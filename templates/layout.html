@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Ordem de serviço</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.css">
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  
+  
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<!-- Include the default stylesheet -->
+<!-- Include plugin -->
+<script src="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.js"></script>
+<script src="/static/js/multiselect-dropdown.js" ></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+  <div class="container pt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand nav-link" href="#">CEMAG</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link disabled" href="#">Abertura de Os</a>
+          <a class="nav-item nav-link disabled" href="#">PAGINA2</a>
+          <a class="nav-item nav-link disabled" href="#">PAGINA3</a>
+          <a class="nav-item nav-link disabled" href="#">Disabled</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+    <div class="container pt-4">
+      {% block body %}
+      {% endblock %}
+    </div>
+   
+<script>
+
+// const btnDelete= document.querySelectorAll('.btn-delete');
+// if(btnDelete) {
+//   const btnArray = Array.from(btnDelete);
+//   btnArray.forEach((btn) => {
+//     btn.addEventListener('click', (e) => {
+//       if(!confirm('Tem certeza que quer deletar?')){
+//         e.preventDefault();
+//       }
+//     });
+//   })
+// }
+  
+// $(document).ready(function() {
+//     $('#table1').DataTable({     
+//       "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
+//         "iDisplayLength": 10
+//        } 
+//     );
+// } );
+
+// $(document).ready(function () {
+//     // Setup - add a text input to each footer cell
+//     $('#table1 tfoot th:eq(1), #table1 tfoot th:eq(2), #table1 tfoot th:eq(3), #table1 tfoot th:eq(4), #table1 tfoot th:eq(5), #table1 tfoot th:eq(6), #table1 tfoot th:eq(7)').each(function () {
+//         var title = $(this).text();
+//         $(this).html('<div class="form-group"> <input class="form-control" type="text" placeholder= "' + title + '" /> </div>');
+//     });
+ 
+//     // DataTable
+//     var table = $('#table1').DataTable({
+//       "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
+//       "iDisplayLength": 10,
+//         initComplete: function () {
+//             // Apply the search
+//             this.api()
+//                 .columns()
+//                 .every(function () {
+//                     var that = this;
+ 
+//                     $('input', this.footer()).on('keyup change clear', function () {
+//                         if (that.search() !== this.value) {
+//                             that.search(this.value).draw();
+//                         }
+//                     });
+//                 });
+//         },
+//     });
+// });
+
+
+$(document).ready(function() {
+    $('#table1').DataTable({     
+      "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
+        "iDisplayLength": 10
+       } 
+    );
+} );
+
+</script>
+</body>
+</html>
