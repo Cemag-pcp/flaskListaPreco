@@ -2,40 +2,28 @@
 {% block body %}
     
 <div class="container pt-4">
-    <div class="row justify-content-md-center">
-        <div style="overflow-x: auto;">
-            <table id="table1" class="table table-striped" style="width: 100%";>
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>codigo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in data %}
-                    <tr style = "max-width:200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <td>{{row.id}}</td>
-                        <td>{{row.codigo}}</td>
-                        <td>
-                            <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-delete"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th class="sorting sorting_asc"></th>
-                        <th></th>
-                        <th>Codigo</th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        </div>
-    </div>
+    <table id="table1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Código</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{row.id}}</td>
+                <td>{{row.codigo}}</td>
+                <td>
+                    <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-star"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 
