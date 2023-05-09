@@ -11,7 +11,6 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
-import locale
 
 app = Flask(__name__)
 app.secret_key = "listaPreco"
@@ -84,11 +83,10 @@ def login_required(view):
 @login_required
 def lista():
 
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
     representante = "'"+session['user_id']+"'"
+    representante = """'Galo'"""
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT * FROM tb_lista_precos where representante = {}".format(representante))
@@ -96,8 +94,7 @@ def lista():
     data = cur.fetchall()
 
     for row in data:
-        preco = locale.currency(row['preco'], grouping=True, symbol='R$')
-        row['preco'] = preco    
+        row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
 
     return render_template('lista.html', data=data)
 
@@ -128,8 +125,6 @@ def move(id):
 @login_required
 def lista_favoritos():
 
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
     representante = "'"+session['user_id']+"'"
@@ -139,8 +134,8 @@ def lista_favoritos():
     data = cur.fetchall()
 
     for row in data:
-        preco = locale.currency(row['preco'], grouping=True, symbol='R$')
-        row['preco'] = preco    
+        row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
+  
 
     return render_template("favoritos.html", data=data)
 
