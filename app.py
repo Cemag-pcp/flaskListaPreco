@@ -11,6 +11,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
+import locale
 
 app = Flask(__name__)
 app.secret_key = "listaPreco"
@@ -83,6 +84,8 @@ def login_required(view):
 @login_required
 def lista():
 
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
     representante = "'"+session['user_id']+"'"
@@ -91,6 +94,10 @@ def lista():
     cur.execute("SELECT * FROM tb_lista_precos where representante = {}".format(representante))
     #data = pd.read_sql_query("SELECT * FROM tb_lista_precos", conn)
     data = cur.fetchall()
+
+    for row in data:
+        preco = locale.currency(row['preco'], grouping=True, symbol='R$')
+        row['preco'] = preco    
 
     return render_template('lista.html', data=data)
 
@@ -110,7 +117,7 @@ def move(id):
         if df[coluna].dtype == 'object':
             df[coluna] = df[coluna].str.strip()
 
-    cur.execute("INSERT INTO tb_favoritos (id, familia, codigo, descricao, representante) VALUES (%s,%s,%s,%s,%s)", (int(np.int64(df['id'][0])), df['familia'][0], df['codigo'][0], df['descricao'][0], representante))
+    cur.execute("INSERT INTO tb_favoritos (id, familia, codigo, descricao, representante, preco) VALUES (%s,%s,%s,%s,%s,%s)", (int(np.int64(df['id'][0])), df['familia'][0], df['codigo'][0], df['descricao'][0], representante, df['preco'][0]))
     cur.execute('DELETE FROM tb_lista_precos WHERE id = {0}'.format(id))
     conn.commit()
     conn.close()
@@ -121,13 +128,19 @@ def move(id):
 @login_required
 def lista_favoritos():
 
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
     representante = "'"+session['user_id']+"'"
-
+    # representante = """'Galo'"""
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT * FROM tb_favoritos where representante = {}".format(representante))
     data = cur.fetchall()
+
+    for row in data:
+        preco = locale.currency(row['preco'], grouping=True, symbol='R$')
+        row['preco'] = preco    
 
     return render_template("favoritos.html", data=data)
 
@@ -141,13 +154,15 @@ def remove(id):
 
     representante = ""+session['user_id']+""
 
+    representante = """Galo"""
+
     df = pd.read_sql_query('SELECT * FROM tb_favoritos WHERE id = {}'.format(id), conn)
 
     for coluna in df.columns:
         if df[coluna].dtype == 'object':
             df[coluna] = df[coluna].str.strip()
 
-    cur.execute("INSERT INTO tb_lista_precos (id, familia, codigo, descricao, representante) VALUES (%s,%s,%s,%s,%s)", (int(np.int64(df['id'][0])), df['familia'][0], df['codigo'][0], df['descricao'][0], representante))
+    cur.execute("INSERT INTO tb_lista_precos (id, familia, codigo, descricao, representante, preco) VALUES (%s,%s,%s,%s,%s,%s)", (int(np.int64(df['id'][0])), df['familia'][0], df['codigo'][0], df['descricao'][0], representante, df['preco'][0]))
 
     cur.execute('DELETE FROM tb_favoritos WHERE id = {0}'.format(id))
 
@@ -176,14 +191,14 @@ def export_pdf():
     # representante = "'Galo'"
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
-    s = "SELECT familia,codigo,descricao FROM tb_favoritos where representante = {}".format(representante)
+    s = "SELECT familia,codigo,descricao,preco FROM tb_favoritos where representante = {}".format(representante)
     data = pd.read_sql_query(s,conn)
 
     data['codigo'] = data['codigo'].str.strip()
     data['descricao'] = data['descricao'].str.strip()
     data['familia'] = data['familia'].str.strip()
 
-    header = ['Família','Código','Descrição']
+    header = ['Família','Código','Descrição', 'Preço']
 
     data = data.values.tolist()
     data.insert(0, header)
@@ -243,14 +258,14 @@ def export_pdf_all():
     # representante = "'Galo'"
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
-    s = "SELECT familia,codigo,descricao FROM tb_lista_precos where representante = {}".format(representante)
+    s = "SELECT familia,codigo,descricao,preco FROM tb_lista_precos where representante = {}".format(representante)
     data = pd.read_sql_query(s,conn)
 
     data['codigo'] = data['codigo'].str.strip()
     data['descricao'] = data['descricao'].str.strip()
     data['familia'] = data['familia'].str.strip()
 
-    header = ['Família','Código','Descrição']
+    header = ['Família','Código','Descrição', 'Preço']
 
     data = data.values.tolist()
     data.insert(0, header)
@@ -308,13 +323,13 @@ def export_pdf_all():
 
 # df.reset_index(inplace=True)
 # df = df.rename(columns={'index':'id'})
-# df.drop(columns={'Unnamed: 4'}, inplace=True)
+# # df.drop(columns={'Unnamed: 4'}, inplace=True)
 
-# df = df.iloc[[0,1],:]
+# # df = df.iloc[[0,1],:]
 
 # # Inserir os dados do dataframe na tabela
 # for index, row in df.iterrows():
-#     cur.execute('INSERT INTO tb_lista_precos (id, familia, codigo, descricao, representante) VALUES (%s, %s, %s, %s, %s)', (row['id'], row['familia'], row['codigo'], row['descricao'], row['representante']))
+#     cur.execute('INSERT INTO tb_lista_precos (id, familia, codigo, descricao, representante, preco) VALUES (%s, %s, %s, %s, %s, %s)', (row['id'], row['familia'], row['codigo'], row['descricao'], row['representante'], row['preco']))
 
 # # Salvar as alterações no banco de dados
 # conn.commit()

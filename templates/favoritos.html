@@ -10,20 +10,20 @@
         <table id="table2" class="table table-striped">
             <thead>
                 <tr>
-                    <th>Id</th>
                     <th>Família</th>
                     <th>Código</th>
                     <th>Descrição</th>
-                    <th>Ação</th>
+                    <th>Preço</th>
+                    <th>Remover</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in data %}
                 <tr>
-                    <td>{{row.id}}</td>
                     <td>{{row.familia}}</td>
                     <td>{{row.codigo}}</td>
                     <td>{{row.descricao}}</td>
+                    <td style="white-space: nowrap;">{{row.preco}}</td>
                     <td>
                         <a href="/remove/{{row.id}}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-trash"></i>
