@@ -1,29 +1,39 @@
 {% extends "layout.html" %}
 {% block body %}
-    
+
+
 <div class="container pt-4">
-    <table id="table1" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Código</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            <tr>
-                <td>{{row.id}}</td>
-                <td>{{row.codigo}}</td>
-                <td>
-                    <a href="/remove/{{row.id}}" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="position: relative;">
+        <a href="/export/pdf">
+            <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
+        </a>
+        <table id="table2" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Família</th>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{row.id}}</td>
+                    <td>{{row.familia}}</td>
+                    <td>{{row.codigo}}</td>
+                    <td>{{row.descricao}}</td>
+                    <td>
+                        <a href="/remove/{{row.id}}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 

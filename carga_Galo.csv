@@ -1,0 +1,338 @@
+﻿familia;codigo;descricao;representante;
+CBH12;CBH12 SS RS/T R15,5 M22;"Carreta Hidráulica 12t (19m3) RS/T de 2 Eixos - FORRAGEIRA - RODA 15,5"" - Molas, Freios e Pneus não Incluídos";Galo;23
+CBH12;CBH12 SS RS/T R15,5 P400 M22;"Carreta Hidráulica 12t (19m3) RS/T de 2 Eixos - FORRAGEIRA - RODA 15,5"" - C/ PNEUS ALTA FLUTUAÇÃO - Molas, Freios não Incluídos";Galo;28
+CBH3,5;CBH3,5 UG CS RS M21;Carreta Hidráulica 3,5t (3m3) RS de 1 Eixo - USO GERAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+CBH3,5;CBH3,5 UG SS RS M21;Carreta Hidráulica 3,5t (3m3) RS de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH3,5;CBH3,5 UG SS RS MM M21;Carreta Hidráulica 3,5t (3m3) RS de 1 Eixo - USO GERAL - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;22
+CBH5;CBH5 FO CS RD M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - C/ MOLAS - Freios e Pneus não Incluídos;Galo;17
+CBH5;CBH5 FO SC RD M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;17
+CBH5;CBH5 FO SC RD MM M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;20
+CBH5;CBH5 FO SC RD MM P750(I) M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluído;Galo;28
+CBH5;CBH5 FO SC RD BE M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;20
+CBH5;CBH5 FO SC RD BE MM M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS + MANG MAIORES + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;23
+CBH5;CBH5 FO SC T M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;16
+CBH5;CBH5 FO SC T MM M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;19
+CBH5;CBH5 FO SS RD M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH5;CBH5 FO SS RD MM M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH5;CBH5 FO SS RD MM P750(I) M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - C/ MANG MAIORES + PNEUS - Molas e Freios não Incluídos+;Galo;28
+CBH5;CBH5 FO SS RD P750(I) M21;Carreta Hidráulica 5t (7,5m3) RD de 1 Eixo - FORRAGEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH5;CBH5 FO SS T M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH5;CBH5 FO SS T MM M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH5;CBH5 FO SS T MM P750(I) M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ MANG MAIORES + PNEUS 750(I) - Molas e Freios não Incluídos;Galo;27
+CBH5;CBH5 FO SS T BE M21;Carreta Hidráulica 5t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ BASE P/ ENSILADEIRA - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH5;CBH5 FO-1M CS RD M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ MOLAS - Freios e Pneus não Incluídos;Galo;20
+CBH5;CBH5 FO-1M CS RD P750(I) M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;28
+CBH5;CBH5 FO-1M SC RD M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídas;Galo;20
+CBH5;CBH5 FO-1M SC RD MM P750(I) M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo- FORRAGEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídas+;Galo;31
+CBH5;CBH5 FO-1M SS RD M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH5;CBH5 FO-1M SS RD MM M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ MANG MAIORES - Molas, Freios e Pneus não incluídos;Galo;23
+CBH5;CBH5 FO-1M SS RD MM P750(I) M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ PNEUS + MANG MAIORES - Molas e Freios não incluídos;Galo;31
+CBH5;CBH5 FO-1M SS RD P750(I) M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+CBH5;CBH5 FO-1M SS RD BE M21;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ BASE P/ ENSILADEIRA - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH5;CBH5 FO-1M SS T M21;Carreta Hidráulica 5t (5m3) de Eixo Tandem - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH5;CBH5 FO-1M SS T MM M21;Carreta Hidráulica 5t (5m3) de Eixo Tandem - FORRAGEIRA 1M - C/ MANGUEIRAS MAIORES - Molas, Freios e Pneus não Incluídos;Galo;22
+CBH5;CBH5 FO-1M SS T MM P750(I) M21;Carreta Hidráulica 5t (5m3) de Eixo Tandem - FORRAGEIRA 1M - C/ MANG MAIORES + PNEUS 750(I) - Molas e Freios não Incluídos;Galo;30
+CBH5;CBH5 FO-1M SS T BE M21;Carreta Hidráulica 5t (5m3) de Eixo Tandem - FORRAGEIRA 1M - C/ BASE P/ ENSILADEIRA - Molas, Freios e Pneus não Incluídos;Galo;22
+CBH5;CBH5 FO-1M SS T BE MM P750(I) M21;Carreta Hidráulica 5t (5m3) de Eixo Tandem - FORRAGEIRA 1M - C/ BASE P/ ENSILADEIRA - MANG. MAIORES - C/PNEUS 750(I) - Molas e Freios não Incluídos;Galo;33
+CBH5;CBH5 UG CS RD M21;Carreta Hidráulica 5t (3m3) RD de 1 Eixo - USO GERAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;17
+CBH5;CBH5 UG CS RD P750(I) M21;Carreta Hidráulica 5t (3m3) RD de 1 Eixo - USO GERAL - C/ MOLAS + PNEUS - Freios não incluídos;Galo;25
+CBH5;CBH5 UG SC T M21;Carreta Hidráulica 5t (3m3) de Eixo Tandem - USO GERAL - C/ FREIOS - Molas e Pneus não Incluídos;Galo;16
+CBH5;CBH5 UG SS RD M21;Carreta Hidráulica 5t (3m3) RD de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH5;CBH5 UG SS RD P750(I) M21;Carreta Hidráulica 5t (3m3) RD de 1 Eixo - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH5;CBH5 UG SS T M21;Carreta Hidráulica 5t (3m3) de Eixo Tandem - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH5;CBH5 UG SS T MM M21;Carreta Hidráulica 5t (3m3) de Eixo Tandem - USO GERAL - C/ MANGUEIRAS MAIORES - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH5;CBH5 UG SS T P750(I) M21;Carreta Hidráulica 5t (3m3) de Eixo Tandem - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;24
+CBH6;CBH6 FO SC RD M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - C/ FREIOS - Pneus não Incluídos;Galo;17
+CBH6;CBH6 FO SC RD MM M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - C/ FREIOS + MANG MAIORES - Pneus não Incluídos;Galo;20
+CBH6;CBH6 FO SC RD MM P750(I) M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - C/ FREIOS + MANG MAIORES + PNEUS;Galo;28
+CBH6;CBH6 FO SS RD M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH6;CBH6 FO SS RD MM M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - MANGUEIRAS MAIORES - Molas, Pneus e Freios não Incluídos;Galo;20
+CBH6;CBH6 FO SS RD MM P750(I) M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - MANGUEIRAS MAIORES - PNEUS 750(I) - Molas e Freios não Incluídos;Galo;28
+CBH6;CBH6 FO SS RD P750(I) M22;Carreta Hidráulica 6t (9m3) RD de 1 Eixo – FORRAGEIRA - PNEUS - Molas, Freios não Incluídos;Galo;25
+CBH6;CBH6 FO SS T M22;Carreta Hidráulica 6t (9m3) de Eixo Tandem – FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH6;CBH6 FO SS T MM M22;Carreta Hidráulica 6t (9m3) de Eixo Tandem – FORRAGEIRA - C/ MANG. MAIORES - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH6;CBH6 FO SS T MM P750(I) M22;Carreta Hidráulica 6t (9m3) de Eixo Tandem – FORRAGEIRA - C/ MANG. MAIORES + PNEUS 750(I) - Molas e Freios não Incluídos;Galo;27
+CBH6;CBH6 FO SS T P750(I) M22;Carreta Hidráulica 6t (9m3) de Eixo Tandem – FORRAGEIRA - C/ PNEUS - Molas, Freios não Incluídos;Galo;24
+CBH6;CBH6 FO-1M SC RD M22;Carreta Hidráulica 6t (6m3) RD de 1 Eixo – FORRAGEIRA 1M - C/ FREIOS - Pneus não Incluídos;Galo;20
+CBH6;CBH6 FO-1M SS RD M22;Carreta Hidráulica 6t (6m3) RD de 1 Eixo – FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH6;CBH6 FO-1M SS RD MM M22;Carreta Hidráulica 6t (6m3) RD de 1 Eixo – FORRAGEIRA 1M - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH6;CBH6 FO-1M SS RD P750(I) M22;Carreta Hidráulica 6t (6m3) RD de 1 Eixo – FORRAGEIRA 1M - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+CBH6;CBH6 FO-1M SS T M22;Carreta Hidráulica 6t (6m3) de Eixo Tandem – FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH6;CBH6 FO-1M SS T P750(I) M22;Carreta Hidráulica 6t (6m3) de Eixo Tandem – FORRAGEIRA 1M - C/ PNEUS - Molas, Freios e Pneus não Incluídos;Galo;27
+CBH6;CBH6 UG SC RD M22;Carreta Hidráulica 6t (4m3) RD de 1 Eixo – USO GERAL - C/ FREIOS - Pneus não Incluídos;Galo;17
+CBH6;CBH6 UG SS RD M22;Carreta Hidráulica 6t (4m3) RD de 1 Eixo – USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH6;CBH6 UG SS RD P750(I) M22;Carreta Hidráulica 6t (4m3) RD de 1 Eixo – USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH6;CBH6 UG SS T M22;Carreta Hidráulica 6t (4m3) de Eixo Tandem – USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH6-2E;CBH6-2E FO SS RS/RD CB P750(I) M21;Carreta Hidráulica 6t (9m3) RS/RD de 2 Eixos - FORRAGEIRA - C/ COMBOIO - COM PNEUS 750(I)- Molas e Freios não Incluídos;Galo;34
+CBH6-2E;CBH6-2E FO SS RS/RD M21;Carreta Hidráulica 6t (9m3) RS/RD de 2 Eixos - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH6-2E;CBH6-2E FO SS RS/RD P750(I) M21;Carreta Hidráulica 6t (9m3) RS/RD de 2 Eixos - FORRAGEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+CBH6-2E;CBH6-2E FO SS RS/T M21;Carreta Hidráulica 6t (9m3) RS/Tandem de 2 Eixos - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;22
+CBH6-2E;CBH6-2E FO SS RS/T P750(I) M21;Carreta Hidráulica 6t (9m3) RS/Tandem de 2 Eixos - FORRAGEIRA - C/ PNEUS - Molas e Freio não Incluídos;Galo;30
+CBH6-2E;CBH6-2E FO-1M SS RS/RD M21;Carreta Hidráulica 6t (6m3) RS/RD de 2 Eixos - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;26
+CBH6-2E;CBH6-2E FO-1M SS RS/T M21;Carreta Hidráulica 6t (6m3) RS/Tandem de 2 Eixos - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;25
+CBH6-2E;CBH6-2E UG SS RS/RD M21;Carreta Hidráulica 6t (4m3) RS/RD de 2 Eixos - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH6R;CBH6R FO SC T M21;Carreta Hidráulica 6t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;17
+CBH6R;CBH6R FO SC T P750(I) M21;Carreta Hidráulica 6t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ FREIO + PNEUS - Molas não Incluídos;Galo;25
+CBH6R;CBH6R FO SS T M21;Carreta Hidráulica 6t (7,5m3) de Eixo Tandem - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH6R;CBH6R FO SS T MM M21;Carreta Hidráulica 6t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH6R;CBH6R FO SS T P750(I) M21;Carreta Hidráulica 6t (7,5m3) de Eixo Tandem - FORRAGEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH7;CBH7 FO SC RD M21;Carreta Hidráulica 7t (9m3)RD de 1 Eixo - FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;17
+CBH7;CBH7 FO SC RD MM M21;Carreta Hidráulica 7t (9m3)RD de 1 Eixo - FORRAGEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;20
+CBH7;CBH7 FO SC T M21;Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;16
+CBH7;CBH7 FO SC T MM M21;Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;19
+CBH7;CBH7 FO SS RD M21;Carreta Hidráulica 7t (9m3) RD de 1 Eixo - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH7;CBH7 FO SS RD MM M21;Carreta Hidráulica 7t (9m3)RD de 1 Eixo - FORRAGEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH7;CBH7 FO SS RD MM P750(I) M21;Carreta Hidráulica 7t (9m3)RD de 1 Eixo - FORRAGEIRA - C/ MANG MAIORES + PNEUS - Molas e Freios não Incluídos;Galo;28
+CBH7;CBH7 FO SS RD P750(I) M21;Carreta Hidráulica 7t (9m3) RD de 1 Eixo - FORRAGEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH7;CBH7 FO SS T M21;Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH7;CBH7 FO SS T MM M21;Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH7;CBH7 FO SS T MM P750(I) M21;Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - C/ MANG MAIORES + PNEUS - Molas e Freios não Incluídos;Galo;27
+CBH7;CBH7 FO SS T P750(I) M21;Carreta Hidráulica 7t (9m3) Eixo Tandem - FORRAGEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;24
+CBH7;CBH7 FO SS T R15,5 M21;"Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - RODA 15,5"" - Molas, Freios não Incluídos+";Galo;22
+CBH7;CBH7 FO SS T R15,5 P400 M21;"Carreta Hidráulica 7t (9m3) de Eixo Tandem - FORRAGEIRA - RODA 15,5"" - C/ PNEUS 400/60 - Molas, Freios não Incluídos";Galo;27
+CBH7;CBH7 FO-1M SS RD M21;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;20
+CBH7;CBH7 FO-1M SS RD P750(I) M21;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - FORRAGEIRA 1M - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+CBH7;CBH7 FO-1M SS T M21;Carreta Hidráulica 7t (6m3) de Eixo Tandem - FORRAGEIRA 1M - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH7;CBH7 UG SC RD M21;Carreta Hidráulica 7t (4m3) RD de 1 Eixo - USO GERAL - C/ FREIOS - Freios e Pneus não Incluídos;Galo;17
+CBH7;CBH7 UG SS RD M21;Carreta Hidráulica 7t (4m3) RD de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;17
+CBH7;CBH7 UG SS RD P750(I) M21;Carreta Hidráulica 7t (4m3) RD de 1 Eixo - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;25
+CBH7;CBH7 UG SS T M21;Carreta Hidráulica 7t (4m3) de Eixo Tandem - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;16
+CBH7-2E;CBH7-2E FO SS R15,5 RS/RS M23;Carreta Hidráulica 7t (9m3) RS/RS de 2 Eixos - P/ PNEU ALTA FLUTUAÇÃO - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;29
+CBH7-2E;CBH7-2E FO SS RS/RD M21;Carreta Hidráulica 7t (9m3) RS/RD de 2 Eixos - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH7-2E;CBH7-2E FO SS RS/T M21;Carreta Hidráulica 7t (9m3) RS/T de 2 Eixos - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;22
+CBH7-2E;CBH7-2E FO SS RS/T R15,5 M21;Carreta Hidráulica 7t (9m3) RS/T de 2 Eixos - FORRAGEIRA - ALTA FLUTUAÇÃO - Molas, Freios e Pneus não Incluídos;Galo;28
+CBH7-2E;CBH7-2E FO SS RS/T R15,5 P400 M21;Carreta Hidráulica 7t (9m3) RS/T de 2 Eixos - FORRAGEIRA - C/ PNEUS ALTA FLUTUAÇÃO - Molas, Freios não Incluídos;Galo;33
+CBH7-2E;CBH7-2E UG SS RS/RD M21;Carreta Hidráulica 7t (4m3) RS/RD de 2 Eixos - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;23
+CBH9;CBH9 SS T R15,5 M22;Carreta Hidráulica 9t (14m3) de Eixo Tandem – FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;19
+CBH9;CBH9 SS T R15,5 P400 M22;Carreta Hidráulica 9t (14m3) de Eixo Tandem – FORRAGEIRA - C/ PNEUS 400 - Molas e Freios não Incluídos;Galo;24
+CBH9-2E;CBH9-2E SS RS/RS R15,5 M22;"Carreta Hidráulica 9t (14m3) RS/RS de 2 Eixos - FORRAGEIRA - RODA 15,5"" - Molas, Freios e Pneus não Incluídos";Galo;26
+CBH9-2E;CBH9-2E SS RS/RS R15,5 P400 M22;"Carreta Hidráulica 9t (14m3) RS/RS de 2 Eixos - FORRAGEIRA - RODA 15,5"" - C/ PNEUS 400/60 - Molas e Freios não Incluídos";Galo;31
+CBHL6000;CBHL6000 CS RS/RS M20;Carreta Hidráulica 5t (6m3) RS/RS de 2 Eixos - TRIBASCULANTE - C/ MOLAS - Freios e Pneus não Incluídos;Galo;21
+CBHM10000;CBHM10000 SS RD M17;Carreta Hidráulica 7t (10m3) RD de 1 Eixo – FORRAGEIRO - Molas, Freios e Pneus não Incluídos;Galo;19
+CBHM10000;CBHM10000 SS T R15,5 M20;Carreta Hidráulica 7t (10m3) de Eixo Tandem - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM10000;CBHM10000 SS T R15,5 P400 M20;Carreta Hidráulica 7t (10m3) de Eixo Tandem - FORRAGEIRA - PNEUS 400/60 - Molas e Freios não Incluídos;Galo;29
+CBHM10000-2E;CBHM10000-2E SS RS/RD M17;Carreta Hidráulica 6t (10m3) RS/RD de 2 Eixos - FORRAGEIRO - Molas, Freios e Pneus não Incluídos;Galo;25
+CBHM10000-2E;CBHM10000-2E SS RS/RD P750(I) M17;Carreta Hidráulica 6t (10m3) RS/RD de 2 Eixos – FORRAGEIRO - C/ PNEUS - Molas e Freios não Incluídos;Galo;33
+CBHM10000-2E;CBHM10000-2E SS RS/RS M17;Carreta Hidráulica 6t (10m3) RS/RS de 2 Eixos - FORRAGEIRA - Molas, Freios e Pneus não Incluídos;Galo;25
+CBHM10000-2E;CBHM10000-2E SS RS/RS R15,5 M17;"Carreta Hidráulica 6t (10m3) RS/RD de 2 Eixos - FORRAGEIRA - RODA 15,5"" - Molas, Freios e Pneus não Incluídos";Galo;31
+CBHM10000-2E;CBHM10000-2E SS RS/RS R15,5 P400 M17;"Carreta Hidráulica 6t (10m3) RS/RD de 2 Eixos - FORRAGEIRA - RODA 15,5"" - PNEUS 400/60 - Molas, Freios e Pneus não Incluídos";Galo;36
+CBHM10000-2E;CBHM10000-2E SS RS/T M20;Carreta Hidráulica 6t (10m3) RS/T de 2 Eixos - FORRAGEIRO - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM10000;CBHM10000 SS RD P750(I) M17;Carreta Hidráulica 7t (10m3) RD de 1 Eixo – FORRAGEIRO - C/ PNEUS - Molas e Freios não Incluídos;Galo;27
+CBHM3500;CBHM3500 CS RD M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 CS RS M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SC RD M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ FREIOS - Molas e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SC RD P750(I) M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ FREIOS - C/ PNEUS - Molas não Incluídas;Galo;26
+CBHM3500;CBHM3500 SC RD BE M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ FREIOS + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;21
+CBHM3500;CBHM3500 SC RS M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - C/ FREIOS - Molas e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SS RD M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SS RD MM M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM3500;CBHM3500 SS RD P750(I) M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ PNEUS 750(I) - Molas e Freios não Incluídos;Galo;26
+CBHM3500;CBHM3500 SS RS M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SC RD BE M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ FREIOS + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;21
+CBHM3500;CBHM3500 SC RS M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - C/ FREIOS - Molas e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SS RD M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SS RD MM M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM3500;CBHM3500 SS RD P750(I) M17;Carreta Hidráulica 5t (3,5m3) RD de 1 Eixo - USO GERAL - C/ PNEUS 750(I) - Molas e Freios não Incluídos;Galo;26
+CBHM3500;CBHM3500 SS RS M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM3500;CBHM3500 SS RS MM M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - C/ MANGUEIRAS MAIORES - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM3500;CBHM3500 SS RS P750(I) M17;Carreta Hidráulica 5t (3,5m3) RS de 1 Eixo - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;26
+CBHM4500;CBHM4500 SC RD M17;Carreta Hidráulica 4t (4,5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;18
+CBHM4500;CBHM4500 SC RS M17;Carreta Hidráulica 4t (4,5m3) RS de 1 Eixo - CAFEEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;18
+CBHM4500;CBHM4500 SS RD M17;Carreta Hidráulica 4t (4,5m3) RD de 1 Eixo - CAFEEIRA - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM4500;CBHM4500 SS RD MM M17;Carreta Hidráulica 4t (4,5m3) RD de 1 Eixo - CAFEEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM4500;CBHM4500 SS RD MM P750(I) M17;Carreta Hidráulica 4t (4,5m3) RD de 1 Eixo - CAFEEIRA - MANGUEIRAS MAIORES - C/ PNEUS 750(I) - Molas e Freios não Incluídos+;Galo;29
+CBHM4500;CBHM4500 SS RD P750(I) M17;Carreta Hidráulica 4t (4,5m3) RD de 1 Eixo - CAFEEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;26
+CBHM4500;CBHM4500 SS RS M17;Carreta Hidráulica 3,5t (4,5m3) RS de 1 Eixo - CAFEEIRA - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM5000;CBHM5000 GR CS RD M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ MOLAS - Freios e Pneus não Incluídos;Galo;21
+CBHM5000;CBHM5000 GR SC RD BE M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIO + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 CA SC RD ABA MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + ABAS LATERAIS + MANG MAIORES - Pneus e Molas não Incluídas;Galo;28
+CBHM5000;CBHM5000 CA SC RD ABA MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + ABAS LATERAIS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;36
+CBHM5000;CBHM5000 CA SC RD M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;21
+CBHM5000;CBHM5000 CA SC RD MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 CA SC RD MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;32
+CBHM5000;CBHM5000 GR SC RD M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;21
+CBHM5000;CBHM5000 GR SC RD MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 GR SC RD MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídas+;Galo;32
+CBHM5000;CBHM5000 GR SC RD P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS + PNEUS - Molas não Incluídas+;Galo;29
+CBHM5000;CBHM5000 GR SC RD BE MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS + BASE P/ ENSILADEIRA + MANG MAIORES - Molas e Pneus não Incluídos;Galo;27
+CBHM5000;CBHM5000 GR SC RD BE P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ FREIOS + BASE P/ ENSILADEIRA + PNEUS - Molas não Incluídas;Galo;32
+CBHM5000;CBHM5000 CA SC T ABA MM P750(I) M20;Carreta Hidráulica 5t (5m3) RD de Eixo Tandem - CAFEEIRA - C/ FREIOS + ABAS LATERAIS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;35
+CBHM5000;CBHM5000 GR SC T M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - Molas e Pneus não Incluídos;Galo;20
+CBHM5000;CBHM5000 GR SC T MM M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;23
+CBHM5000;CBHM5000 GR SC T MM P750(I) M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;31
+CBHM5000;CBHM5000 CA SS RD ABA MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ MANG MAIORES + PNEUS - C/ ABAS - Molas e Freios não Incluídos;Galo;36
+CBHM5000;CBHM5000 CA SS RD MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 CA SS RD MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - CAFEEIRA - C/ MANG MAIORES + PNEUS - Molas e Freios não Incluídos;Galo;32
+CBHM5000;CBHM5000 GR SS RD M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM5000;CBHM5000 GR SS RD MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 GR SS RD P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo – GRANELEIRA - PNEUS - Molas e Freios não Incluídos;Galo;29
+CBHM5000;CBHM5000 GR SS RD BE M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo – GRANELEIRA - BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;24
+CBHM5000;CBHM5000 GR SS RD BE MM M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - BASE P/ ENSILADEIRA + MANG MAIORES - Molasm Freios e Pneus não Incluídos;Galo;27
+CBHM5000;CBHM5000 GR SS RD BE MM P750(I) M17;Carreta Hidráulica 5t (5m3) RD de 1 Eixo - GRANELEIRA - C/ BASE P/ ENSILADEIRA + MANG MAIORES + PNEUS 750(I) - Molas e Freios não Incluídos;Galo;35
+CBHM5000;CBHM5000 CA SS T ABA MM M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - CAFEEIRA - C/ ABAS LATERAIS + MANG MAIORES - Freios, Molas e Pneus não Incluídas;Galo;27
+CBHM5000;CBHM5000 CA SS T ABA MM P750(I) M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - CAFEEIRA - C/ ABAS LATERAIS + MANG MAIORES + PNEUS - Freios, Molas não Incluídas;Galo;35
+CBHM5000;CBHM5000 GR SS T M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - Molas, Freios e Pneus não Incluídos;Galo;20
+CBHM5000;CBHM5000 GR SS T MM M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;23
+CBHM5000;CBHM5000 GR SS T MM P750(I) M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ MANG MAIORES - PNEUS 750(I) - Molas e Freios não Incluídos+;Galo;31
+CBHM5000;CBHM5000 GR SS T P700(R) M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ PNEUS 700(R) - Molas e Freios não Incluídos;Galo;28
+CBHM5000;CBHM5000 GR SS T P750(I) M20;Carreta Hidráulica 5t (5m3) de Eixo Tandem - GRANELEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+CBHM6000;CBHM6000 CA SC RD ABA MM M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + ABAS LATERAIS + MANG MAIORES - Molas, Pneus não Incluídas;Galo;28
+CBHM6000;CBHM6000 CA SC RD ABA MM P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + ABAS LATERAIS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;36
+CBHM6000;CBHM6000 CA SC RD M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;21
+CBHM6000;CBHM6000 CA SC RD MM M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;24
+CBHM6000;CBHM6000 CA SC RD MM P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídas;Galo;32
+CBHM6000;CBHM6000 CA SC RD P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ FREIOS + PNEUS - Molas não Incluídas;Galo;29
+CBHM6000;CBHM6000 CA SC T M21;Carreta Hidráulica (6m3) de Eixo Tandem - CAFEEIRA - C/ FREIOS - Molas e Pneus não Incluídos;Galo;20
+CBHM6000;CBHM6000 CA SC T MM M21;Carreta Hidráulica (6m3) de Eixo Tandem - CAFEEIRA - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídas;Galo;23
+CBHM6000;CBHM6000 CA SS RD ABA MM P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/MANGUEIRAS MAIORES - C/ ABAS + PNEUS - Molas e Freios não Incluídos;Galo;36
+CBHM6000;CBHM6000 CA SS RD ABA P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ ABAS + PNEUS - Molas e Freios não Incluídos;Galo;33
+CBHM6000;CBHM6000 CA SS RD M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM6000;CBHM6000 CA SS RD MM M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM6000;CBHM6000 CA SS RD MM P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ MANG. MAIORES + PNEUS - Molas e Freios não Incluídos;Galo;32
+CBHM6000;CBHM6000 CA SS RD P750(I) M21;Carreta Hidráulica (6m3) RD de 1 Eixo - CAFEEIRA - C/ PNEUS - Molas e Freios não Incluídos;Galo;29
+CBHM6000;CBHM6000 CA SS T M21;Carreta Hidráulica (6m3) de Eixo Tandem - CAFEEIRA - Molas, Freios e Pneus não Incluídos;Galo;20
+CBHM6000;CBHM6000 CA SS T MM M21;Carreta Hidráulica (6m3) de Eixo Tandem - CAFEEIRA - C/ MANGUEIRAS MAIORES - Molas, Freios e Pneus não Incluídos;Galo;23
+CBHM6000;CBHM6000 UG SC RD M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - C/ FREIOS - Molas e Pneus não Incluídos;Galo;21
+CBHM6000;CBHM6000 UG SC RD MM M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - C/ FREIOS + MANG MAIORES - Molas e Pneus não Incluídos;Galo;24
+CBHM6000;CBHM6000 UG SC RD MM P750(I) M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - C/ FREIOS + MANG MAIORES + PNEUS - Molas não Incluídos;Galo;32
+CBHM6000;CBHM6000 UG SC RD P750(I) M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - C/ FREIOS + PNEUS - Molas não Incluídas;Galo;29
+CBHM6000;CBHM6000 UG SS RD M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM6000;CBHM6000 UG SS RD MM M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - MANG MAIORES - Molas, Freios e Pneus não Incluídos+;Galo;24
+CBHM6000;CBHM6000 UG SS RD P750(I) M17;Carreta Hidráulica 7t (6m3) RD de 1 Eixo - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;29
+CBHM6000;CBHM6000 UG SS T M20;Carreta Hidráulica 7t (6m3) de Eixo Tandem - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;20
+CBHM6000;CBHM6000 UG SS T MM M20;Carreta Hidráulica 7t (6m3) de Eixo Tandem - USO GERAL - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;23
+CBHM6000;CBHM6000 UG SS T P750(I) M20;Carreta Hidráulica 7t (6m3) de Eixo Tandem - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+CBHM6000;CBHM6000 UG SS T R15,5 M20;"Carreta Hidráulica 7t (6m3) de Eixo Tandem - USO GERAL - RODA 15,5"" - Molas, Freios e Pneus não Incluídos";Galo;26
+CBHM6000;CBHM6000 UG SS T R15,5 P400 M20;"Carreta Hidráulica 7t (6m3) de Eixo Tandem - USO GERAL - RODA 15,5"" - PNEUS 400/60 - Molas e Freios não Incluídos";Galo;31
+CBHM6000-2E;CBHM6000-2E SS RS/RD M17;Carreta Hidráulica 6t (6m3) RS/RD de 2 Eixos - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM6000-2E;CBHM6000-2E SS RS/RD P750(I) M17;Carreta Hidráulica 6t (6m3) RS/RD de 2 Eixos - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;32
+CBHM6000-2E;CBHM6000-2E SS RS/RS M17;Carreta Hidráulica 6t (6m3) RS/RS de 2 Eixos - USO GERAL - Molas, Freios e Pneus não Incluídos;Galo;24
+CBHM6000-2E;CBHM6000-2E SS RS/RS P750(I) M17;Carreta Hidráulica 6t (6m3) RS/RS de 2 Eixos - USO GERAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;32
+CBHM6000-2E;CBHM6000-2E SS RS/RS R15,5 M17;"Carreta Hidráulica 6t (6m3) RS/RS de 2 Eixos - USO GERAL - RODA 15,5"" - Molas, Freios e Pneus não Incluídos";Galo;30
+CBHM6000-2E;CBHM6000-2E SS RS/RS R15,5 P400 M17;"Carreta Hidráulica 6t (6m3) RS/RS de 2 Eixos - USO GERAL - RODA 15,5"" - PNEUS 400/60 - Molas e Freios não Incluídos";Galo;35
+CBHM8000;CBHM8000 CS RD M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRO - C/ MOLAS -Freios e Pneus não Incluídos;Galo;18
+CBHM8000;CBHM8000 SC RD M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRO - C/ FREIOS -Molas e Pneus não Incluídos;Galo;18
+CBHM8000;CBHM8000 SC RD BE M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRO - C/ FREIOS + BASE P/ ENSILADEIRA - Molas e Pneus não Incluídos;Galo;21
+CBHM8000;CBHM8000 SS RD M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRO - Molas, Freios e Pneus não Incluídos;Galo;18
+CBHM8000;CBHM8000 SS RD MM M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRO - C/ MANG MAIORES - Molas, Freios e Pneus não Incluídos;Galo;21
+CBHM8000;CBHM8000 SS RD P750(I) M17;Carreta Hidráulica 5t (8m3) RD de 1 Eixo - FORRAGEIRA - C/ PNEUS 750(I) - Molas e Freios não Incluídos;Galo;26
+CBHM8000;CBHM8000 SS T M20;Carreta Hidráulica 5t (8m3) Tandem de 1 Eixo – FORRAGEIRO - Molas, Freios e Pneus não Incluídos;Galo;17
+F4;F4 CS RS/RS A45 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F4;F4 CS RS/RS A45 P750(I) M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;27
+F4;F4 CS RS/RS A45 MT M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos - ALT 45 - C/ MOLAS - Freios e Pneus não Incluídos+;Galo;22
+F4;F4 CS RS/RS A45 MT P750(I) M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos - ALT 45 - C/ MOLAS + PNEUS - Freios não Incluídos+;Galo;30
+F4;F4 CS RS/RS A60 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos – ALT 60 - MAD NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F4;F4 CS RS/RS A90 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F4;F4 CS RS/RS A90 MT M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos - ALT 90 - C/ MOLAS - Freios e Pneus não Incluídos;Galo;22
+F4;F4 CS RS/RS A90 MT P750(I) M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos - ALT 90 - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;30
+F4;F4 SS RS/RS A45 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;19
+F4;F4 SS RS/RS A45 P750(I) M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;27
+F4;F4 SS RS/RS A45 MT M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos – ALT 45 - Molas, Freios e Pneus não Incluídos;Galo;22
+F4;F4 SS RS/RS A45 MT P750(I) M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos – ALT 45 - C/ PNEUS - Molas e Freios não Incluídos;Galo;30
+F4;F4 SS RS/RS A60 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - MAD NAVAL - ALT 60 - Molas, Freios e Pneus não Incluídos;Galo;19
+F4;F4 SS RS/RS A60 P750(I) M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - MAD NAVAL - ALT 60 - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;27
+F4;F4 SS RS/RS A60 P750(I) M23;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - MAD NAVAL - ALT 60 - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;27
+F4;F4 SS RS/RS A90 CB M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - C/ COMBOIO - Molas, Freios e Pneus não Incluídos;Galo;22
+F4;F4 SS RS/RS A90 CB P750(I) M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - C/ COMBOIO - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;30
+F4;F4 SS RS/RS A90 M22;Carreta Madeira Fixa 4t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;19
+F4;F4 SS RS/RS A90 MT M22;Carreta Metálica Fixa 4t RS/RS de 2 Eixos – ALT 90 - Molas, Freios e Pneus não Incluídos;Galo;22
+F6;F6 CS RS/RS A45 CB M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ MOLAS + COMBOIO - Freios e Pneus não Incluídos;Galo;22
+F6;F6 CS RS/RS A45 CB P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ MOLAS + COMBOIO + PNEUS 750(I) - Freios não Incluídos;Galo;30
+F6;F6 CS RS/RS A45 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F6;F6 CS RS/RS A45 P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - Comp Naval - ALT 45 - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;27
+F6;F6 CS RS/RS A45 MT CB M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos - ALT 45 - C/ MOLAS + COMBOIO - Freios e Pneus não Incluídos;Galo;25
+F6;F6 CS RS/RS A45 MT M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos - ALT 45 - C/ MOLAS - Freios e Pneus não Incluídos;Galo;22
+F6;F6 CS RS/RS A60 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos – ALT 60 - MAD NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F6;F6 CS RS/RS A60 MT M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos - ALT 60 - C/ MOLAS - Freios e Pneus não Incluídos;Galo;22
+F6;F6 CS RS/RS A90 CB P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - C/ MOLAS + COMBOIO + PNEUS - Freios não Incluídos;Galo;30
+F6;F6 CS RS/RS A90 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 90 - COMP NAVAL - C/ MOLAS - Freios e Pneus não Incluídos;Galo;19
+F6;F6 CS RS/RS A90 P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;27
+F6;F6 CS RS/RS A90 MT P750(I) M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos - ALT 90 - C/ MOLAS - C/PNEUS 750(I) - Freios não Incluídos;Galo;30
+F6;F6 CS RS/RS A90 MT M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos - ALT 90 - C/ MOLAS - Freios e Pneus não Incluídos;Galo;22
+F6;F6 SS RS/RS A45 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;19
+F6;F6 SS RS/RS A45 P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 45 - MAD NAVAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;27
+F6;F6 SS RS/RS A45 MT M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos – ALT 45 - Molas, Freios e Pneus não Incluídos;Galo;22
+F6;F6 SS RS/RS A45 MT P750(I) M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos – ALT 45 - C/ PNEUS - Molas, Freios não Incluídos;Galo;30
+F6;F6 SS RS/RS A60 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 60 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;19
+F6;F6 SS RS/RS A60 P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 60 - MAD NAVAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;27
+F6;F6 SS RS/RS A90 M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - ALT 90 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;19
+F6;F6 SS RS/RS A90 MT M22;Carreta Metálica Fixa 6t RS/RS de 2 Eixos – ALT 90 - Molas, Freios e Pneus não Incluídos;Galo;22
+F6B;F6B SS RS/RD M22;Carreta Madeira Fixa 6t RS/RD de 2 Eixos – PLATAFORMA - Molas, Freios e Pneus não Incluídos;Galo;16
+F6B;F6B SS RS/RD P750(I) M22;Carreta Madeira Fixa 6t RS/RD de 2 Eixos - PLATAFORMA - C/ PNEUS - Molas e Freios não Incluídos;Galo;24
+F6C;F6C SS RS/RS B2M CB M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - PLATAFORMA - C/ BITOLA 2M + COMBOIO - Molas, Freios e Pneus não Incluídos;Galo;23
+F6C;F6C SS RS/RS B2M CB M23;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - PLATAFORMA - MAD NAVAL - C/ BITOLA 2M + COMBOIO - Molas, Freios e Pneus não Incluídos;Galo;23
+F6C;F6C SS RS/RS CB M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - PLATAFORMA - C/ COMBOIO - Molas, Freios e Pneus não Incluídos;Galo;19
+F6C;F6C SS RS/RS CB M23;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - PLATAFORMA - MAD NAVAL - C/ COMBOIO - Molas, Freios e Pneus não Incluídos;Galo;19
+F6C;F6C SS RS/RS CB P750(I) M22;Carreta Madeira Fixa 6t RS/RS de 2 Eixos - PLATAFORMA - C/ COMBOIO + PNEUS - Molas e Freios não Incluídos;Galo;27
+FA2;FA2 SS T M23;Carreta Metal Fixa 2t de Eixo Tandem - PLATAFORMA - Molas, Freios e Pneus não Incluídos;Galo;12
+FA2;FA2 SS T P175(R) M23;Carreta Metal Fixa 2t de Eixo Tandem - PLATAFORMA - C/ PNEUS 175(R) - Molas, Freios e Pneus não Incluídos;Galo;20
+FA2A;FA2A SS T M23;Carreta Metal Fixa Adensada 2t de Eixo Tandem - PLATAFORMA - Molas, Freios e Pneus não Incluídos;Galo;13
+FA2A;FA2A SS T P175(R) M23;Carreta Metal Fixa Adensada 2t de Eixo Tandem - PLATAFORMA - C/ PNEUS - Molas e Freios não Incluídos;Galo;21
+FA4;FA4 SS RS A90 P750(I) M22;Carreta Madeira Fixa 4t RS de 1 Eixo – ALT 90 - MAD NAVAL - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;25
+FA4;FA4 FB SS RD A45 M22;Carreta Madeira Fixa Basculante 4t RD de 1 Eixo - ALT 45 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;20
+FA4;FA4 FB SS RD A45 P750(I) M22;Carreta Madeira Fixa Basculante 4t RD de 1 Eixo - ALT 45 - PNEUS 750(I) - Molas e Freios não Incluídos+;Galo;28
+FA4;FA4 FB SS RD A60 M22;Carreta Madeira Fixa Basculante 4t RD de 1 Eixo – ALT 60 - MAD NAVAL - Molas, Freios e Pneus não Incluídos+;Galo;20
+FA4;FA4 FB SS RD A90 M22;Carreta Madeira Fixa Basculante 4t RD de 1 Eixo – ALT 90 - MAD NAVAL - Molas, Freios e Pneus não Incluídos+;Galo;20
+FA4;FA4 FB SS RD A90 P750(I) M22;Carreta Madeira Fixa Basculante 4t RD de 1 Eixo – ALT 90 - MAD NAVAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+FA4;FA4 FB SS RS A45 M22;Carreta Madeira Fixa Basculante 4t RS de 1 Eixo - ALT 45 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;20
+FA4;FA4 FB SS RS A45 P750(I) M22;Carreta Madeira Fixa Basculante 4t RS de 1 Eixo - ALT 45 - MAD NAVAL - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+FA4;FA4 FB SS RS A60 M22;Carreta Madeira Fixa Basculante 4t RS de 1 Eixo – ALT 60 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;20
+FA4;FA4 FB SS RS A60 P750(I) M22;Carreta Madeira Fixa Basculante 4t RS de 1 Eixo - ALT 60 - C/ PNEUS - Molas e Freios não Incluídos+;Galo;28
+FA4;FA4 FB SS RS A90 M22;Carreta Madeira Fixa Basculante 4t RS de 1 Eixo – ALT 90 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;20
+FA5;FA5 SS T AD M23;Carreta Metal Fixa 5t de Eixo Tandem - PLATAFORMA - Piso Antiderrapante - Molas, Freios e Pneus não Incluídos;Galo;15
+FA5;FA5 SS T AD P750(I) M23;Carreta Metal Fixa 5t de Eixo Tandem - PLATAFORMA - Piso Antiderrapante - C/ PNEUS - Molas, Freios não Incluídos;Galo;23
+FA6;FA6 SS RD A45 M22;Carreta Madeira Fixa 6t RD de 1 Eixo - ALT 45 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;17
+FA6;FA6 SS RD A45 P750(I) M22;Carreta Madeira Fixa 6t RD de 1 Eixo - ALT 45 - MAD NAVAL - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;25
+FA6;FA6 SS RD A90 M22;Carreta Madeira Fixa 6t RD de 1 Eixo - ALT 90 - MAD NAVAL - Molas, Freios e Pneus não Incluídos;Galo;17
+FA6;FA6 SS T A45 M22;Carreta Madeira Fixa 6t de Eixo Tandem – ALT 45 - MAD NAVAL - Molas ,Freios e Pneus não Incluídos;Galo;16
+FA6;FA6 SS T A45 P750(I) M22;Carreta Madeira Fixa 6t de Eixo Tandem – ALT 45 - MAD NAVAL - C/ PNEUS - Molas, Freios não Incluídos;Galo;24
+FA6;FA6 SS T A90 M22;Carreta Madeira Fixa 6t de Eixo Tandem – ALT 90 - MAD NAVAL - Molas ,Freios e Pneus não Incluídos;Galo;16
+FA6F;FA6F SS T M22;Carreta Metálica Fixa 6t de Eixo Tandem - PLATAFORMA - Molas, Pneus e Freios não Incluídos;Galo;13
+FA6F;FA6F SS T P750(I) M22;Carreta Metálica Fixa 6t de Eixo Tandem - PLATAFORMA - C/ PNEUS 750(I) - Molas e Freios não Incluídos;Galo;21
+FT10500-2E;FT10500-2E SS RS/RS R15,5 BB P400 M22;Carreta Tanque (10500L) de 2 Eixos – TANQUE + BOMBA (MANG. 6m) + KIT BOMBEIRO + PNEUS 400 - Molas e Freios não Incluídos;Galo;37
+FT12500;FT12500 SS RS/T BB M22;Carreta Tanque (12500L) RS/T de 2 Eixos – TANQUE - BOMBA (MANG. 6m) + KIT BOMBEIRO - Molas, Freios e Pneus não Incluídos;Galo;22
+FT12500;FT12500 SS RS/T BB P900(I) M22;Carreta Tanque (12500L) RS/T de 2 Eixos – TANQUE - BOMBA (MANG. 6m) + KIT BOMBEIRO + PNEUS 900(I) - Molas e Freios não Incluídos;Galo;30
+FT12500;FT12500 SS RS/T R15,5 BB M23;Carreta Tanque (12500L) RS/T de 2 Eixos – TANQUE - BOMBA (MANG. 6m) + KIT BOMBEIRO - Molas, Freios e Pneus não Incluídos;Galo;28
+FT12500;FT12500 SS RS/T R15,5 BB P400 M22;Carreta Tanque (12500L) RS/T de 2 Eixos – TANQUE - BOMBA (MANG. 6m) + KIT BOMBEIRO - C/ PNEUS 400 - Molas e Freios não Incluídos;Galo;33
+FTC4300;FTC4300 CS RS/RS BB M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS + BOMBA (MANG 6m) - Freios e Pneus não Incluídos+;Galo;23
+FTC4300;FTC4300 CS RS/RS BB P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS + BOMBA (MANG 6m) - C/ PNEUS - Freios não Incluídos;Galo;31
+FTC4300;FTC4300 CS RS/RS M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS - Freios e Pneus não Incluídos;Galo;20
+FTC4300;FTC4300 CS RS/RS P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;28
+FTC4300;FTC4300 CS RS/RS PL SPG P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - PLATAFORMA P/ BOMBA - C/ BARRA ESPARGEDORA - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;35
+FTC4300;FTC4300 SS RS/RS BB M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - BOMBA (MANG 6m) - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC4300;FTC4300 SS RS/RS BB P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - BOMBA (MANG 6m) - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+FTC4300;FTC4300 SS RS/RS M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;20
+FTC4300;FTC4300 SS RS/RS P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - C/ PNEUS 750(I) - Molas e Freios não Incluídos;Galo;28
+FTC4300;FTC4300 SS RS/RS PL M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - PLAT P/ BOMBA - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC4300;FTC4300 SS RS/RS PL P750(I) M22;Carreta Tanque (4300L) RS/RS de 2 Eixos - TANQUE - PLAT P/ BOMBA - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+FTC4300-1E;FTC4300-1E CS RD M22;Carreta Tanque (4300L) RD de 1 Eixo – TANQUE - C/ MOLAS - Freios e Pneus não Incluídos;Galo;20
+FTC4300-1E;FTC4300-1E CS RD P750(I) M22;Carreta Tanque (4300L) RD de 1 Eixo – TANQUE - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;28
+FTC4300-1E;FTC4300-1E SS RD BB M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - BOMBA (MANG 6m) - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC4300-1E;FTC4300-1E SS RD BB P750(I) M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - BOMBA (MANG 6m) - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+FTC4300-1E;FTC4300-1E SS RD M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;20
+FTC4300-1E;FTC4300-1E SS RD P750(I) M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;28
+FTC4300-1E;FTC4300-1E SS RD PL M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - PLAT P/ BOMBA - Molas, Freios e Pneus não Incluídos+;Galo;23
+FTC4300-1E;FTC4300-1E SS RD PL P750(I) M22;Carreta Tanque (4300L) RD de 1 Eixo - TANQUE - PLATAFORMA P/ BOMBA - PNEUS 750(I) - Molas, Freios não Incluídos;Galo;31
+FTC4300-1E;FTC4300-1E SS T M22;Carreta Tanque (4300L) TANDEM de 1 Eixo - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;19
+FTC6500;FTC6500 CC RS/RS BB P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos – TANQUE - BOMBA (MANG 6m) - C/ MOLAS + FREIOS + PNEUS - LARANJA;Galo;31
+FTC6500;FTC6500 CS RS/RS BB P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos – TANQUE - BOMBA (MANG 6m) - C/MOLAS - C/ PNEUS - LARANJA - Freios não Incluídos;Galo;31
+FTC6500;FTC6500 CS RS/RS M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS - Freios e Pneus não Incluídos;Galo;20
+FTC6500;FTC6500 CS RS/RS P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - C/ MOLAS + PNEUS - Freios não Incluídos;Galo;28
+FTC6500;FTC6500 CS RS/RS PL M22;Carreta Tanque (6500L) RS/RS de 2 Eixos – TANQUE - PLAT. P/ BOMBA - C/ MOLAS - Freios e Pneus não Incluídos;Galo;23
+FTC6500;FTC6500 CS RS/RS PL P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos – TANQUE - PLAT. P/ BOMBA - C/ MOLAS + PNEUS - Freios e não Incluídos;Galo;31
+FTC6500;FTC6500 SS RS/RD M22;Carreta Tanque (6500L) RS/RD de 2 Eixos - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;20
+FTC6500;FTC6500 SS RS/RD PL M22;Carreta Tanque (6500L) RS/RD de 2 Eixos - TANQUE - PLAT P/ BOMBA - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC6500;FTC6500 SS RS/RS BB M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - BOMBA (MANG 6m) - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC6500;FTC6500 SS RS/RS BB P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - BOMBA (MANG 6m) - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+FTC6500;FTC6500 SS RS/RS M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;20
+FTC6500;FTC6500 SS RS/RS P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - C/ PNEUS - Molas e Freios não Incluídos;Galo;28
+FTC6500;FTC6500 SS RS/RS PL M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - PLAT P/ BOMBA - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC6500;FTC6500 SS RS/RS PL P750(I) M22;Carreta Tanque (6500L) RS/RS de 2 Eixos - TANQUE - PLAT P/ BOMBA - C/ PNEUS - Molas e Freios não Incluídos;Galo;31
+FTC6500-1E;FTC6500-1E SS RD BB M22;Carreta Tanque (6500L) de Eixo RD - TANQUE - BOMBA (MANG 6m) - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC6500-1E;FTC6500-1E SS RD BB P750(I) M22;Carreta Tanque (6500L) de Eixo RD - TANQUE - PLAT. C/ BOMBA - C/ PNEUS - Molas, Freios não Incluídos;Galo;31
+FTC6500-1E;FTC6500-1E SS RD M22;Carreta Tanque (6500L) de Eixo RD - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;20
+FTC6500-1E;FTC6500-1E SS RD PL M22;Carreta Tanque (6500L) de Eixo RD - TANQUE - PLAT. P/ BOMBA - Molas, Freios e Pneus não Incluídos;Galo;23
+FTC6500-1E;FTC6500-1E SS T BB M22;Carreta Tanque (6500L) de Eixo Tandem de 1 Eixo – TANQUE - BOMBA (MANG. 6m) - Molas, Freios e Pneus não Incluídos;Galo;22
+FTC6500-1E;FTC6500-1E SS T M22;Carreta Tanque (6500L) de Eixo Tandem de 1 Eixo – TANQUE - Molas, Freios e Pneus não Incluídos;Galo;19
+FTC6500-1E;FTC6500-1E SS T PL M22;Carreta Tanque (6500L) de Eixo Tandem de 1 Eixo – TANQUE - PLATAFORMA P/ BOMBA - Molas, Freios e Pneus não Incluídos;Galo;22
+FTD5000;FTD5000 SS T M22;Carreta Tanque Distribuidor de Esterco Líquido (5000L) 1 Eixo Tandem - TANQUE - Molas, Freios e Pneus não Incluídos;Galo;16
