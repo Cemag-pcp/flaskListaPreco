@@ -1,0 +1,219 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class='row'>
+    <div class="container pt-4">
+        <h2>Orçamentos</h2>
+        <!-- <div style="position: relative;">
+            <a href="/export/pdf">
+                <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
+            </a>
+        </div> -->
+    </div>
+</div>
+<div class='row'>
+    <div class="container pt-4">
+        <form id="myForm" action="/car" method="GET">
+            <div class="mb-3">
+                <label for="phone">Telefone:</label>
+                <!-- <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)"> -->
+                <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)" required>
+            </div>
+        </form>
+        <table id="table3" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Família</th>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Preço Final</th>
+                    <th>Quantidade</th>
+                    <th>Remover</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{row.familia}}</td>
+                    <td>{{row.codigo}}</td>
+                    <td>{{row.descricao}}</td>
+                    <td style="white-space: nowrap;">{{row.preco}}</td>
+                    <td>
+                        <input name='preco' value='{{row.preco}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
+                    </td>
+                    <td>
+                        <input name='quantidade_car' value='1' style="width: 50px;" oninput="atualizarValorTotal(this)">
+                    </td>
+                    <td>
+                        <a href="/remove-carrinho/{{row.id}}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot id="tfoot">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th style="white-space: nowrap;"></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        <button class="btn btn-primary mt-2" onclick="copiarTabela()">
+            <i class="fab fa-whatsapp"></i> Enviar WhatsApp
+        </button>    
+    </div>
+</div>
+
+<script>
+    function salvarTabela() {
+        var tabelaHTML = document.querySelector('#table3').outerHTML;
+
+        fetch('/salvar_dados', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                tabela: tabelaHTML
+            })
+        })
+}
+</script>
+
+<!-- <script>
+    function enviarFormulario() {
+        document.getElementById('myForm').submit();
+    }
+</script> -->
+
+<script src="https://cdn.jsdelivr.net/npm/autonumeric@4.1.0/dist/autoNumeric.min.js"></script>
+<script>
+    function formatarNumero(numero) {
+        return numero.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function removerFormatacaoPreco(valor) {
+        return parseFloat(valor.replace("R$", "").replace(/\./g, "").replace(",", "."));
+    }
+
+    function atualizarValorTotal() {
+        var rows = document.querySelectorAll('#table3 tbody tr');
+        var valorTotal = 0;
+        for (var i = 0; i < rows.length; i++) {
+            var quantidade = parseInt(rows[i].querySelector('input[name="quantidade_car"]').value) || 0;
+            var preco = removerFormatacaoPreco(rows[i].querySelector('input[name="preco"]').value) || 0;
+            if (!isNaN(quantidade) && !isNaN(preco)) {
+                valorTotal += quantidade * preco;
+            }
+        }
+        document.querySelector('#tfoot th:nth-child(4)').innerText = 'R$ ' + formatarNumero(valorTotal);
+    }
+
+    // Chamada inicial para calcular o valor total
+    atualizarValorTotal();
+
+    // Aplicar formatação automática ao campo de entrada de preço
+    var precoInputs = document.querySelectorAll('input[name="preco"]');
+    for (var i = 0; i < precoInputs.length; i++) {
+        new AutoNumeric(precoInputs[i], {
+            decimalCharacter: ',',
+            digitGroupSeparator: '.',
+            currencySymbol: 'R$ ',
+            unformatOnSubmit: true,
+            modifyValueOnWheel: false,
+            allowDecimalPadding: false,
+            maximumValue: '999999999',
+            minimumValue: '-999999999'
+        });
+    }
+</script>
+
+<!-- <script>
+    function copiarTabela() {
+        var tabela = document.getElementById("table3");
+        var textoCopiado = "";
+        
+        for (var i = 1; i < tabela.rows.length; i++) {
+            var linha = tabela.rows[i];
+            var quantidadeInput = linha.querySelector("input[name='quantidade_car']");
+
+            for (var j = 0; j < linha.cells.length; j++) {
+                var conteudoCelula = linha.cells[j].textContent.trim();
+                textoCopiado += conteudoCelula + "\n\n";
+            }
+        }
+
+        navigator.clipboard.writeText(textoCopiado); // Copia o texto para o clipboard
+
+        alert("Conteúdo copiado para o clipboard!");
+    }
+</script> -->
+
+<script>
+
+    function copiarTabela() {
+        var tabela = document.getElementById("table3");
+        var textoCopiado = "";
+
+        for (var i = 1; i < tabela.rows.length-1; i++) {
+            var linha = tabela.rows[i];
+
+            var codigo = linha.cells[1].textContent.trim();
+            var descricao = linha.cells[2].textContent.trim();
+
+            var precoInput = linha.querySelector("input[name='preco']");
+            var preco = precoInput ? precoInput.value : "";
+
+            var quantidadeInput = linha.querySelector("input[name='quantidade_car']");
+            var quantidade = quantidadeInput ? quantidadeInput.value : "";
+
+            textoCopiado += "Código: " + codigo + "\n";
+            textoCopiado += "Descrição: " + descricao + "\n";
+            textoCopiado += "Valor: " + preco + "\n";
+            textoCopiado += "Quantidade: " + quantidade + "\n\n";
+        }
+
+        var valorTotal = document.querySelector("#tfoot th:nth-child(4)").textContent.trim();
+        textoCopiado += "Valor Total: " + valorTotal;
+
+        var numeroWhatsAppInput = document.getElementById("number_cliente");
+        var numeroWhatsApp = numeroWhatsAppInput ? numeroWhatsAppInput.value : "";
+        numeroWhatsApp = numeroWhatsApp.replace("(", "").replace(")", "").replace(" ", "").replace("-","");
+        
+        if (numeroWhatsApp) {
+            var mensagemWhatsApp = encodeURIComponent(textoCopiado);
+            var linkWhatsApp = "https://api.whatsapp.com/send?pt_BR=55&phone=55" + numeroWhatsApp + "&text=" + mensagemWhatsApp;
+
+            // Copia o texto para o clipboard
+            navigator.clipboard.writeText(textoCopiado);
+
+            // Redireciona para o link do WhatsApp
+            window.location.href = linkWhatsApp;
+        }
+
+}   
+
+</script>
+
+<script>
+    function formatPhoneNumber(input) {
+        // Remove qualquer caractere que não seja um número
+        var phoneNumber = input.value.replace(/\D/g, '');
+
+        // Limita para 11 caracteres
+        phoneNumber = phoneNumber.slice(0, 11);
+
+        // Formatação "(XX) XXXXX-XXXX"
+        var formattedPhoneNumber = phoneNumber.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+
+        // Atualiza o valor do campo de entrada
+        input.value = formattedPhoneNumber;
+    }
+</script>
+
+{% endblock %}

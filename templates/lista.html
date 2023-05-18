@@ -1,40 +1,54 @@
 {% extends "layout.html" %}
 {% block body %}
-    
+
 <div class="container pt-4">
-    <div style="position: relative;">
-        <a href="/export/pdf-all">
-            <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
-        </a>
-        <table id="table1" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Família</th>
+    <h2>Lista de preços</h2>
+    <div class="row">
+        <div style="position: relative;">
+            <a href="/export/pdf-all">
+                <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
+            </a>
+            <table id="table1" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Família</th>
+                        <th>Código</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                        <th>Favorito</th>
+                        <th>Carrinho</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{row.familia}}</td>
+                        <td>{{row.codigo}}</td>
+                        <td>{{row.descricao}}</td>
+                        <td style="white-space: nowrap;">{{row.preco}}</td>
+                        <td>
+                            <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-star"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/move-carrinho/{{row.id}}" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-shopping-cart"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <th>Familia</th>
                     <th>Código</th>
                     <th>Descrição</th>
                     <th>Preço</th>
-                    <th>Favorito</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in data %}
-                <tr>
-                    <td>{{row.familia}}</td>
-                    <td>{{row.codigo}}</td>
-                    <td>{{row.descricao}}</td>
-                    <td style="white-space: nowrap;">{{row.preco}}</td>
-                    <td>
-                        <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-star"></i>
-                        </a>
-                        <!-- <a href="/export/pdf" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-star"></i>
-                        </a> -->
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    <th></th>
+                    <th></th>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 

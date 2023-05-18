@@ -11,6 +11,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
+from bs4 import BeautifulSoup
+from datetime import date
 
 app = Flask(__name__)
 app.secret_key = "listaPreco"
@@ -136,7 +138,6 @@ def lista_favoritos():
     for row in data:
         row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
   
-
     return render_template("favoritos.html", data=data)
 
 @app.route('/remove/<string:id>', methods = ['POST','GET'])
@@ -310,6 +311,147 @@ def export_pdf_all():
     buff.close()
     response.headers.set('Content-Type', 'application/pdf')
     return response
+
+@app.route('/car')
+def adicionar_ao_carrinho():
+    
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    representante = "'"+session['user_id']+"'"
+    # representante = """'Galo'"""
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM tb_carrinho_representante where representante = {}".format(representante))
+    data = cur.fetchall()
+
+    for row in data:
+        preco = float(row['preco'])
+        row['preco'] = "R$ {:,.2f}".format(preco).replace(",", "X").replace(".", ",").replace("X", ".")
+
+    return render_template("car.html", data=data)
+
+@app.route('/salvar_dados', methods=['POST','GET'])
+def salvar_dados():
+    # Obter os dados da tabela enviados na solicitação POST
+    tabela = request.form['tabela']
+    print(tabela)
+    # Fazer o parsing do HTML usando BeautifulSoup
+    soup = BeautifulSoup(tabela, 'html.parser')
+    
+    # Extrair o texto dos elementos da tabela
+    tabela_texto = '\n'.join(['|'.join([cell.get_text(strip=True) for cell in row.find_all(['th', 'td'])]) for row in soup.find_all('tr')])
+    # print(tabela_texto)
+
+    # Extrair as linhas de dados da string
+    linhas = tabela_texto.strip().split('\n')
+    dados = [linha.split('|') for linha in linhas]
+    print(dados)
+    # Criar o DataFrame
+    df = pd.DataFrame(dados[1:], columns=dados[0])
+    df['representante'] = ""+session['user_id']+""
+    print(df)
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    
+    s = """SELECT max(id) FROM tb_orcamento"""
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute(s)
+    id = cur.fetchall()
+    id = id[0]['max']
+    
+    df['id'] = id + 1
+
+    df['Preço'] = df['Preço'].apply(lambda x: float(x.replace("R$ ","").replace(".","").replace(",",".")))
+    df['data'] = date.today()
+
+    print(df)
+
+    # for i in range(len(df)):
+        
+    #     id_value = int(df['id'][i])
+    #     preco_value = float(df['Preço'][i])
+    #     qtd = float(df['Qnt'][i])
+
+    #     query = "INSERT INTO tb_orcamento (id, familia, codigo, descricao, preco, representante, data, quantidade) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    #     values = (id_value, df['Família'][i], df['Código'][i], df['Descrição'][i], preco_value, df['representante'][i], df['data'][i], qtd)
+
+    #     cur.execute(query, values)
+                
+    # conn.commit()
+    # conn.close()
+
+    return redirect(url_for('adicionar_ao_carrinho'))
+
+@app.route('/move-carrinho/<string:id>', methods = ['POST','GET'])
+@login_required
+def move_carrinho(id):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
+    
+    df = pd.read_sql_query('SELECT * FROM tb_lista_precos WHERE id = {}'.format(id), conn)
+
+    for coluna in df.columns:
+        if df[coluna].dtype == 'object':
+            df[coluna] = df[coluna].str.strip()
+
+    df_carrinho = pd.read_sql_query('SELECT * FROM tb_carrinho_representante WHERE representante = {}'.format(representante), conn)
+
+    df_carrinho = df_carrinho['codigo'].values.tolist()
+
+    representante = ""+session['user_id']+""
+
+    print(representante)
+    if df['codigo'][0] not in df_carrinho:
+        cur.execute("INSERT INTO tb_carrinho_representante (familia, codigo, descricao, preco, representante) VALUES (%s,%s,%s,%s,%s)", (df['familia'][0], df['codigo'][0], df['descricao'][0], df['preco'][0], representante))
+        conn.commit()
+        conn.close()
+    else:
+        pass
+
+    return redirect(url_for('lista'))
+
+@app.route('/remove-carrinho/<string:id>', methods = ['POST','GET'])
+@login_required
+def remove_carrinho(id):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
+
+    # representante = """Galo"""
+
+    cur.execute('DELETE FROM tb_carrinho_representante WHERE id = {}'.format(id))
+
+    conn.commit()
+    
+    conn.close()
+
+    return redirect(url_for('adicionar_ao_carrinho'))
+
+@app.route('/remove-all', methods = ['POST','GET'])
+@login_required
+def remove_all():
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
+
+    # representante = """Galo"""
+
+    cur.execute('DELETE FROM tb_carrinho_representante WHERE representante = {}'.format(representante))
+
+    conn.commit()
+    
+    conn.close()
+
+    return redirect(url_for('adicionar_ao_carrinho'))
+
 
 # conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 # cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)

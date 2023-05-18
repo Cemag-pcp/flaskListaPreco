@@ -24,8 +24,12 @@
   
   <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="/">Lista Principal</a>
-    <a href="/favoritos">Favoritos</a>
+    <a style="font-size: 20px;" href="/">Lista Principal</a>
+    <a style="font-size: 20px;" href="/favoritos">Favoritos</a>
+    <a style="font-size: 20px;" href="/car">Orçamento</a>
+    <footer>
+      <a style="font-size: 20px;" href="/logout">Logout</a>
+    </footer>
   </div>
   <div class="container pt-4">
 
@@ -38,14 +42,6 @@
   </div>
   
 <script>
-
-  $(document).ready(function() {
-      $('#table1').DataTable({     
-        "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
-          "iDisplayLength": 10
-        } 
-      );
-  } );
 
   $(document).ready(function() {
       $('#table2').DataTable({     
@@ -67,6 +63,48 @@
   }
 
 
+</script>
+
+<script>
+$(document).ready(function () {
+  // Setup - add a text input to each footer cell
+  $('#table1 tfoot th:eq(0), #table1 tfoot th:eq(1), #table1 tfoot th:eq(2), #table1 tfoot th:eq(3)').each(function () {
+      var title = $(this).text();
+      $(this).html('<div class="form-group"> <input class="form-control" type="text" placeholder= "' + title + '" /> </div>');
+  });
+
+  // DataTable
+  var table = $('#table1').DataTable({
+      initComplete: function () {
+          // Apply the search
+          this.api()
+              .columns()
+              .every(function () {
+                  var that = this;
+
+                  $('input', this.footer()).on('keyup change clear', function () {
+                      if (that.search() !== this.value) {
+                          that.search(this.value).draw();
+                      }
+                  });
+              });
+      },
+  });
+});
+</script>
+
+<script>
+  function chamarFuncao() {
+      // Chamar a rota '/chamar-funcao' no Flask usando AJAX
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/logout', true);
+      xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+              alert(xhr.responseText);  // Exibir a resposta da função em Python
+          }
+      };
+      xhr.send();
+  }
 </script>
 
 </body>
