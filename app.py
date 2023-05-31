@@ -1,5 +1,5 @@
 from flask import Flask,render_template, redirect, url_for, request, session, flash, make_response, Response
-from flask import render_template_string
+from flask import render_template_string, jsonify
 import psycopg2 #pip install psycopg2 
 import psycopg2.extras
 import pandas as pd
@@ -13,17 +13,27 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
 from bs4 import BeautifulSoup
 from datetime import date
+import json
+from datetime import datetime
+import uuid
+from sqlalchemy import create_engine
+import warnings
+from babel.numbers import format_currency
+
+warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
 app.secret_key = "listaPreco"
 
 # DB_HOST = "localhost"
-DB_HOST = "database-1.cdcogkfzajf0.us-east-1.rds.amazonaws.com"
+DB_HOST = "database-2.cdcogkfzajf0.us-east-1.rds.amazonaws.com"
 DB_NAME = "postgres"
 DB_USER = "postgres"
 DB_PASS = "15512332"
  
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+engine = create_engine(f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{5432}/{DB_NAME}')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -331,54 +341,48 @@ def adicionar_ao_carrinho():
 
 @app.route('/salvar_dados', methods=['POST','GET'])
 def salvar_dados():
-    # Obter os dados da tabela enviados na solicitação POST
-    tabela = request.form['tabela']
-    print(tabela)
-    # Fazer o parsing do HTML usando BeautifulSoup
-    soup = BeautifulSoup(tabela, 'html.parser')
+
+    if request.method == 'POST':
+
+        conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
+
+        cur = conn.cursor
+
+        tabela = request.form.get('tabela')
+        tabela = json.loads(tabela)
     
-    # Extrair o texto dos elementos da tabela
-    tabela_texto = '\n'.join(['|'.join([cell.get_text(strip=True) for cell in row.find_all(['th', 'td'])]) for row in soup.find_all('tr')])
-    # print(tabela_texto)
-
-    # Extrair as linhas de dados da string
-    linhas = tabela_texto.strip().split('\n')
-    dados = [linha.split('|') for linha in linhas]
-    print(dados)
-    # Criar o DataFrame
-    df = pd.DataFrame(dados[1:], columns=dados[0])
-    df['representante'] = ""+session['user_id']+""
-    print(df)
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+        cliente = request.form.get('numeroCliente')
     
-    s = """SELECT max(id) FROM tb_orcamento"""
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute(s)
-    id = cur.fetchall()
-    id = id[0]['max']
-    
-    df['id'] = id + 1
+        unique_id = str(uuid.uuid4())
 
-    df['Preço'] = df['Preço'].apply(lambda x: float(x.replace("R$ ","").replace(".","").replace(",",".")))
-    df['data'] = date.today()
+        tb_orcamento = pd.DataFrame(tabela)
+        tb_orcamento['representante'] = ""+session['user_id']+""
+        tb_orcamento['dataOrcamento'] = datetime.today()
+        tb_orcamento['dataOrcamento'] = tb_orcamento['dataOrcamento'].dt.strftime('%Y-%m-%d')
+        tb_orcamento['cliente'] = cliente
+        tb_orcamento['id'] = unique_id
 
-    print(df)
-
-    # for i in range(len(df)):
+        tb_orcamento['precoFinal'] = tb_orcamento['precoFinal'].str.replace("R\$","").str.replace(".","").str.replace(",",".").astype(float)
+        tb_orcamento['preco'] = tb_orcamento['preco'].str.replace("R\$","").str.replace(".","").str.replace(",",".").astype(float)
         
-    #     id_value = int(df['id'][i])
-    #     preco_value = float(df['Preço'][i])
-    #     qtd = float(df['Qnt'][i])
+        print(tb_orcamento)
 
-    #     query = "INSERT INTO tb_orcamento (id, familia, codigo, descricao, preco, representante, data, quantidade) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    #     values = (id_value, df['Família'][i], df['Código'][i], df['Descrição'][i], preco_value, df['representante'][i], df['data'][i], qtd)
+        # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
+        valores = list(zip(tb_orcamento['familia'], tb_orcamento['codigo'], tb_orcamento['descricao'], tb_orcamento['preco'], tb_orcamento['precoFinal'],
+                        tb_orcamento['quantidade'].astype(int), tb_orcamento['representante'], tb_orcamento['dataOrcamento'], tb_orcamento['cliente'], tb_orcamento['id']))
 
-    #     cur.execute(query, values)
-                
-    # conn.commit()
-    # conn.close()
+        # Cria a string de consulta SQL para a inserção
+        consulta = "INSERT INTO tb_orcamento (familia, codigo, descricao, preco, precoFinal, quantidade, representante, dataOrcamento, cliente, id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-    return redirect(url_for('adicionar_ao_carrinho'))
+        # Abre uma transação explícita
+        with conn:
+            # Cria um cursor dentro do contexto da transação
+            with conn.cursor() as cur:
+                # Executa a inserção das linhas usando executemany
+                cur.executemany(consulta, valores)
+
+
+        return jsonify({'mensagem': 'Dados enviados com sucesso'})
 
 @app.route('/move-carrinho/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -402,7 +406,6 @@ def move_carrinho(id):
 
     representante = ""+session['user_id']+""
 
-    print(representante)
     if df['codigo'][0] not in df_carrinho:
         cur.execute("INSERT INTO tb_carrinho_representante (familia, codigo, descricao, preco, representante) VALUES (%s,%s,%s,%s,%s)", (df['familia'][0], df['codigo'][0], df['descricao'][0], df['preco'][0], representante))
         conn.commit()
@@ -411,6 +414,37 @@ def move_carrinho(id):
         pass
 
     return redirect(url_for('lista'))
+
+@app.route('/move-carrinho-favorito/<string:id>', methods = ['POST','GET'])
+@login_required
+def move_carrinho_favorito(id):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
+    
+    df = pd.read_sql_query('SELECT * FROM tb_favoritos WHERE id = {}'.format(id), conn)
+
+    for coluna in df.columns:
+        if df[coluna].dtype == 'object':
+            df[coluna] = df[coluna].str.strip()
+
+    df_carrinho = pd.read_sql_query('SELECT * FROM tb_carrinho_representante WHERE representante = {}'.format(representante), conn)
+
+    df_carrinho = df_carrinho['codigo'].values.tolist()
+
+    representante = ""+session['user_id']+""
+
+    if df['codigo'][0] not in df_carrinho:
+        cur.execute("INSERT INTO tb_carrinho_representante (familia, codigo, descricao, preco, representante) VALUES (%s,%s,%s,%s,%s)", (df['familia'][0], df['codigo'][0], df['descricao'][0], df['preco'][0], representante))
+        conn.commit()
+        conn.close()
+    else:
+        pass
+
+    return redirect(url_for('lista_favoritos'))
 
 @app.route('/remove-carrinho/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -452,27 +486,98 @@ def remove_all():
 
     return redirect(url_for('adicionar_ao_carrinho'))
 
+##### Bloco de orçamentos #####
 
-# conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-# cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+@app.route('/orcamentos', methods=['GET'])
+@login_required
+def orcamentos():
 
-# df = pd.read_csv('carga_Galo.csv', sep=';')
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
-# df.reset_index(inplace=True)
-# df = df.rename(columns={'index':'id'})
-# # df.drop(columns={'Unnamed: 4'}, inplace=True)
+    # filtro_cliente = request.args.get('cliente')
+    filtro_data = request.args.get('filtro_data')
+    filtro_cliente = request.args.get('filtro_cliente')
+    filtro_status = request.args.get('filtro_status')
 
-# # df = df.iloc[[0,1],:]
+    print(filtro_data,filtro_status, filtro_cliente)
 
-# # Inserir os dados do dataframe na tabela
-# for index, row in df.iterrows():
-#     cur.execute('INSERT INTO tb_lista_precos (id, familia, codigo, descricao, representante, preco) VALUES (%s, %s, %s, %s, %s, %s)', (row['id'], row['familia'], row['codigo'], row['descricao'], row['representante'], row['preco']))
+    # Conexão com o banco de dados PostgreSQL
+    cur = conn.cursor()
 
-# # Salvar as alterações no banco de dados
-# conn.commit()
+    # Construindo a consulta com placeholder
+    sql1 = "SELECT cliente, id, SUM(precofinal * quantidade) AS soma_total, SUM(quantidade) AS quantidade_total FROM tb_orcamento WHERE 1=1"
+    sql2 = " GROUP BY cliente, id"
+    
+    placeholders = []
+    
+    if filtro_data and filtro_data != '':
+        if filtro_data != '':
+            sql1 += " AND dataOrcamento = %s"  # Adiciona um espaço em branco antes do AND
+            placeholders.append(filtro_data)
+        
+    if filtro_cliente:
+        sql1 += " AND cliente = %s"  # Adiciona um espaço em branco antes do AND
+        placeholders.append(filtro_cliente)
 
-# # Fechar a conexão com o banco de dados
-# conn.close()
+    # if filtro_status:
+    #         sql1 += " AND dataOrcamento = %s"  # Adiciona um espaço em branco antes do AND
+    #         placeholders.append(filtro_data)
+
+    # Executando a consulta com os placeholders
+    cur.execute(sql1+sql2, placeholders)
+    dados = cur.fetchall()
+    
+    for i, tupla in enumerate(dados):
+        valor = tupla[2]  # Acessa o terceiro elemento da tupla (valor a ser formatado)
+        valor_formatado = format_currency(valor, 'BRL', locale='pt_BR')
+        valor_formatado = valor_formatado.replace("\xa0", " ")  # Remove o espaço em branco
+        dados[i] = (*tupla[:2], valor_formatado, *tupla[3:])
+
+    return render_template('orcamentos.html', dados=dados)
+
+@app.route('/orcamento/<string:id>', methods = ['POST','GET'])
+@login_required
+def item_orcamento(id):
+
+    id = "'" + id + "'"
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
+
+    # representante = """Galo"""
+
+    cur.execute('SELECT * FROM tb_orcamento WHERE id = {}'.format(id))
+
+    dados = cur.fetchall()
+
+    for dicionario in dados:
+        valor = dicionario['preco']  # Acessa o valor do campo 'preco' no dicionário
+        valor_formatado = format_currency(valor, 'BRL', locale='pt_BR')
+        valor_formatado = valor_formatado.replace("\xa0", " ")  # Remove o espaço em branco
+        dicionario['preco'] = valor_formatado
+
+    return render_template("orcamento_item.html", dados=dados)
+
+@app.route('/remover_item', methods=['POST'])
+@login_required
+def remover_item():
+    id = request.form.get('id')  # Obtém o ID enviado na requisição
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+
+    query = 'DELETE FROM tb_orcamento WHERE id_serial = %s'
+    cur.execute(query, (id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({'message': 'Item removido com sucesso'})
+
 
 if __name__ == '__main__':
     app.run()

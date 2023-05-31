@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class='row'>
+    <div class="container pt-4">
+        <h2>Orçamentos</h2>
+        <!-- <div style="position: relative;">
+            <a href="/export/pdf">
+                <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
+            </a>
+        </div> -->
+    </div>
+</div>
+<div class='row'>
+    <div class="container pt-4">
+        <!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .card {
+            flex-basis: 48%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .card p {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lista de Itens</h1>
+
+    <form>
+        <label for="filtro_data">Filtrar por Data:</label>
+        <input type="date" name="filtro_data" id="filtro_data">  
+        <select name="filtro_status" id="filtro_status">
+            <option selected disabled hidden>Todos</option>
+            <option>Fechado</option>
+            <option>Cotação</option>
+            <option>Aguardando retorno</option>
+        </select>
+        <select name="filtro_cliente" id="filtro_cliente">
+            <option selected disabled hidden>Todos</option>
+            <option>(85) 99901-2483</option>
+            <option>(85) 98944-4307</option>
+            <option>(85) 98770-2630</option>
+        </select>      
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <div class="card-container">  
+        {% for dado in dados %}
+            <div class="card" data-item-id="{{ dado[1] }}">
+                <h3>{{ dado[0] }}</h3>
+                <p>Valor total: {{ dado[2] }}</p>
+                <p>Quantidade: {{ dado[3] }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+<style>
+    /* Estilos para o indicador de carregamento */
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    #loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid #fff;
+        border-top: 3px solid #f00;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+    
+<div id="loading-overlay" style="display: none;">
+    <div id="loading-spinner"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    
+    // Função de redirecionamento para a página de detalhes do item
+    function redirecionarDetalhes(id) {
+        $("#loading-overlay").show(); // Mostra o indicador de carregamento
+        window.location.href = "/orcamento/" + id;
+    }
+
+    // Adiciona um evento de clique em cada card
+    window.addEventListener('DOMContentLoaded', (event) => {
+        var cards = document.getElementsByClassName('card');
+        Array.from(cards).forEach((card) => {
+            card.addEventListener('click', () => {
+                var itemId = card.dataset.itemId;
+                redirecionarDetalhes(itemId);
+            });
+        });
+
+        // Atraso de 1 segundo antes de ocultar o indicador de carregamento
+        setTimeout(() => {
+            $("#loading-overlay").hide(); // Oculta o indicador de carregamento
+        }, 10000);
+    });
+
+</script>
+
+</body>
+</html>
+
+{% endblock %}

@@ -13,13 +13,6 @@
 </div>
 <div class='row'>
     <div class="container pt-4">
-        <form id="myForm" action="/car" method="GET">
-            <div class="mb-3">
-                <label for="phone">Telefone:</label>
-                <!-- <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)"> -->
-                <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)" required>
-            </div>
-        </form>
         <table id="table3" class="table table-striped">
             <thead>
                 <tr>
@@ -33,21 +26,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for row in data %}
+                {% for row in dados %}
                 <tr>
                     <td>{{row.familia}}</td>
                     <td>{{row.codigo}}</td>
                     <td>{{row.descricao}}</td>
                     <td style="white-space: nowrap;">{{row.preco}}</td>
                     <td>
-                        <input name='preco' value='{{row.preco}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
+                        <input name='preco' value='{{row.precofinal}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
                     </td>
                     <td>
-                        <input name='quantidade_car' value='1' style="width: 50px;" oninput="atualizarValorTotal(this)">
+                        <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
                     </td>
                     <td>
-                        <a href="/remove-carrinho/{{row.id}}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-trash"></i>
+                        <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
+                            <i class="fas fa-times"></i>
                         </a>
                     </td>
                 </tr>
@@ -58,18 +51,12 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th style="white-space: nowrap;"></th>
                     <th></th>
+                    <th style="white-space: nowrap;"></th>
+                    <th style="white-space: nowrap;"></th>
                 </tr>
             </tfoot>
-        </table>
-        <button class="btn btn-primary mt-2" onclick="copiarEEnviar()">
-            <i class="fab fa-whatsapp"></i> Guardar e enviar WhatsApp
-        </button>
-        <button class="btn btn-primary mt-2" onclick="guardar()">
-            <i class="fab"></i>Guardar orçamento
-        </button>
-            
+        </table>            
     </div>
 </div>
 
@@ -96,20 +83,24 @@
     }
 
     function removerFormatacaoPreco(valor) {
-        return parseFloat(valor.replace("R$", "").replace(/\./g, "").replace(",", "."));
+        return parseFloat(valor.replace("R$ ", "").replace(",", "."));
     }
 
     function atualizarValorTotal() {
         var rows = document.querySelectorAll('#table3 tbody tr');
         var valorTotal = 0;
+        var quantidadeTotal = 0; // Adicionado
+
         for (var i = 0; i < rows.length; i++) {
             var quantidade = parseInt(rows[i].querySelector('input[name="quantidade_car"]').value) || 0;
             var preco = removerFormatacaoPreco(rows[i].querySelector('input[name="preco"]').value) || 0;
             if (!isNaN(quantidade) && !isNaN(preco)) {
                 valorTotal += quantidade * preco;
+                quantidadeTotal += quantidade
             }
         }
-        document.querySelector('#tfoot th:nth-child(4)').innerText = 'R$ ' + formatarNumero(valorTotal);
+        document.querySelector('#tfoot th:nth-child(5)').innerText = 'R$ ' + formatarNumero(valorTotal);
+        document.querySelector('#tfoot th:nth-child(6)').innerText = quantidadeTotal;
     }
 
     // Chamada inicial para calcular o valor total
@@ -247,10 +238,8 @@
 
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function guardar() {
-
         var tabela = document.getElementById("table3");
         var tbody = tabela.getElementsByTagName("tbody")[0];
         var linhas = tbody.getElementsByTagName("tr");
@@ -263,8 +252,6 @@
             alert("O campo número do cliente está vazio!");
             return;
         }
-
-        $("#loading-overlay").show();
 
         var dadosTabela = [];
 
@@ -311,10 +298,6 @@
             }
         };
         xhr.send(formData);
-
-        setTimeout(function() {
-            $("#loading-overlay").hide();
-        }, 1000);
     }
 </script>
 
@@ -368,5 +351,37 @@
     <div id="loading-spinner"></div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function removerItem(id) {
+        // Exibir o indicador de carregamento
+        $("#loading-overlay").show();
+
+        $.ajax({
+            url: '/remover_item',
+            method: 'POST',
+            data: { id: id },
+            success: function(response) {
+                console.log('Item removido com sucesso:', response);
+                location.reload(); // Recarrega a página
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao remover o item:', error);
+                // Lógica para lidar com erros, se necessário
+            },
+            
+           
+            complete: function() {
+                // Atraso de 1 segundo antes de ocultar o indicador de carregamento
+                setTimeout(function() {
+                    $("#loading-overlay").hide();
+                }, 10000);
+            }
+
+
+        });
+    }
+
+</script>
 
 {% endblock %}
