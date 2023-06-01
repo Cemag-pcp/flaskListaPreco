@@ -11,55 +11,60 @@
         </div> -->
     </div>
 </div>
-<div class='row'>
-    <div class="container pt-4">
-        <!DOCTYPE html>
-<html>
-<head>
+
     <style>
         .card-container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
         }
-
+    
         .card {
-            flex-basis: 48%;
+            flex-basis: 43%; /* ou 40% */
             border: 1px solid #ccc;
             border-radius: 4px;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-right: 20px; /* Adicione o espaçamento desejado à direita */
+            margin-bottom: 10px; /* Adicione o espaçamento desejado abaixo */
             background-color: #f9f9f9;
             cursor: pointer;
         }
-
+    
         .card h3 {
             margin-top: 0;
+            text-align: center;
         }
-
+    
         .card p {
             margin-bottom: 0;
         }
+    
+        .status {
+            font-size: 14px;
+        }
+    
+        .content {
+            margin-top: 10px;
+        }
     </style>
-</head>
-<body>
-
-    <h1>Lista de Itens</h1>
-
+    
     <form>
-        <label for="filtro_data">Filtrar por Data:</label>
-        <input type="date" name="filtro_data" id="filtro_data">  
+        <!-- <label for="filtro_data">Filtrar por Data:</label>
+        <input type="date" name="filtro_data" id="filtro_data">   -->
+        
+        <label for="filtro_data">Filtros:</label>
+        <input autocomplete="off" type="text" id="filtro_data" name="filtro_data">
+
         <select name="filtro_status" id="filtro_status">
-            <option selected disabled hidden>Todos</option>
-            <option>Fechado</option>
-            <option>Cotação</option>
-            <option>Aguardando retorno</option>
+            <option value="Todos">Todos</option>
+            <option value="Fechado">Fechado</option>
+            <option value="Cotação">Cotação</option>
+            <option value="Aguardando retorno">Aguardando retorno</option>
         </select>
         <select name="filtro_cliente" id="filtro_cliente">
-            <option selected disabled hidden>Todos</option>
-            <option>(85) 99901-2483</option>
-            <option>(85) 98944-4307</option>
-            <option>(85) 98770-2630</option>
+            <option value="Todos">Todos</option>
+            <option value="(85) 99901-2483">(85) 99901-2483</option>
+            <option value="(85) 98944-4307">(85) 98944-4307</option>
+            <option value="(85) 98770-2630">(85) 98770-2630</option>
         </select>      
         <button type="submit">Filtrar</button>
     </form>
@@ -67,9 +72,14 @@
     <div class="card-container">  
         {% for dado in dados %}
             <div class="card" data-item-id="{{ dado[1] }}">
-                <h3>{{ dado[0] }}</h3>
-                <p>Valor total: {{ dado[2] }}</p>
-                <p>Quantidade: {{ dado[3] }}</p>
+                <div class="header">
+                    <h3>{{ dado[0] }}</h3>
+                    <p class="status">{{ dado[4] }}</p>
+                </div>
+                <div class="content">
+                    <p>Valor total: {{ dado[2] }}</p>
+                    <p>Quantidade: {{ dado[3] }}</p>
+                </div>
             </div>
         {% endfor %}
     </div>
@@ -108,7 +118,6 @@
     <div id="loading-spinner"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     
     // Função de redirecionamento para a página de detalhes do item
@@ -133,6 +142,55 @@
         }, 10000);
     });
 
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script>
+    $(function() {
+        $('input[name="filtro_data"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'YYYY-MM-DD'
+            }
+        });
+
+        $('input[name="filtro_data"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('input[name="filtro_data"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    });
+</script>
+
+<script>
+$(document).ready(function() {
+    // Verifica se existem valores armazenados no localStorage
+    if (localStorage.getItem('filtro_data')) {
+        $('input[name="filtro_data"]').val(localStorage.getItem('filtro_data'));
+    }
+
+    if (localStorage.getItem('filtro_cliente')) {
+        $('select[name="filtro_cliente"]').val(localStorage.getItem('filtro_cliente'));
+    }
+
+    if (localStorage.getItem('filtro_status')) {
+        $('select[name="filtro_status"]').val(localStorage.getItem('filtro_status'));
+    }
+
+    // Manipulador de evento para o envio do formulário
+    $('form').on('submit', function() {
+        // Armazena os valores dos inputs no localStorage
+        localStorage.setItem('filtro_data', $('input[name="filtro_data"]').val());
+        localStorage.setItem('filtro_cliente', $('select[name="filtro_cliente"]').val());
+        localStorage.setItem('filtro_status', $('select[name="filtro_status"]').val());
+    });
+});
 </script>
 
 </body>

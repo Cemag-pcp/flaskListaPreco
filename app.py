@@ -344,16 +344,20 @@ def salvar_dados():
 
     if request.method == 'POST':
 
+
         conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
 
         cur = conn.cursor
 
         tabela = request.form.get('tabela')
         tabela = json.loads(tabela)
-    
+
         cliente = request.form.get('numeroCliente')
-    
-        unique_id = str(uuid.uuid4())
+        status = request.form.get("statusCotacao")
+
+        print(status, cliente)
+
+        unique_id = str(uuid.uuid4())  # Gerar id unico
 
         tb_orcamento = pd.DataFrame(tabela)
         tb_orcamento['representante'] = ""+session['user_id']+""
@@ -361,6 +365,7 @@ def salvar_dados():
         tb_orcamento['dataOrcamento'] = tb_orcamento['dataOrcamento'].dt.strftime('%Y-%m-%d')
         tb_orcamento['cliente'] = cliente
         tb_orcamento['id'] = unique_id
+        tb_orcamento['status'] = status
 
         tb_orcamento['precoFinal'] = tb_orcamento['precoFinal'].str.replace("R\$","").str.replace(".","").str.replace(",",".").astype(float)
         tb_orcamento['preco'] = tb_orcamento['preco'].str.replace("R\$","").str.replace(".","").str.replace(",",".").astype(float)
@@ -369,10 +374,11 @@ def salvar_dados():
 
         # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
         valores = list(zip(tb_orcamento['familia'], tb_orcamento['codigo'], tb_orcamento['descricao'], tb_orcamento['preco'], tb_orcamento['precoFinal'],
-                        tb_orcamento['quantidade'].astype(int), tb_orcamento['representante'], tb_orcamento['dataOrcamento'], tb_orcamento['cliente'], tb_orcamento['id']))
+                        tb_orcamento['quantidade'].astype(int), tb_orcamento['representante'], tb_orcamento['dataOrcamento'], tb_orcamento['cliente'], tb_orcamento['id'],
+                        tb_orcamento['status']))
 
         # Cria a string de consulta SQL para a inserção
-        consulta = "INSERT INTO tb_orcamento (familia, codigo, descricao, preco, precoFinal, quantidade, representante, dataOrcamento, cliente, id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        consulta = "INSERT INTO tb_orcamento (familia, codigo, descricao, preco, precoFinal, quantidade, representante, dataOrcamento, cliente, id, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
         # Abre uma transação explícita
         with conn:
@@ -498,30 +504,41 @@ def orcamentos():
     filtro_data = request.args.get('filtro_data')
     filtro_cliente = request.args.get('filtro_cliente')
     filtro_status = request.args.get('filtro_status')
+    representante = session['user_id']
 
-    print(filtro_data,filtro_status, filtro_cliente)
+    print(representante)
 
     # Conexão com o banco de dados PostgreSQL
     cur = conn.cursor()
 
     # Construindo a consulta com placeholder
-    sql1 = "SELECT cliente, id, SUM(precofinal * quantidade) AS soma_total, SUM(quantidade) AS quantidade_total FROM tb_orcamento WHERE 1=1"
-    sql2 = " GROUP BY cliente, id"
+    sql1 = "SELECT cliente, id, SUM(precofinal * quantidade) AS soma_total, SUM(quantidade) AS quantidade_total, status FROM tb_orcamento WHERE 1=1 AND representante = %s"
+    sql2 = " GROUP BY cliente, id, status"
     
-    placeholders = []
+    placeholders = [representante]
     
+    print(placeholders)
+
     if filtro_data and filtro_data != '':
         if filtro_data != '':
-            sql1 += " AND dataOrcamento = %s"  # Adiciona um espaço em branco antes do AND
-            placeholders.append(filtro_data)
+            data_inicial, data_final = filtro_data.split(" - ")
+
+            print(data_inicial, data_final)
+
+            # Converter as strings em objetos de data
+            data_inicial = datetime.strptime(data_inicial, "%Y-%m-%d").date()
+            data_final = datetime.strptime(data_final, "%Y-%m-%d").date()
+
+            sql1 += " AND dataOrcamento BETWEEN %s AND %s"  # Adiciona um espaço em branco antes do AND
+            placeholders.extend([data_inicial, data_final])
         
-    if filtro_cliente:
+    if filtro_cliente and filtro_cliente != 'Todos':
         sql1 += " AND cliente = %s"  # Adiciona um espaço em branco antes do AND
         placeholders.append(filtro_cliente)
 
-    # if filtro_status:
-    #         sql1 += " AND dataOrcamento = %s"  # Adiciona um espaço em branco antes do AND
-    #         placeholders.append(filtro_data)
+    if filtro_status and filtro_status != 'Todos':
+        sql1 += " AND status = %s"  # Adiciona um espaço em branco antes do AND
+        placeholders.append(filtro_status)
 
     # Executando a consulta com os placeholders
     cur.execute(sql1+sql2, placeholders)
@@ -577,7 +594,6 @@ def remover_item():
     conn.close()
 
     return jsonify({'message': 'Item removido com sucesso'})
-
 
 if __name__ == '__main__':
     app.run()

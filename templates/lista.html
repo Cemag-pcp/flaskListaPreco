@@ -1,6 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<style>
+    /* Estilos para dispositivos móveis */
+    @media only screen and (max-width: 600px) {
+    .responsive-table {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .responsive-table thead {
+        display: none;
+    }
+    
+    .responsive-table td,
+    .responsive-table th {
+        display: block;
+        text-align: center;
+    }
+    
+    .responsive-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    }
+</style>
+
 <div class="container pt-4">
     <h2>Lista de preços</h2>
     <div class="row">
@@ -8,7 +35,7 @@
             <a href="/export/pdf-all">
                 <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
             </a>
-            <table id="table1" class="table table-striped">
+            <table id="table1" class="table table-striped responsive-table">
                 <thead>
                     <tr>
                         <th>Família</th>

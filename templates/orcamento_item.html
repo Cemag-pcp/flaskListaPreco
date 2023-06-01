@@ -1,6 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<style>
+    /* Estilos para dispositivos móveis */
+    @media only screen and (max-width: 600px) {
+    .responsive-table {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .responsive-table thead {
+        display: none;
+    }
+    
+    .responsive-table td,
+    .responsive-table th {
+        display: block;
+        text-align: center;
+    }
+    
+    .responsive-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    }
+</style>
+
 <div class='row'>
     <div class="container pt-4">
         <h2>Gerador de orçamentos</h2>
@@ -13,50 +40,52 @@
 </div>
 <div class='row'>
     <div class="container pt-4">
-        <table id="table3" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Família</th>
-                    <th>Código</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Preço Final</th>
-                    <th>Quantidade</th>
-                    <th>Remover</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in dados %}
-                <tr>
-                    <td>{{row.familia}}</td>
-                    <td>{{row.codigo}}</td>
-                    <td>{{row.descricao}}</td>
-                    <td style="white-space: nowrap;">{{row.preco}}</td>
-                    <td>
-                        <input name='preco' value='{{row.precofinal}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
-                    </td>
-                    <td>
-                        <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
-                    </td>
-                    <td>
-                        <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot id="tfoot">
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th style="white-space: nowrap;"></th>
-                    <th style="white-space: nowrap;"></th>
-                </tr>
-            </tfoot>
-        </table>            
+        <div class="responsive-table">
+            <table id="table3" class="table responsive-table">
+                <thead>
+                    <tr>
+                        <th>Família</th>
+                        <th>Código</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                        <th>Preço Final</th>
+                        <th>Quantidade</th>
+                        <th>Remover</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in dados %}
+                    <tr>
+                        <td>{{row.familia}}</td>
+                        <td>{{row.codigo}}</td>
+                        <td>{{row.descricao}}</td>
+                        <td style="white-space: nowrap;">{{row.preco}}</td>
+                        <td>
+                            <input name='preco' value='{{row.precofinal}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
+                        </td>
+                        <td>
+                            <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot id="tfoot">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th style="white-space: nowrap;"></th>
+                        <th style="white-space: nowrap;"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>            
     </div>
 </div>
 
