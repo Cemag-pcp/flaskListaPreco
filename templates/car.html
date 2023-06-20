@@ -31,11 +31,6 @@
 <div class='row'>
     <div class="container pt-4">
         <h2>Gerador de orçamentos</h2>
-        <!-- <div style="position: relative;">
-            <a href="/export/pdf">
-                <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
-            </a>
-        </div> -->
     </div>
 </div>
 <div class='row'>
@@ -43,12 +38,18 @@
         <form id="myForm" action="/car" method="GET">
             <div class="mb-3">
                 <label for="phone">Telefone:</label>
-                <!-- <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)"> -->
                 <input type="text" id="number_cliente" oninput="formatPhoneNumber(this)" required>
                 <select name="statusCotacao">
-                    <option value="Orçamento">Orçamento</option>
-                    <option value="Cotação">Cotação</option>
-                    <option value="Em espera">Em espera</option>
+                    <option value="" selected hidden disabled></option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Aguardando aprovação">Aguardando aprovação</option>
+                    <option value="Aprovado">Aprovado</option>
+                    <option value="Rejeitado">Rejeitado</option>
+                    <option value="Cancelado">Cancelado</option>
+                    <option value="Em negociação">Em negociação</option>
+                    <option value="Concluído">Concluído</option>
+                    <option value="Convertido em venda">Convertido em venda</option>
                 </select>
             </div>
         </form>
@@ -122,6 +123,7 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.1.0/dist/autoNumeric.min.js"></script>
+
 <script>
     function formatarNumero(numero) {
         return numero.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -398,6 +400,5 @@
 <div id="loading-overlay" style="display: none;">
     <div id="loading-spinner"></div>
 </div>
-
 
 {% endblock %}

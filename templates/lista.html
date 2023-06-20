@@ -26,7 +26,43 @@
         margin-bottom: 5px;
     }
     }
+
+    .filter-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    }
+
+    .filter-wrapper div {
+        margin-right: 10px;
+    }
 </style>
+
+<style>
+    .selected {
+      background-color: rgb(139, 208, 97); /* Altere para a cor desejada */
+    }
+</style>
+
+<div class="filter-wrapper">
+    <div>
+        <label for="filtro-familia">Família:</label>
+        <input type="text" id="filtro-familia" onkeyup="filtrarTabela()">
+    </div>
+    
+    <div>
+        <label for="filtro-codigo">Código:</label>
+        <input type="text" id="filtro-codigo" onkeyup="filtrarTabela()">
+    </div>
+    
+    <div>
+        <label for="filtro-descricao">Descrição:</label>
+        <input type="text" id="filtro-descricao" onkeyup="filtrarTabela()">
+    </div>
+
+    <button onclick="enviarDados()">Enviar Dados Selecionados</button>
+
+</div>
 
 <div class="container pt-4">
     <h2>Lista de preços</h2>
@@ -35,49 +71,112 @@
             <a href="/export/pdf-all">
                 <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
             </a>
-            <table id="table1" class="table table-striped responsive-table">
+            <table id="table1" class="table responsive-table">
                 <thead>
-                    <tr>
-                        <th>Família</th>
-                        <th>Código</th>
-                        <th>Descrição</th>
-                        <th>Preço</th>
-                        <th>Favorito</th>
-                        <th>Carrinho</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in data %}
-                    <tr>
-                        <td>{{row.familia}}</td>
-                        <td>{{row.codigo}}</td>
-                        <td>{{row.descricao}}</td>
-                        <td style="white-space: nowrap;">{{row.preco}}</td>
-                        <td>
-                            <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-star"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a href="/move-carrinho/{{row.id}}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-shopping-cart"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <th>Familia</th>
+                  <tr>
+                    <th>Família</th>
                     <th>Código</th>
                     <th>Descrição</th>
                     <th>Preço</th>
-                    <th></th>
-                    <th></th>
-                </tfoot>
-            </table>
+                    <th>Favorito</th>
+                    <th>Carrinho</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in data %}
+                  <tr onclick="toggleCheckbox(this)">
+                    <td>{{row.familia}}</td>
+                    <td>{{row.codigo}}</td>
+                    <td>{{row.descricao}}</td>
+                    <td style="white-space: nowrap;">{{row.preco}}</td>
+                    <td>
+                      <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-star"></i>
+                      </a>
+                    </td>
+                    <td>
+                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this)">
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+            </table>  
         </div>
     </div>
 </div>
 
+<script>
+    function toggleCheckbox(row) {
+      var checkbox = row.querySelector('input[type="checkbox"]');
+      checkbox.checked = !checkbox.checked;
+      toggleRowColor(checkbox);
+    }
+  
+    function toggleRowColor(checkbox) {
+      var row = checkbox.parentNode.parentNode;
+      if (checkbox.checked) {
+        row.classList.add("selected");
+      } else {
+        row.classList.remove("selected");
+      }
+    }
+</script>
+
+<script>
+    function filtrarTabela() {
+      var inputFamilia = document.getElementById("filtro-familia").value.toUpperCase();
+      var inputCodigo = document.getElementById("filtro-codigo").value.toUpperCase();
+      var inputDescricao = document.getElementById("filtro-descricao").value.toUpperCase();
+
+      var tabela = document.getElementById("table1");
+      var linhas = tabela.getElementsByTagName("tr");
+    
+      for (var i = 0; i < linhas.length; i++) {
+        var colunaFamilia = linhas[i].getElementsByTagName("td")[0];
+        var colunaCodigo = linhas[i].getElementsByTagName("td")[1];
+        var colunaDescricao = linhas[i].getElementsByTagName("td")[2];
+
+        if (colunaFamilia && colunaCodigo) {
+          var textoFamilia = colunaFamilia.textContent || colunaFamilia.innerText;
+          var textoCodigo = colunaCodigo.textContent || colunaCodigo.innerText;
+          var textoDescricao = colunaDescricao.textContent || colunaDescricao.innerText;
+
+          if (
+            textoFamilia.toUpperCase().indexOf(inputFamilia) > -1 &&
+            textoCodigo.toUpperCase().indexOf(inputCodigo) > -1 &&
+            textoDescricao.toUpperCase().indexOf(inputDescricao) > -1
+          ) {
+            linhas[i].style.display = "";
+          } else {
+            linhas[i].style.display = "none";
+          }
+        }
+      }
+    }
+</script>
+
+<script>
+
+    function enviarDados() {
+        var checkboxes = document.querySelectorAll('input[name="item[]"]:checked');
+        var dadosSelecionados = [];
+    
+        for (var i = 0; i < checkboxes.length; i++) {
+        dadosSelecionados.push(checkboxes[i].value);
+        }
+    
+        // Enviar os dados selecionados para o backend via AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/checkbox', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            console.log('Dados enviados com sucesso!');
+        }
+        };
+        xhr.send(JSON.stringify(dadosSelecionados));
+    }
+
+</script>
 
 {% endblock %}

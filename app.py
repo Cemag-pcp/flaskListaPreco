@@ -517,8 +517,6 @@ def orcamentos():
     
     placeholders = [representante]
     
-    print(placeholders)
-
     if filtro_data and filtro_data != '':
         if filtro_data != '':
             data_inicial, data_final = filtro_data.split(" - ")
@@ -575,8 +573,22 @@ def item_orcamento(id):
         valor_formatado = format_currency(valor, 'BRL', locale='pt_BR')
         valor_formatado = valor_formatado.replace("\xa0", " ")  # Remove o espaço em branco
         dicionario['preco'] = valor_formatado
+    
+    #id = "'8397d602-ca7d-43c1-a838-378ff7640ba7'"
 
-    return render_template("orcamento_item.html", dados=dados)
+    status_atual = [dados[0]['status']]
+    
+    lista_status = ['Pendente', 'Em andamento', 'Aguardando aprovação', 'Aprovado', 'Rejeitado',
+                    'Cancelado', 'Em negociação', 'Concluído', 'Convertido em venda']
+
+    # Remover o status atual da lista
+    lista_status.remove(status_atual[0])
+
+    # Inserir o status atual na primeira posição
+    lista_status.insert(0, status_atual[0])
+
+    return render_template("orcamento_item.html", dados=dados, lista_status=lista_status,
+                            status_atual=status_atual)
 
 @app.route('/remover_item', methods=['POST'])
 @login_required
@@ -594,6 +606,16 @@ def remover_item():
     conn.close()
 
     return jsonify({'message': 'Item removido com sucesso'})
+
+@app.route("/checkbox", methods=['POST'] )
+def checkbox():
+    
+    dados_selecionados = request.get_json()
+    
+    # Faça o processamento dos dados selecionados aqui
+    # Por exemplo, você pode imprimir os dados no console
+    print(dados_selecionados)
+    return 'Dados recebidos com sucesso!'
 
 if __name__ == '__main__':
     app.run()

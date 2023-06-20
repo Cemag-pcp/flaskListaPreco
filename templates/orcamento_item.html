@@ -31,61 +31,65 @@
 <div class='row'>
     <div class="container pt-4">
         <h2>Gerador de orçamentos</h2>
-        <!-- <div style="position: relative;">
-            <a href="/export/pdf">
-                <i class='fas fa-file-pdf' style='font-size:20px;color:red'></i>
-            </a>
-        </div> -->
     </div>
 </div>
 <div class='row'>
     <div class="container pt-4">
-        <div class="responsive-table">
-            <table id="table3" class="table responsive-table">
-                <thead>
-                    <tr>
-                        <th>Família</th>
-                        <th>Código</th>
-                        <th>Descrição</th>
-                        <th>Preço</th>
-                        <th>Preço Final</th>
-                        <th>Quantidade</th>
-                        <th>Remover</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in dados %}
-                    <tr>
-                        <td>{{row.familia}}</td>
-                        <td>{{row.codigo}}</td>
-                        <td>{{row.descricao}}</td>
-                        <td style="white-space: nowrap;">{{row.preco}}</td>
-                        <td>
-                            <input name='preco' value='{{row.precofinal}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
-                        </td>
-                        <td>
-                            <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
-                        </td>
-                        <td>
-                            <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        </td>
-                    </tr>
+        <form id="myForm">
+            <div class="mb-3">
+                <label for="status_cotacao">Status</label>
+                <select name="statusCotacao">
+                    <option value="{{status_atual[0]}}" selected hidden disabled>{{status_atual[0]}}</option>
+                    {% for status in lista_status %}
+                    <option value="{{status}}">{{status}}</option>
                     {% endfor %}
-                </tbody>
-                <tfoot id="tfoot">
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th style="white-space: nowrap;"></th>
-                        <th style="white-space: nowrap;"></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>            
+                </select>
+            </div>
+        </form>
+        <table id="table3" class="table table-striped responsive-table">
+            <thead>
+                <tr>
+                    <th>Família</th>
+                    <th>Código</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Preço Final</th>
+                    <th>Quantidade</th>
+                    <th>Remover</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in dados %}
+                <tr>
+                    <td>{{row.familia}}</td>
+                    <td>{{row.codigo}}</td>
+                    <td>{{row.descricao}}</td>
+                    <td style="white-space: nowrap;">{{row.preco}}</td>
+                    <td>
+                        <input name='preco' value='{{row.preco}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
+                    </td>
+                    <td>
+                        <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot id="tfoot">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th style="white-space: nowrap;"></th>
+                    <th style="white-space: nowrap;"></th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 
@@ -106,30 +110,27 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.1.0/dist/autoNumeric.min.js"></script>
+
 <script>
     function formatarNumero(numero) {
         return numero.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
     function removerFormatacaoPreco(valor) {
-        return parseFloat(valor.replace("R$ ", "").replace(",", "."));
+        return parseFloat(valor.replace("R$", "").replace(/\./g, "").replace(",", "."));
     }
 
     function atualizarValorTotal() {
         var rows = document.querySelectorAll('#table3 tbody tr');
         var valorTotal = 0;
-        var quantidadeTotal = 0; // Adicionado
-
         for (var i = 0; i < rows.length; i++) {
             var quantidade = parseInt(rows[i].querySelector('input[name="quantidade_car"]').value) || 0;
             var preco = removerFormatacaoPreco(rows[i].querySelector('input[name="preco"]').value) || 0;
             if (!isNaN(quantidade) && !isNaN(preco)) {
                 valorTotal += quantidade * preco;
-                quantidadeTotal += quantidade
             }
         }
-        document.querySelector('#tfoot th:nth-child(5)').innerText = 'R$ ' + formatarNumero(valorTotal);
-        document.querySelector('#tfoot th:nth-child(6)').innerText = quantidadeTotal;
+        document.querySelector('#tfoot th:nth-child(4)').innerText = 'R$ ' + formatarNumero(valorTotal);
     }
 
     // Chamada inicial para calcular o valor total
@@ -152,135 +153,25 @@
 
 </script>
 
-<script>
-
-    function copiarTabela() {
-        var tabela = document.getElementById("table3");
-        var textoCopiado = "";
-
-        for (var i = 1; i < tabela.rows.length-1; i++) {
-            var linha = tabela.rows[i];
-
-            var codigo = linha.cells[1].textContent.trim();
-            var descricao = linha.cells[2].textContent.trim();
-
-            var precoInput = linha.querySelector("input[name='preco']");
-            var preco = precoInput ? precoInput.value : "";
-
-            var quantidadeInput = linha.querySelector("input[name='quantidade_car']");
-            var quantidade = quantidadeInput ? quantidadeInput.value : "";
-
-            textoCopiado += "Código: " + codigo + "\n";
-            textoCopiado += "Descrição: " + descricao + "\n";
-            textoCopiado += "Valor: " + preco + "\n";
-            textoCopiado += "Quantidade: " + quantidade + "\n\n";
-        }
-
-        var valorTotal = document.querySelector("#tfoot th:nth-child(4)").textContent.trim();
-        textoCopiado += "Valor Total: " + valorTotal;
-
-        var numeroWhatsAppInput = document.getElementById("number_cliente");
-        var numeroWhatsApp = numeroWhatsAppInput ? numeroWhatsAppInput.value : "";
-        numeroWhatsApp = numeroWhatsApp.replace("(", "").replace(")", "").replace(" ", "").replace("-","");
-        
-        if (numeroWhatsApp) {
-            var mensagemWhatsApp = encodeURIComponent(textoCopiado);
-            var linkWhatsApp = "https://api.whatsapp.com/send?pt_BR=55&phone=55" + numeroWhatsApp + "&text=" + mensagemWhatsApp;
-
-            // Copia o texto para o clipboard
-            navigator.clipboard.writeText(textoCopiado);
-
-            // Redireciona para o link do WhatsApp
-            window.location.href = linkWhatsApp;
-        }
-    }  
-    
-    function enviaTabela() {
-        var tabela = document.getElementById("table3");
-        var tbody = tabela.getElementsByTagName("tbody")[0];
-        var linhas = tbody.getElementsByTagName("tr");
-
-        var dadosTabela = [];
-
-        // Percorre as linhas da tabela
-        for (var i = 0; i < linhas.length; i++) {
-            var linha = linhas[i];
-            var colunas = linha.getElementsByTagName("td");
-
-            var dadosLinha = {};
-
-            // Extrai os valores das células
-            dadosLinha.familia = colunas[0].innerText;
-            dadosLinha.codigo = colunas[1].innerText;
-            dadosLinha.descricao = colunas[2].innerText;
-            dadosLinha.preco = colunas[3].innerText;
-            dadosLinha.precoFinal = colunas[4].getElementsByTagName("input")[0].value;
-            dadosLinha.quantidade = colunas[5].getElementsByTagName("input")[0].value;
-
-            dadosTabela.push(dadosLinha);
-        }
-
-        // Captura o valor do input
-        var numeroCliente = document.getElementById('number_cliente').value;
-
-        // Verifica se o campo está vazio
-        if (!numeroCliente) {
-            alert("O campo número do cliente está vazio!");
-            return;
-        }
-
-        // Cria um objeto FormData
-        var formData = new FormData();
-
-        // Adiciona os dados da tabela ao objeto FormData
-        formData.append("tabela", JSON.stringify(dadosTabela));
-
-        // Adiciona o valor do input ao objeto FormData
-        formData.append("numeroCliente", numeroCliente);
-
-        var numeroWhatsAppInput = document.getElementById("number_cliente");
-        var numeroWhatsApp = numeroWhatsAppInput ? numeroWhatsAppInput.value : "";
-        numeroWhatsApp = numeroWhatsApp.replace("(", "").replace(")", "").replace(" ", "").replace("-","");
-        
-        if (numeroWhatsApp) {     
-
-            // Envia a tabela para o backend usando AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/salvar_dados", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        console.log("Tabela enviada com sucesso!");
-                    } else {
-                        console.log("Erro ao enviar tabela:", xhr.status);
-                    }
-                }
-            };
-            xhr.send(formData);
-    }
-    }
-
-    function copiarEEnviar() {
-        copiarTabela();
-        enviaTabela();
-    }
-
-</script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function guardar() {
+
         var tabela = document.getElementById("table3");
         var tbody = tabela.getElementsByTagName("tbody")[0];
         var linhas = tbody.getElementsByTagName("tr");
 
         // Captura o valor do input
         var numeroCliente = document.getElementById('number_cliente').value;
+        var statusCotacao = document.getElementsByName("statusCotacao")[0].value;
 
         // Verifica se o campo está vazio
         if (!numeroCliente) {
             alert("O campo número do cliente está vazio!");
             return;
         }
+
+        $("#loading-overlay").show();
 
         var dadosTabela = [];
 
@@ -302,9 +193,6 @@
             dadosTabela.push(dadosLinha);
         }
 
-        // Captura o valor do input
-        var numeroCliente = document.getElementById('number_cliente').value;
-
         // Cria um objeto FormData
         var formData = new FormData();
 
@@ -313,6 +201,7 @@
 
         // Adiciona o valor do input ao objeto FormData
         formData.append("numeroCliente", numeroCliente);
+        formData.append("statusCotacao", statusCotacao);
 
         // Envia a tabela para o backend usando AJAX
         var xhr = new XMLHttpRequest();
@@ -327,22 +216,10 @@
             }
         };
         xhr.send(formData);
-    }
-</script>
 
-<script>
-    function formatPhoneNumber(input) {
-        // Remove qualquer caractere que não seja um número
-        var phoneNumber = input.value.replace(/\D/g, '');
-
-        // Limita para 11 caracteres
-        phoneNumber = phoneNumber.slice(0, 11);
-
-        // Formatação "(XX) XXXXX-XXXX"
-        var formattedPhoneNumber = phoneNumber.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-
-        // Atualiza o valor do campo de entrada
-        input.value = formattedPhoneNumber;
+        setTimeout(function() {
+            $("#loading-overlay").hide();
+        }, 1000);
     }
 </script>
 
@@ -380,7 +257,6 @@
     <div id="loading-spinner"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function removerItem(id) {
         // Exibir o indicador de carregamento

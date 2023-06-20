@@ -12,77 +12,89 @@
     </div>
 </div>
 
-    <style>
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-        }
-    
-        .card {
-            flex-basis: 43%; /* ou 40% */
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 10px;
-            margin-right: 20px; /* Adicione o espaçamento desejado à direita */
-            margin-bottom: 10px; /* Adicione o espaçamento desejado abaixo */
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-    
-        .card h3 {
-            margin-top: 0;
-            text-align: center;
-        }
-    
-        .card p {
-            margin-bottom: 0;
-        }
-    
-        .status {
-            font-size: 14px;
-        }
-    
-        .content {
-            margin-top: 10px;
-        }
-    </style>
-    
-    <form>
-        <!-- <label for="filtro_data">Filtrar por Data:</label>
-        <input type="date" name="filtro_data" id="filtro_data">   -->
-        
-        <label for="filtro_data">Filtros:</label>
-        <input autocomplete="off" type="text" id="filtro_data" name="filtro_data">
+<style>
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-        <select name="filtro_status" id="filtro_status">
+    .card {
+        flex-basis: 43%; /* ou 40% */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        margin-right: 20px; /* Adicione o espaçamento desejado à direita */
+        margin-bottom: 10px; /* Adicione o espaçamento desejado abaixo */
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+    .card h3 {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    .card p {
+        margin-bottom: 0;
+    }
+
+    .status {
+        font-size: 14px;
+    }
+
+    .content {
+        margin-top: 10px;
+    }
+</style>
+    
+<form class="form-filtros form-inline">
+            
+    <div class="form-group">
+        <label for="filtro_data">Filtros:</label>
+        <input autocomplete="off" type="text" id="filtro_data" name="filtro_data" class="form-control">
+    
+        <label for="filtro_status">Status:</label>
+        <select name="filtro_status" id="filtro_status" class="form-control">
             <option value="Todos">Todos</option>
-            <option value="Fechado">Fechado</option>
-            <option value="Cotação">Cotação</option>
-            <option value="Aguardando retorno">Aguardando retorno</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Aguardando aprovação">Aguardando aprovação</option>
+            <option value="Aprovado">Aprovado</option>
+            <option value="Rejeitado">Rejeitado</option>
+            <option value="Cancelado">Cancelado</option>
+            <option value="Em negociação">Em negociação</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Convertido em venda">Convertido em venda</option>
         </select>
-        <select name="filtro_cliente" id="filtro_cliente">
+    
+        <label for="filtro_cliente">Cliente:</label>
+        <select name="filtro_cliente" id="filtro_cliente" class="form-control">
             <option value="Todos">Todos</option>
             <option value="(85) 99901-2483">(85) 99901-2483</option>
             <option value="(85) 98944-4307">(85) 98944-4307</option>
             <option value="(85) 98770-2630">(85) 98770-2630</option>
-        </select>      
-        <button type="submit">Filtrar</button>
-    </form>
+        </select>
+    
+        <button type="submit" class="btn btn-primary">Filtrar</button>
 
-    <div class="card-container">  
-        {% for dado in dados %}
-            <div class="card" data-item-id="{{ dado[1] }}">
-                <div class="header">
-                    <h3>{{ dado[0] }}</h3>
-                    <p class="status">{{ dado[4] }}</p>
-                </div>
-                <div class="content">
-                    <p>Valor total: {{ dado[2] }}</p>
-                    <p>Quantidade: {{ dado[3] }}</p>
-                </div>
+    </div>  
+
+</form>
+<br>
+<div class="card-container">  
+    {% for dado in dados %}
+        <div class="card" data-item-id="{{ dado[1] }}">
+            <div class="header">
+                <h3>{{ dado[0] }}</h3>
+                <p class="status">{{ dado[4] }}</p>
             </div>
-        {% endfor %}
-    </div>
+            <div class="content">
+                <p>Valor total: {{ dado[2] }}</p>
+                <p>Quantidade: {{ dado[3] }}</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 
 <style>
     /* Estilos para o indicador de carregamento */
