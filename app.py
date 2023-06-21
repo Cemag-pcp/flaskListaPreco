@@ -108,7 +108,18 @@ def lista():
     for row in data:
         row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
 
-    return render_template('lista.html', data=data)
+    query = "SELECT DISTINCT modelo, eixo, mola_freio FROM tb_produtos"
+    cur.execute(query)
+    datas = cur.fetchall()
+    datas = pd.DataFrame(datas)
+
+    modelo_unique = datas['modelo'].drop_duplicates().values.tolist()
+    eixo_unique = datas['eixo'].drop_duplicates().values.tolist()
+    mola_freio_unique = datas['mola_freio'].drop_duplicates().values.tolist()
+
+    return render_template('lista.html', modelo_unique=modelo_unique,
+                           eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
+                           data=data)
 
 @app.route('/move/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -616,6 +627,50 @@ def checkbox():
     # Por exemplo, você pode imprimir os dados no console
     print(dados_selecionados)
     return 'Dados recebidos com sucesso!'
+
+@app.route('/filtros')
+def filtro_maquinas():
+    
+    modelo = request.args.get('modelo', '')
+    eixo = request.args.get('eixo', '')
+    mola_freio = request.args.get('mola_freio', '')
+
+    print(modelo)
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    query = """
+        SELECT DISTINCT eixo,modelo,mola_freio FROM tb_produtos WHERE 1=1 
+        """
+
+    if modelo:
+        query += f" AND modelo='{modelo}'"
+
+    if eixo:
+        query += f" AND eixo='{eixo}'"
+
+    if mola_freio:
+        query += f" AND mola_freio='{mola_freio}'"   
+
+    cur.execute(query)
+    data = cur.fetchall()
+    data = pd.DataFrame(data, columns=['eixo','modelo','mola_freio'])
+
+    print(data)
+
+    modelo_unique = data['modelo'].drop_duplicates().values.tolist()
+    eixo_unique = data['eixo'].drop_duplicates().values.tolist()
+    mola_freio_unique = data['mola_freio'].drop_duplicates().values.tolist()
+
+    cur.close()
+    conn.close()
+
+    return jsonify({
+    'modelo_unique': modelo_unique,
+    'eixo_unique': eixo_unique,
+    'mola_freio_unique': mola_freio_unique
+    })  
 
 if __name__ == '__main__':
     app.run()
