@@ -17,7 +17,9 @@
 <script src="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/d1807a784c.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lista.css') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
@@ -33,16 +35,34 @@
       <a style="font-size: 20px;" href="/logout">Logout</a>
     </footer>
   </div>
-  <div class="container pt-4">
-
-    <div id="main">
-      <button class="openbtn" onclick="openNav()">&#9776; Abrir menu</button>
+  <div class="container principal">
+    <header>
+      <div class="shopping">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="quantity">0</span>
+      </div>
+    </header>
+    <div class="list"></div>
+  </div>
+  <div class="card">
+    <h1>Orçamento</h1>
+    <ul class="listCard"></ul>
+    <div class="checkOut">
+      <div class="total">0</div>
+      <div class="closeShopping">Fechar</div>
     </div>
-
+  </div>
+    <!-- <div id="main">
+      <button class="openbtn" onclick="openNav()">&#9776; Abrir menu</button>
+    </div> -->
+    
+  <script src="static/js/app.js"></script>
     {% block body %}
     {% endblock %}
-  </div>
-  
+
+
+
+
 <script>
 
   $(document).ready(function() {

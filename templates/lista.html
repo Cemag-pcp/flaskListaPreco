@@ -1,50 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<style>
-    /* Estilos para dispositivos móveis */
-    @media only screen and (max-width: 600px) {
-    .responsive-table {
-        max-width: 100%;
-        overflow-x: auto;
-    }
-
-    .responsive-table thead {
-        display: none;
-    }
-    
-    .responsive-table td,
-    .responsive-table th {
-        display: block;
-        text-align: center;
-    }
-    
-    .responsive-table td:before {
-        content: attr(data-label);
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-    }
-
-    .filter-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    }
-
-    .filter-wrapper div {
-        margin-right: 10px;
-    }
-</style>
-
-<style>
-    .selected {
-      background-color: rgb(139, 208, 97); /* Altere para a cor desejada */
-    }
-</style>
-
-<div class="filter-wrapper">
+<div class="container filter-wrapper">
     <div>
         <label for="filtro-familia">Família:</label>
         <input type="text" id="filtro-familia" onkeyup="filtrarTabela()">
@@ -61,10 +18,17 @@
     </div>
 
     <button onclick="enviarDados()">Enviar Dados Selecionados</button>
-
+    
 </div>
-
-<div class="container pt-4">
+    <!-- {% for row in data %}
+      <div class="familia">{{row.familia}}</div>
+      <div class="codigo">{{row.codigo}}</div>
+      <div class="descricao">{{row.descricao}}</div>
+      <input class="row-data cor-input" name="cor" style="width: 60px;">
+      <div class="preco">{{row.preco}}</div>
+      <button onclick=addToCard(1)>Add</button>
+    {% endfor %} -->
+<div class="container pt-4" style="transition: 0.5s;">
     <h2>Lista de preços</h2>
     <div class="row">
         <div style="position: relative;">
@@ -77,11 +41,11 @@
                       <th>Família</th>
                       <th>Código</th>
                       <th>Descrição</th>
+                      <th>Cor</th>
                       <th>Preço</th>
                       <th>Preço Final</th>
                       <th>Quantidade</th>
                       <th>Total</th>
-                      <th>Remover</th>
                   </tr>
               </thead>
               <tbody>
@@ -90,6 +54,9 @@
                     <td>{{row.familia}}</td>
                     <td>{{row.codigo}}</td>
                     <td>{{row.descricao}}</td>
+                    <td>
+                      <input class="row-data cor-input" name="cor" style="width: 60px;">
+                    </td>
                     <td style="white-space: nowrap;">{{row.preco}}</td>
                     <td>
                       <input class="row-data preco-input" name="preco" style="width: 100px;">
@@ -123,10 +90,14 @@
   
     function toggleRowColor(checkbox) {
       var row = checkbox.parentNode.parentNode;
+      var quantitySpan = document.querySelector(".quantity");
+
       if (checkbox.checked) {
         row.classList.add("selected");
+        quantitySpan.innerText = parseInt(quantitySpan.innerText) + 1;
       } else {
         row.classList.remove("selected");
+        quantitySpan.innerText = parseInt(quantitySpan.innerText) - 1;
       }
     }
 </script>
