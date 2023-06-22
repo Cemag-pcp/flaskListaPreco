@@ -6,12 +6,113 @@ let body = document.querySelector('body');
 let total = document.querySelector('.total');
 let quantity = document.querySelector('.quantity');
 
-openShopping.addEventListener('click', ()=>{
-    body.classList.add('active');
-})
-closeShopping.addEventListener('click', ()=>{
-    body.classList.remove('active');
-})
+openShopping.addEventListener('click', () => {
+  body.classList.add('active');
+});
+
+closeShopping.addEventListener('click', () => {
+  body.classList.remove('active');
+});
+
+list.addEventListener('change', (event) => {
+  if (event.target.matches('.itemCheckbox')) {
+    toggleCardItem(event.target);
+  }
+});
+
+function toggleCardItem(checkbox) {
+    const card = document.getElementById('card');
+    const listCard = card.querySelector('.listCard');
+  
+    const row = checkbox.parentNode.parentNode;
+    const columns = row.getElementsByTagName('td');
+  
+    const description = columns[1].textContent; // Assuming the description is in the 3rd column
+    const preco = columns[4].textContent; // Assuming the preco is in the 5th column
+  
+    if (checkbox.checked) {
+      const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
+      if (existingItem) {
+        const numElement = existingItem.querySelector('.numeros');
+        let nume = parseInt(numElement.textContent);
+        numElement.textContent = nume.toString();
+      } else {
+        const item = document.createElement('li');
+        item.dataset.description = description;
+  
+        const itemName = document.createElement('div');
+        itemName.textContent = description; // Set the item description
+        item.appendChild(itemName);
+  
+        const precoElement = document.createElement('span');
+        precoElement.textContent = preco; // Set the preco value
+        item.appendChild(precoElement);
+        
+        const decreaseButton = document.createElement('button');
+        decreaseButton.textContent = '-';
+        decreaseButton.addEventListener('click', () => {
+          let nume = parseInt(numElement.textContent);
+          if (nume > 1) {
+            nume--;
+            numElement.textContent = nume.toString();
+          } else {
+            listCard.removeChild(item);
+            checkbox.checked = false;
+            toggleRowColor(checkbox); // Update the row color and quantity
+          }
+        });
+        item.appendChild(decreaseButton);
+        
+        const numElement = document.createElement('div');
+        numElement.classList.add('numeros');
+        numElement.textContent = '1';
+        item.appendChild(numElement);
+
+        const increaseButton = document.createElement('button');
+        increaseButton.textContent = '+';
+        increaseButton.addEventListener('click', () => {
+          let nume = parseInt(numElement.textContent);
+          nume++;
+          numElement.textContent = nume.toString();
+        });
+        item.appendChild(increaseButton);
+  
+        listCard.appendChild(item);
+  
+      }
+  
+    } else {
+      const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
+  
+      if (existingItem) {
+        listCard.removeChild(existingItem);
+        var cardItem = checkbox.parentNode.parentNode;
+        var cardList = document.querySelector(".listCard");
+        cardList.removeChild(cardItem);
+        checkbox.checked = false;
+  
+        if (listCard.children.length === 0) {
+          card.style.display = 'none'; // Hide the card when it has no items
+        }
+      }
+    }
+  }
+  
+function toggleRowColor(checkbox) {
+  var row = checkbox.parentNode.parentNode;
+  var quantitySpan = document.querySelector(".quantity");
+
+  if (checkbox.checked) {
+    row.classList.add("selected");
+    quantitySpan.innerText = parseInt(quantitySpan.innerText) + 1;
+  } else {
+    row.classList.remove("selected");
+    var currentQuantity = parseInt(quantitySpan.innerText);
+    if (currentQuantity > 0) {
+      quantitySpan.innerText = currentQuantity - 1;
+    }
+  }
+}
 
 // let products = [
 //     {

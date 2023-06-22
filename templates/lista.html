@@ -44,7 +44,6 @@
                       <th>Cor</th>
                       <th>Preço</th>
                       <th>Preço Final</th>
-                      <th>Quantidade</th>
                       <th>Total</th>
                   </tr>
               </thead>
@@ -55,23 +54,27 @@
                     <td>{{row.codigo}}</td>
                     <td>{{row.descricao}}</td>
                     <td>
-                      <input class="row-data cor-input" name="cor" style="width: 60px;">
+                      <select id="cor">
+                        <option value="" selected disabled hidden></option>
+                        <option value="LARANJA">Laranja</option>
+                        <option value="VERDE">Verde</option>
+                        <option value="VERMELHO">Vermelho</option>
+                        <option value="AZUL">Azul</option>
+                        <option value="AMARELO">Amarelo</option>
+                      </select>
                     </td>
                     <td style="white-space: nowrap;">{{row.preco}}</td>
                     <td>
                       <input class="row-data preco-input" name="preco" style="width: 100px;">
                     </td>
-                    <td>
-                      <input class="row-data quantidade-input" name="quantidade_car" value="1" style="width: 50px;">
-                    </td>
                     <td class="row-total"></td>
                     <td>
-                      <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
+                      <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
                         <i class="fas fa-star"></i>
                       </a>
                     </td>
                     <td>
-                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this)">
+                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this)">
                     </td>
                   </tr>
                   {% endfor %}
@@ -80,27 +83,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    function toggleCheckbox(row) {
-      var checkbox = row.querySelector('input[type="checkbox"]');
-      checkbox.checked = !checkbox.checked;
-      toggleRowColor(checkbox);
-    }
-  
-    function toggleRowColor(checkbox) {
-      var row = checkbox.parentNode.parentNode;
-      var quantitySpan = document.querySelector(".quantity");
-
-      if (checkbox.checked) {
-        row.classList.add("selected");
-        quantitySpan.innerText = parseInt(quantitySpan.innerText) + 1;
-      } else {
-        row.classList.remove("selected");
-        quantitySpan.innerText = parseInt(quantitySpan.innerText) - 1;
-      }
-    }
-</script>
 
 <script>
     function filtrarTabela() {
