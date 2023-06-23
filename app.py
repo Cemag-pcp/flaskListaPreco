@@ -101,14 +101,38 @@ def lista():
     representante = """'Galo'"""
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute("SELECT * FROM tb_lista_precos where representante = {}".format(representante))
-    #data = pd.read_sql_query("SELECT * FROM tb_lista_precos", conn)
-    data = cur.fetchall()
+    # cur.execute("SELECT * FROM tb_lista_precos where representante = {}".format(representante))
+    # #data = pd.read_sql_query("SELECT * FROM tb_lista_precos", conn)
+    # data = cur.fetchall()
 
-    for row in data:
-        row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
+    # for row in data:
+    #     row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
 
-    return render_template('lista.html', data=data)
+    query = """ SELECT DISTINCT t1.*, t2.preco
+        FROM tb_produtos AS t1
+        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+        WHERE t1.crm = 'T' and t2.preco is not null; 
+    """
+
+    df = pd.read_sql_query(query, conn)
+
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    data = df.values.tolist()
+
+    descricao_unique = df[['descricao_generica']].drop_duplicates().values.tolist()
+    modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
+    eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
+    mola_freio_unique = df[['mola_freio']].drop_duplicates().values.tolist()
+    tamanho_unique = df[['tamanho']].drop_duplicates().values.tolist()
+    rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
+    pneu_unique = df[['pneu']].drop_duplicates().values.tolist()
+
+    return render_template('lista.html', data=data,
+                           descricao_unique=descricao_unique,modelo_unique=modelo_unique,
+                           eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
+                           tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
+                           pneu_unique=pneu_unique)
 
 @app.route('/move/<string:id>', methods = ['POST','GET'])
 @login_required

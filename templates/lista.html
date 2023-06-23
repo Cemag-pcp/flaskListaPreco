@@ -2,20 +2,69 @@
 {% block body %}
 
 <div class="container filter-wrapper">
-    <div>
-        <label for="filtro-familia">Família:</label>
-        <input type="text" id="filtro-familia" onkeyup="filtrarTabela()">
-    </div>
-    
-    <div>
-        <label for="filtro-codigo">Código:</label>
-        <input type="text" id="filtro-codigo" onkeyup="filtrarTabela()">
-    </div>
-    
-    <div>
-        <label for="filtro-descricao">Descrição:</label>
-        <input type="text" id="filtro-descricao" onkeyup="filtrarTabela()">
-    </div>
+  <div>
+    <label for="filtro-descricao">Descrição:</label>
+    <select id="filtro-descricao" onchange="filtrarTabela()">
+        <option value="">Todos</option>
+        {% for descricao in descricao_unique %}
+        <option>{{descricao[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-modelo">Modelo:</label>
+    <select id="filtro-modelo" onchange="filtrarTabela()">
+      <option value="">Todos</option>
+      {% for modelo in modelo_unique %}
+      <option>{{modelo[0]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-eixo">Eixo:</label>
+    <select id="filtro-eixo" onchange="filtrarTabela()">
+      <option value="">Todos</option>
+      {% for eixo in eixo_unique %}  
+      <option>{{eixo[0]}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-molaFreio">Mola/Freio:</label>
+    <select id="filtro-molaFreio" onchange="filtrarTabela()">
+        <option value="">Todos</option>
+        {% for mola in mola_freio_unique %}
+        <option>{{mola[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-tamanho">Tamanho:</label>
+    <select id="filtro-tamanho" onchange="filtrarTabela()">
+        <option value="">Todos</option>
+        {% for tamanho in tamanho_unique %}
+        <option>{{tamanho[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-rodado">Rodado:</label>
+    <select id="filtro-rodado" onchange="filtrarTabela()">
+        <option value="">Todos</option>
+        {% for rodado in rodado_unique %}
+        <option>{{rodado[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="filtro-pneu">Pneu:</label>
+    <select id="filtro-pneu" onchange="filtrarTabela()">
+        <option value="">Todas</option>
+        {% for pneu in pneu_unique %}
+        <option>{{pneu[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
 
     <button onclick="enviarDados()">Enviar Dados Selecionados</button>
     
@@ -50,20 +99,20 @@
               <tbody>
                   {% for row in data %}
                   <tr>
-                    <td>{{row.familia}}</td>
-                    <td>{{row.codigo}}</td>
-                    <td>{{row.descricao}}</td>
+                    <td>{{row[11]}}</td>
+                    <td>{{row[1]}}</td>
+                    <td>{{row[2]}}</td>
                     <td>
-                      <select id="cor">
+                      <select id="cor" class="cor-dropdown">
                         <option value="" selected disabled hidden></option>
-                        <option value="LARANJA">Laranja</option>
-                        <option value="VERDE">Verde</option>
-                        <option value="VERMELHO">Vermelho</option>
-                        <option value="AZUL">Azul</option>
-                        <option value="AMARELO">Amarelo</option>
+                        <option value="Laranja">Laranja</option>
+                        <option value="Verde">Verde</option>
+                        <option value="Vermelho">Vermelho</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Amarelo">Amarelo</option>
                       </select>
                     </td>
-                    <td style="white-space: nowrap;">{{row.preco}}</td>
+                    <td style="white-space: nowrap;">{{row[23]}}</td>
                     <td>
                       <input class="row-data preco-input" name="preco" style="width: 100px;" oninput="formatPriceInput(event);">
                     </td>
@@ -85,36 +134,39 @@
 </div>
 
 <script>
-    function filtrarTabela() {
-      var inputFamilia = document.getElementById("filtro-familia").value.toUpperCase();
-      var inputCodigo = document.getElementById("filtro-codigo").value.toUpperCase();
-      var inputDescricao = document.getElementById("filtro-descricao").value.toUpperCase();
+  // Função para filtrar a tabela e enviar requisição para o backend
+  function filtrarTabela() {
+    // Obter os valores selecionados nos dropdowns
+    var descricao = $('#filtro-descricao').val();
+    var modelo = $('#filtro-modelo').val();
+    var eixo = $('#filtro-eixo').val();
+    var molaFreio = $('#filtro-molaFreio').val();
+    var tamanho = $('#filtro-tamanho').val();
+    var rodado = $('#filtro-rodado').val();
+    var pneu = $('#filtro-pneu').val();
 
-      var tabela = document.getElementById("table1");
-      var linhas = tabela.getElementsByTagName("tr");
-    
-      for (var i = 0; i < linhas.length; i++) {
-        var colunaFamilia = linhas[i].getElementsByTagName("td")[0];
-        var colunaCodigo = linhas[i].getElementsByTagName("td")[1];
-        var colunaDescricao = linhas[i].getElementsByTagName("td")[2];
-
-        if (colunaFamilia && colunaCodigo) {
-          var textoFamilia = colunaFamilia.textContent || colunaFamilia.innerText;
-          var textoCodigo = colunaCodigo.textContent || colunaCodigo.innerText;
-          var textoDescricao = colunaDescricao.textContent || colunaDescricao.innerText;
-
-          if (
-            textoFamilia.toUpperCase().indexOf(inputFamilia) > -1 &&
-            textoCodigo.toUpperCase().indexOf(inputCodigo) > -1 &&
-            textoDescricao.toUpperCase().indexOf(inputDescricao) > -1
-          ) {
-            linhas[i].style.display = "";
-          } else {
-            linhas[i].style.display = "none";
-          }
-        }
+    // Enviar a requisição AJAX para o backend
+    $.ajax({
+      url: '/sua-rota-backend', // Substitua '/sua-rota-backend' pela URL correta do seu backend
+      method: 'POST', // Use o método HTTP correto (por exemplo, POST, GET, etc.)
+      data: {
+        descricao: descricao,
+        modelo: modelo,
+        eixo: eixo,
+        molaFreio: molaFreio,
+        tamanho: tamanho,
+        rodado: rodado,
+        pneu: pneu
+      },
+      success: function(response) {
+        // Manipular a resposta do backend e atualizar os dropdowns conforme necessário
+        // Por exemplo, você pode usar o retorno JSON do backend para atualizar as opções dos outros dropdowns
+      },
+      error: function(xhr, status, error) {
+        // Lidar com erros de requisição, se necessário
       }
-    }
+    });
+  }
 </script>
 
 <script>
@@ -189,6 +241,5 @@ function formatPriceInput(event) {
   }
   
 </script>
-
 
 {% endblock %}
