@@ -47,6 +47,16 @@
 <div class="filter-wrapper">
 
     <div>
+      <label for="descricao_generica">descricao_generica:</label>
+      <select type="text" id="descricao_generica" sdata-live-search="true" onchange="filtrarTabela()">
+          <option value="">Todos</option>
+          {% for data in descricao_generica_unique %}
+              <option value="{{ data }}">{{ data }}</option>
+          {% endfor %}
+      </select>
+    </div>
+
+    <div>
       <label for="modelo">modelo:</label>
       <select type="text" id="modelo" sdata-live-search="true" onchange="filtrarTabela()">
           <option value="">Todos</option>
@@ -76,6 +86,46 @@
       </select>  
     </div>
 
+    <div>
+      <label for="tamanho">tamanho:</label>
+      <select type="text" id="tamanho" sdata-live-search="true" onchange="filtrarTabela()">
+          <option value="">Todos</option>
+          {% for data in tamanho_unique %}
+              <option value="{{ data }}">{{ data }}</option>
+          {% endfor %}
+      </select>  
+    </div>
+
+    <div>
+      <label for="rodado">rodado:</label>
+      <select type="text" id="rodado" sdata-live-search="true" onchange="filtrarTabela()">
+          <option value="">Todos</option>
+          {% for data in rodado_unique %}
+              <option value="{{ data }}">{{ data }}</option>
+          {% endfor %}
+      </select>  
+    </div>
+
+    <div>
+      <label for="pneu">pneu:</label>
+      <select type="text" id="pneu" sdata-live-search="true" onchange="filtrarTabela()">
+          <option value="">Todos</option>
+          {% for data in pneu_unique %}
+              <option value="{{ data }}">{{ data }}</option>
+          {% endfor %}
+      </select>  
+    </div>
+
+    <div>
+      <label for="adicionais">adicionais:</label>
+      <select type="text" id="adicionais" sdata-live-search="true" onchange="filtrarTabela()">
+          <option value="">Todos</option>
+          {% for data in adicionais_unique %}
+              <option value="{{ data }}">{{ data }}</option>
+          {% endfor %}
+      </select>  
+    </div>
+
     <button onclick="enviarDados()">Enviar Dados Selecionados</button>
     <button onclick="selecionarTodos()">Apagar filtros</button>
 
@@ -92,38 +142,13 @@
             <table id="table3" class="table table-striped responsive-table">
               <thead>
                   <tr>
-                      <th>Família</th>
                       <th>Código</th>
-                      <th>Descrição</th>
-                      <th>Preço</th>
-                      <th>Preço Final</th>
-                      <th>Quantidade</th>
-                      <th>Total</th>
-                      <th>Remover</th>
                   </tr>
               </thead>
               <tbody>
                   {% for row in data %}
                   <tr>
-                    <td>{{row.familia}}</td>
                     <td>{{row.codigo}}</td>
-                    <td>{{row.descricao}}</td>
-                    <td style="white-space: nowrap;">{{row.preco}}</td>
-                    <td>
-                      <input class="row-data preco-input" name="preco" style="width: 100px;">
-                    </td>
-                    <td>
-                      <input class="row-data quantidade-input" name="quantidade_car" value="1" style="width: 50px;">
-                    </td>
-                    <td class="row-total"></td>
-                    <td>
-                      <a href="/move/{{row.id}}" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-star"></i>
-                      </a>
-                    </td>
-                    <td>
-                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this)">
-                    </td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -168,19 +193,34 @@
 
 <script>
   function selecionarTodos() {
+    var descricaoGenericaSelect = document.getElementById('descricao_generica')
     var modeloSelect = document.getElementById('modelo');
     var eixoSelect = document.getElementById('eixo');
     var molaFreioSelect = document.getElementById('mola_freio');
+    var tamanhoSelect = document.getElementById('tamanho');
+    var rodadoSelect = document.getElementById('rodado');
+    var pneuSelect = document.getElementById('pneu');
+    var adicionaisSelect = document.getElementById('adicionais');
 
     // Defina o valor "Todos" para cada dropdown
+    descricaoGenericaSelect.value = 'Todos';
     modeloSelect.value = 'Todos';
     eixoSelect.value = 'Todos';
     molaFreioSelect.value = 'Todos';
+    tamanhoSelect.value = 'Todos';
+    rodadoSelect.value = 'Todos';
+    pneuSelect.value = 'Todos';
+    adicionaisSelect.value = 'Todos';
 
     // Dispare o evento "onchange" para acionar a ação desejada
+    descricaoGenericaSelect.onchange();
     modeloSelect.onchange();
     eixoSelect.onchange();
     molaFreioSelect.onchange();
+    tamanhoSelect.onchange();
+    rodadoSelect.onchange();
+    pneuSelect.onchange();
+    adicionaisSelect.onchange();
   }
 </script>
 
@@ -188,34 +228,66 @@
   function filtrarTabela() {
     $("#loading-overlay").show();
 
+    var descricaoGenericaSelect = document.getElementById('descricao_generica');
     var modeloSelect = document.getElementById('modelo');
     var eixoSelect = document.getElementById('eixo');
     var molaFreioSelect = document.getElementById('mola_freio');
-
+    var tamanhoSelect = document.getElementById('tamanho');
+    var rodadoSelect = document.getElementById('rodado');
+    var pneuSelect = document.getElementById('pneu');
+    var adicionaisSelect = document.getElementById('adicionais');
+    
+    var descricaoGenerica = descricaoGenericaSelect.value;
     var modelo = modeloSelect.value;
     var eixo = eixoSelect.value;
     var molaFreio = molaFreioSelect.value;
+    var tamanho = tamanhoSelect.value;
+    var rodado = rodadoSelect.value;
+    var pneu = pneuSelect.value;
+    var adicionais = adicionaisSelect.value;
 
     $.ajax({
         url: '/filtros',
         type: 'GET',
         data: {
+            descricao_generica: descricaoGenerica,
             modelo: modelo,
             eixo: eixo,
-            mola_freio: molaFreio
+            mola_freio: molaFreio,
+            tamanho: tamanho,
+            rodado: rodado,
+            pneu: pneu,
+            adicionais: adicionais
         },
         success: function(data) {
           // Armazena o valor atual selecionado nos seletores
+          var descricaoGenericaSelectedValue = descricaoGenericaSelect.value;
           var modeloSelectedValue = modeloSelect.value;
           var eixoSelectedValue = eixoSelect.value;
           var molaFreioSelectedValue = molaFreioSelect.value;
+          var tamanhoSelectedValue = tamanhoSelect.value;
+          var rodadoSelectedValue = rodadoSelect.value;
+          var pneuSelectedValue = pneuSelect.value;
+          var adicionaisSelectedValue = adicionaisSelect.value;
 
           // Limpa os dropdowns
+          descricaoGenericaSelect.innerHTML = '<option value="">Todos</option>';          
           modeloSelect.innerHTML = '<option value="">Todos</option>';
           eixoSelect.innerHTML = '<option value="">Todos</option>';
           molaFreioSelect.innerHTML = '<option value="">Todos</option>';
+          tamanhoSelect.innerHTML = '<option value="">Todos</option>';
+          rodadoSelect.innerHTML = '<option value="">Todos</option>';
+          pneuSelect.innerHTML = '<option value="">Todos</option>';
+          adicionaisSelect.innerHTML = '<option value="">Todos</option>';
 
           // Atualiza os dropdowns com as opções retornadas do servidor
+          for (var i = 0; i < data.descricao_generica_unique.length; i++) {
+              var option = document.createElement('option');
+              option.text = data.descricao_generica_unique[i];
+              option.value = data.descricao_generica_unique[i];
+              descricaoGenericaSelect.add(option);
+          }
+
           for (var i = 0; i < data.modelo_unique.length; i++) {
               var option = document.createElement('option');
               option.text = data.modelo_unique[i];
@@ -237,10 +309,57 @@
               molaFreioSelect.add(option);
           }
 
+          for (var i = 0; i < data.tamanho_unique.length; i++) {
+              var option = document.createElement('option');
+              option.text = data.tamanho_unique[i];
+              option.value = data.tamanho_unique[i];
+              tamanhoSelect.add(option);
+          }
+
+          for (var i = 0; i < data.rodado_unique.length; i++) {
+              var option = document.createElement('option');
+              option.text = data.rodado_unique[i];
+              option.value = data.rodado_unique[i];
+              rodadoSelect.add(option);
+          }
+
+          for (var i = 0; i < data.pneu_unique.length; i++) {
+              var option = document.createElement('option');
+              option.text = data.pneu_unique[i];
+              option.value = data.pneu_unique[i];
+              pneuSelect.add(option);
+          }
+
+          for (var i = 0; i < data.adicionais_unique.length; i++) {
+              var option = document.createElement('option');
+              option.text = data.adicionais_unique[i];
+              option.value = data.adicionais_unique[i];
+              adicionaisSelect.add(option);
+          }
+
           // Define o valor selecionado novamente nos seletores
+          descricaoGenericaSelect.value = descricaoGenericaSelectedValue
           modeloSelect.value = modeloSelectedValue;
           eixoSelect.value = eixoSelectedValue;
           molaFreioSelect.value = molaFreioSelectedValue;
+          tamanhoSelect.value = tamanhoSelectedValue;
+          rodadoSelect.value = rodadoSelectedValue;
+          pneuSelect.value = pneuSelectedValue;
+          adicionaisSelect.value = adicionaisSelectedValue;
+
+          // Atualiza a tabela com a nova tabela
+          var tbody = document.getElementById("table3").getElementsByTagName("tbody")[0];
+          tbody.innerHTML = "";
+
+          for (var i = 0; i < data.tabela_nova.length; i++) {
+              var row = data.tabela_nova[i];
+              var newRow = tbody.insertRow();
+
+              for (var j = 0; j < row.length; j++) {
+                  var cell = newRow.insertCell(j);
+                  cell.innerHTML = row[j];
+              }
+          }
 
           // Oculta o indicador de carregamento
           $("#loading-overlay").hide();

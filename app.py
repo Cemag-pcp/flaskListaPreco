@@ -108,18 +108,25 @@ def lista():
     for row in data:
         row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
 
-    query = "SELECT DISTINCT modelo, eixo, mola_freio FROM tb_produtos"
+    query = "SELECT DISTINCT codigo,REPLACE((descricao_generica), 'básica', 'Básica') as descricao_generica,eixo,modelo,mola_freio,tamanho,rodado,pneu,outras_caracteristicas FROM tb_produtos WHERE crm = 'T'"
     cur.execute(query)
     datas = cur.fetchall()
     datas = pd.DataFrame(datas)
 
-    modelo_unique = datas['modelo'].drop_duplicates().values.tolist()
+    descricao_generica_unique = datas['descricao_generica'].drop_duplicates().values.tolist()
     eixo_unique = datas['eixo'].drop_duplicates().values.tolist()
+    modelo_unique = datas['modelo'].drop_duplicates().values.tolist()
     mola_freio_unique = datas['mola_freio'].drop_duplicates().values.tolist()
+    tamanho_unique = datas['tamanho'].drop_duplicates().values.tolist()
+    rodado_unique = datas['rodado'].drop_duplicates().values.tolist()
+    pneu_unique = datas['pneu'].drop_duplicates().values.tolist()
+    adicionais_unique = datas['outras_caracteristicas'].drop_duplicates().values.tolist()
 
     return render_template('lista.html', modelo_unique=modelo_unique,
                            eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
-                           data=data)
+                           tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
+                           pneu_unique=pneu_unique,adicionais_unique=adicionais_unique,
+                           descricao_generica_unique=descricao_generica_unique,data=data)
 
 @app.route('/move/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -634,15 +641,23 @@ def filtro_maquinas():
     modelo = request.args.get('modelo', '')
     eixo = request.args.get('eixo', '')
     mola_freio = request.args.get('mola_freio', '')
-
+    tamanho = request.args.get('tamanho', '')
+    rodado = request.args.get('rodado', '')
+    pneu = request.args.get('pneu', '')
+    adicionais = request.args.get('adicionais','')
+    descricao_generica = request.args.get('descricao_generica','')
+    
     print(modelo)
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     query = """
-        SELECT DISTINCT eixo,modelo,mola_freio FROM tb_produtos WHERE 1=1 
-        """
+            SELECT DISTINCT codigo,REPLACE((descricao_generica), 'básica', 'Básica') as descricao_generica,eixo,modelo,mola_freio,tamanho,rodado,pneu,outras_caracteristicas FROM tb_produtos WHERE crm = 'T'
+            """
+    
+    if descricao_generica:
+        query += f" AND descricao_generica='{descricao_generica}'"
 
     if modelo:
         query += f" AND modelo='{modelo}'"
@@ -651,25 +666,51 @@ def filtro_maquinas():
         query += f" AND eixo='{eixo}'"
 
     if mola_freio:
-        query += f" AND mola_freio='{mola_freio}'"   
+        query += f" AND mola_freio='{mola_freio}'"
 
+    if tamanho:
+        query += f" AND tamanho='{tamanho}'"
+
+    if rodado:
+        query += f" AND rodado='{rodado}'"
+
+    if pneu:
+        query += f" AND pneu='{pneu}'"
+
+    if adicionais:
+        query += f" AND outras_caracteristicas='{adicionais}'"
+       
     cur.execute(query)
     data = cur.fetchall()
-    data = pd.DataFrame(data, columns=['eixo','modelo','mola_freio'])
+    data = pd.DataFrame(data, columns=['codigo','descricao_generica','eixo','modelo','mola_freio','tamanho','rodado','pneu','outras_caracteristicas'])
 
     print(data)
 
-    modelo_unique = data['modelo'].drop_duplicates().values.tolist()
+    descricao_generica_unique = data['descricao_generica'].drop_duplicates().values.tolist()
     eixo_unique = data['eixo'].drop_duplicates().values.tolist()
+    modelo_unique = data['modelo'].drop_duplicates().values.tolist()
     mola_freio_unique = data['mola_freio'].drop_duplicates().values.tolist()
+    tamanho_unique = data['tamanho'].drop_duplicates().values.tolist()
+    rodado_unique = data['rodado'].drop_duplicates().values.tolist()
+    pneu_unique = data['pneu'].drop_duplicates().values.tolist()
+    adicionais_unique = data['outras_caracteristicas'].drop_duplicates().values.tolist()
+
+    tabela_nova = data[['codigo']].values.tolist()
 
     cur.close()
     conn.close()
 
     return jsonify({
+    'descricao_generica_unique':descricao_generica_unique,
     'modelo_unique': modelo_unique,
     'eixo_unique': eixo_unique,
-    'mola_freio_unique': mola_freio_unique
+    'mola_freio_unique': mola_freio_unique,
+    'tamanho_unique':tamanho_unique,
+    'rodado_unique':rodado_unique,
+    'pneu_unique':pneu_unique,
+    'adicionais_unique':adicionais_unique,
+    'tabela_nova':tabela_nova,
+
     })  
 
 if __name__ == '__main__':
