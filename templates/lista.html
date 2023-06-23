@@ -65,7 +65,7 @@
                     </td>
                     <td style="white-space: nowrap;">{{row.preco}}</td>
                     <td>
-                      <input class="row-data preco-input" name="preco" style="width: 100px;">
+                      <input class="row-data preco-input" name="preco" style="width: 100px;" oninput="formatPriceInput(event);">
                     </td>
                     <td class="row-total"></td>
                     <td>
@@ -74,8 +74,8 @@
                       </a>
                     </td>
                     <td>
-                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this)">
-                    </td>
+                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this);">
+                    </td>                    
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -139,6 +139,55 @@
         xhr.send(JSON.stringify(dadosSelecionados));
     }
 
+</script>
+
+<script>// Function to format the price input
+
+function formatPriceInput(event) {
+  const input = event.target;
+  const rawValue = input.value;
+
+  // Remove any non-digit characters from the input value
+  const cleanedValue = rawValue.replace(/[^0-9]/g, '');
+
+  // Format the cleaned value as Brazilian Real
+  const formattedValue = formatAsReal(cleanedValue);
+
+  // Set the formatted value back to the input
+  input.value = formattedValue;
+
+  // Clear the input if the formatted value is "0.00"
+  if (formattedValue === "R$ 0,00") {
+    input.value = '';
+  }
+}
+
+  // Function to format a number as Brazilian Real
+  function formatAsReal(value) {
+    // Convert the value to a number
+    const number = Number(value);
+  
+    // Check if the number is valid
+    if (isNaN(number)) {
+      return '';
+    }
+  
+    // Split the number into integer and decimal parts
+    const integerPart = Math.floor(number / 100);
+    const decimalPart = number % 100;
+  
+    // Format the integer part with thousands separator
+    const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
+  
+    // Format the decimal part with two decimal places
+    const formattedDecimalPart = decimalPart.toString().padStart(2, '0');
+  
+    // Construct the formatted value as Brazilian Real
+    const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
+  
+    return formattedValue;
+  }
+  
 </script>
 
 

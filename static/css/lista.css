@@ -186,5 +186,5 @@ header .shopping span{
 
 
 .selected {
-    background-color: rgb(139, 208, 97); /* Altere para a cor desejada */
+    border: 3px solid rgb(255, 161, 113);
 }
