@@ -27,8 +27,8 @@ function toggleCardItem(checkbox) {
     const row = checkbox.parentNode.parentNode;
     const columns = row.getElementsByTagName('td');
   
-    const description = columns[1].textContent; // Assuming the description is in the 3rd column
-    const preco = columns[4].textContent; // Assuming the preco is in the 5th column
+    const description = columns[0].textContent; // Assuming the description is in the 3rd column
+    const preco = columns[3].textContent; // Assuming the preco is in the 5th column
   
     if (checkbox.checked) {
       const existingItem = listCard.querySelector(`li[data-description="${description}"]`);

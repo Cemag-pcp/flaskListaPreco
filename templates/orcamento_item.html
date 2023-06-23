@@ -49,12 +49,7 @@
         <table id="table3" class="table table-striped responsive-table">
             <thead>
                 <tr>
-                    <th>Família</th>
                     <th>Código</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Preço Final</th>
-                    <th>Quantidade</th>
                     <th>Remover</th>
                 </tr>
             </thead>
@@ -62,15 +57,6 @@
                 {% for row in dados %}
                 <tr>
                     <td>{{row.familia}}</td>
-                    <td>{{row.codigo}}</td>
-                    <td>{{row.descricao}}</td>
-                    <td style="white-space: nowrap;">{{row.preco}}</td>
-                    <td>
-                        <input name='preco' value='{{row.preco}}' style="width: 100px;" oninput="atualizarValorTotal(this)">
-                    </td>
-                    <td>
-                        <input name='quantidade_car' value='{{row.quantidade}}' style="width: 50px;" oninput="atualizarValorTotal(this)">
-                    </td>
                     <td>
                         <a href="#" class="btn btn-secondary btn-sm" onclick="removerItem({{row.id_serial}})">
                             <i class="fas fa-times"></i>
