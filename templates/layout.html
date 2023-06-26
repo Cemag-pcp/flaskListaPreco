@@ -21,21 +21,12 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lista.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/load.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
 <body>
-  
-  <div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a style="font-size: 20px;" href="/">Lista Principal</a>
-    <a style="font-size: 20px;" href="/favoritos">Favoritos</a>
-    <a style="font-size: 20px;" href="/car">Gerador de orçamento</a>
-    <a style="font-size: 20px;" href="/orcamentos">Orçamentos</a>
-    <footer>
-      <a style="font-size: 20px;" href="/logout">Logout</a>
-    </footer>
-  </div>
+    
   <div class="container principal">
     <header>
       <div class="shopping">
@@ -45,23 +36,21 @@
     </header>
     <div class="list"></div>
   </div>
+  
   <div class="card" id="card">
     <h1>Orçamento</h1><i class="close fa-sharp fa-solid fa-xmark"></i>
     <ul class="listCard"></ul>
     <div class="checkOut">
       <div class="total"></div>
-      <div class="closeShopping">Enviar</div>
+      <div class="closeShopping" id="btnEnviar">Enviar</div>
     </div>
   </div>
   
-    <!-- <div id="main">
-      <button class="openbtn" onclick="openNav()">&#9776; Abrir menu</button>
-    </div> -->
-
   <script src="static\js\favorito.js"></script>
   <script src="static/js/app.js"></script>
-    {% block body %}
-    {% endblock %}
+    
+  {% block body %}
+  {% endblock %}
 
 <script>
 
@@ -83,7 +72,6 @@
     document.getElementById("mySidebar").style.width = "0";
     document.getElementById("main").style.marginLeft = "0";
   }
-
 
 </script>
 

@@ -75,26 +75,6 @@
     </select>
   </div>
 
-  <div>
-    <label for="filtro-nome">Nome:</label>
-    <select id="filtro-nome" onchange="atualizarCliente()">
-        <option value="">Todos</option>
-        {% for nome in nome_cliente %}
-        <option>{{nome[0]}}</option>
-        {% endfor %}
-    </select>
-  </div>
-
-  <div>
-    <label for="filtro-contato">Contato:</label>
-    <select id="filtro-contato" onchange="atualizarCliente()">
-        <option value="">Todos</option>
-        {% for contato in contatos_cliente %}
-        <option>{{contato[0]}}</option>
-        {% endfor %}
-    </select>
-  </div>
-
     <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
@@ -168,6 +148,105 @@
 <div id="loading-overlay" style="display: none;">
   <div id="loading-spinner"></div>
 </div>
+
+<div id="modalEnviar" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span> <!-- Botão de fechar -->
+    
+    <div>
+      <label for="filtro-nome">Nome:</label>
+      <select id="filtro-nome" onchange="atualizarCliente()">
+          <option value="">Todos</option>
+          {% for nome in nome_cliente %}
+          <option>{{nome[0]}}</option>
+          {% endfor %}
+      </select>
+    </div>
+  
+    <div>
+      <label for="filtro-contato">Contato:</label>
+      <select id="filtro-contato" onchange="atualizarCliente()">
+          <option value="">Todos</option>
+          {% for contato in contatos_cliente %}
+          <option>{{contato[0]}}</option>
+          {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label for="forma-pagamento">Forma de pagamento:</label>
+      <select id="forma-pagamento">
+        <option>À prazo - 10x</option>
+        <option>À prazo - 9x</option>
+        <option>À prazo - 8x</option>
+        <option>À prazo - 7x</option>
+        <option>À prazo - 6x</option>
+        <option>À prazo - 5x</option>
+        <option>À prazo - 4x</option>
+        <option>À prazo - 3x</option>
+        <option>À prazo - 2x</option>
+        <option>À prazo - 1x</option>
+        <option>A Vista</option>
+        <option>Antecipado</option>
+        <option>Cartão de crédito</option>
+        <option>Personalizado</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="observacao">Observações:</label>
+      <textarea id="observacao" rows="4" cols="45"></textarea>
+    </div>
+
+    <button class="enviarModal">Enviar</button>
+  </div>
+</div>
+
+<script>
+  // Selecionar o elemento do botão de fechar
+  var closeButton = document.querySelector(".modal .close");
+
+  // Selecionar o elemento do modal
+  var modal = document.getElementById("modalEnviar");
+
+  // Função para fechar o modal
+  function fecharModal() {
+    modal.style.display = "none";
+  }
+
+  // Configurar evento de clique para fechar o modal quando o botão de fechar for clicado
+  closeButton.addEventListener("click", fecharModal);
+  
+</script>
+
+<script>
+  $(document).ready(function() {
+    // Ao clicar no botão "Enviar"
+    $('#btnEnviar').click(function() {
+      // Exibir o modal
+      $('#modalEnviar').show();
+    });
+
+    // Ao clicar no botão "Fechar" do modal
+    $('#modalEnviar').on('click', '.fecharModal', function() {
+      // Esconder o modal
+      $('#modalEnviar').hide();
+    });
+
+    // Ao clicar no botão "Enviar" dentro do modal
+    $('#modalEnviar').on('click', '.enviarModal', function() {
+      // Capturar os valores dos campos
+      var campo1 = $('#campo1').val();
+      var campo2 = $('#campo2').val();
+      var campo3 = $('#campo3').val();
+
+      // Fazer algo com os valores capturados, como enviar para o servidor
+
+      // Esconder o modal após o envio
+      $('#modalEnviar').hide();
+    });
+  });
+</script>
 
 <script>// Atualizar dados de dropdown e tabela
   function atualizarDados() {
