@@ -67,7 +67,8 @@
   </div>
 
     <button onclick="enviarDados()">Enviar Dados Selecionados</button>
-    
+    <button id="limpar-filtros-btn" class="btn btn-secondary">Limpar Filtros</button>
+
 </div>
     <!-- {% for row in data %}
       <div class="familia">{{row.familia}}</div>
@@ -210,36 +211,43 @@
 
   function atualizarDropdowns(descricao, modelo, eixo) {
     var descricaoDropdown = $('#filtro-descricao');
-    descricaoDropdown.empty();
-    descricaoDropdown.append($('<option>').text('Todos').attr('value', ''));
+    var modeloDropdown = $('#filtro-modelo');
+    var eixoDropdown = $('#filtro-eixo');
 
+    // Armazenar os valores selecionados atualmente
+    var descricaoSelecionada = descricaoDropdown.val();
+    var modeloSelecionado = modeloDropdown.val();
+    var eixoSelecionado = eixoDropdown.val();
+
+    descricaoDropdown.empty();
+    modeloDropdown.empty();
+    eixoDropdown.empty();
+
+    // Adicionar a opção "Todos" em todos os dropdowns
+    descricaoDropdown.append($('<option>').text('Todos').attr('value', ''));
+    modeloDropdown.append($('<option>').text('Todos').attr('value', ''));
+    eixoDropdown.append($('<option>').text('Todos').attr('value', ''));
+
+    // Preencher os valores dos dropdowns e selecionar o valor atual, se existir
     $.each(descricao, function(index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
-      if (value[0] === descricaoDropdown.val()) {
+      if (value[0] === descricaoSelecionada) {
         option.attr('selected', 'selected');
       }
       descricaoDropdown.append(option);
     });
 
-    var modeloDropdown = $('#filtro-modelo');
-    modeloDropdown.empty();
-    modeloDropdown.append($('<option>').text('Todos').attr('value', ''));
-
     $.each(modelo, function(index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
-      if (value[0] === modeloDropdown.val()) {
+      if (value[0] === modeloSelecionado) {
         option.attr('selected', 'selected');
       }
       modeloDropdown.append(option);
     });
 
-    var eixoDropdown = $('#filtro-eixo');
-    eixoDropdown.empty();
-    eixoDropdown.append($('<option>').text('Todos').attr('value', ''));
-
     $.each(eixo, function(index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
-      if (value[0] === eixoDropdown.val()) {
+      if (value[0] === eixoSelecionado) {
         option.attr('selected', 'selected');
       }
       eixoDropdown.append(option);
@@ -247,6 +255,26 @@
 
     // Atualize os outros dropdowns conforme necessário
   }
+</script>
+
+<script>
+  $(document).ready(function() {
+    // ...
+
+    // Manipulador de eventos para o clique no botão de limpar filtros
+    $('#limpar-filtros-btn').click(function() {
+      // Limpar os valores dos dropdowns e selecionar a opção "Todos"
+      $('#filtro-descricao').val('');
+      $('#filtro-modelo').val('');
+      $('#filtro-eixo').val('');
+      // Limpar a tabela e atualizar com os dados originais
+      atualizarTabela(data); // Utilize a variável 'data' que contém os dados originais da tabela
+      // Atualizar os dropdowns com a opção "Todos"
+      atualizarDropdowns(descricao_unique, modelo_unique, eixo_unique);
+    });
+
+    // ...
+  });
 </script>
 
 <script>
