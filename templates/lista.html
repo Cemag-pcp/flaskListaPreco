@@ -31,7 +31,7 @@
   </div>
   <div>
     <label for="filtro-molaFreio">Mola/Freio:</label>
-    <select id="filtro-molaFreio">
+    <select id="filtro-molaFreio" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for mola in mola_freio_unique %}
         <option>{{mola[0]}}</option>
@@ -40,7 +40,7 @@
   </div>
   <div>
     <label for="filtro-tamanho">Tamanho:</label>
-    <select id="filtro-tamanho">
+    <select id="filtro-tamanho" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for tamanho in tamanho_unique %}
         <option>{{tamanho[0]}}</option>
@@ -49,7 +49,7 @@
   </div>
   <div>
     <label for="filtro-rodado">Rodado:</label>
-    <select id="filtro-rodado">
+    <select id="filtro-rodado" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for rodado in rodado_unique %}
         <option>{{rodado[0]}}</option>
@@ -58,16 +58,45 @@
   </div>
   <div>
     <label for="filtro-pneu">Pneu:</label>
-    <select id="filtro-pneu">
-        <option value="">Todas</option>
+    <select id="filtro-pneu" onchange="atualizarDados()">
+        <option value="">Todos</option>
         {% for pneu in pneu_unique %}
         <option>{{pneu[0]}}</option>
         {% endfor %}
     </select>
   </div>
+  <div>
+    <label for="filtro-descricao-generica">Adicionais:</label>
+    <select id="filtro-descricao-generica" onchange="atualizarDados()">
+        <option value="">Todos</option>
+        {% for descricao_generica in descricao_generica_unique %}
+        <option>{{descricao_generica[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
 
-    <button onclick="enviarDados()">Enviar Dados Selecionados</button>
-    <button onclick="limparFiltros()">Limpar Filtros</button>
+  <div>
+    <label for="filtro-nome">Nome:</label>
+    <select id="filtro-nome" onchange="atualizarCliente()">
+        <option value="">Todos</option>
+        {% for nome in nome_cliente %}
+        <option>{{nome[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label for="filtro-contato">Contato:</label>
+    <select id="filtro-contato" onchange="atualizarCliente()">
+        <option value="">Todos</option>
+        {% for contato in contatos_cliente %}
+        <option>{{contato[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
+
+  <button onclick="enviarDados()">Enviar Dados Selecionados</button>
+  <button onclick="limparFiltros()">Limpar Filtros</button>
 
 </div>
     <!-- {% for row in data %}
@@ -134,11 +163,22 @@
     </div>
 </div>
 
-<script>
+<div id="loading-overlay" style="display: none;">
+  <div id="loading-spinner"></div>
+</div>
+
+<script>// Atualizar dados de dropdown e tabela
   function atualizarDados() {
+    $("#loading-overlay").show();
     var descricao = $('#filtro-descricao').val();
     var modelo = $('#filtro-modelo').val();
     var eixo = $('#filtro-eixo').val();
+    var mola_freio = $('#filtro-molaFreio').val();
+    var tamanho = $('#filtro-tamanho').val();
+    var rodado = $('#filtro-rodado').val();
+    var pneu = $('#filtro-pneu').val();
+    var descricao_generica = $('#filtro-descricao-generica').val();
+
     // obter os valores selecionados em cada dropdown
 
     // enviar a solicitação AJAX para o servidor
@@ -148,7 +188,12 @@
       data: {
         descricao: descricao,
         modelo: modelo,
-        eixo: eixo
+        eixo: eixo,
+        mola_freio: mola_freio,
+        tamanho: tamanho,
+        rodado: rodado,
+        pneu: pneu,
+        descricao_generica: descricao_generica,
         // inclua outros dropdowns aqui
       },
       success: function(response) {
@@ -157,20 +202,30 @@
         var descricaoAtualizada = response.descricao;
         var modeloAtualizado = response.modelo;
         var eixoAtualizado = response.eixo;
+        var molaFreioAtualizado = response.mola_freio;
+        var tamanhoAtualizado = response.tamanho;
+        var rodadoAtualizado = response.rodado;
+        var pneuAtualizado = response.pneu;
+        var descricaoGenericaAtualizado = response.descricao_generica;
+
         // faça o processamento necessário para atualizar o DataFrame na página
 
         // atualizar a tabela com os dados retornados
         atualizarTabela(dadosAtualizados);
-        atualizarDropdowns(descricaoAtualizada, modeloAtualizado, eixoAtualizado);
+        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
       error: function(error) {
         console.log(error);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
       }
     });
+  
   }
 
   function atualizarTabela(dados) {
+    $("#loading-overlay").show();
     var tabela = $('#table1 tbody');
     tabela.empty(); // limpar a tabela antes de adicionar os novos dados
 
@@ -207,26 +262,48 @@
       `;
       tabela.append(html);
     });
+    $("#loading-overlay").hide();
   }
 
-  function atualizarDropdowns(descricao, modelo, eixo) {
+  function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica) {
+    $("#loading-overlay").show();
     var descricaoDropdown = $('#filtro-descricao');
     var modeloDropdown = $('#filtro-modelo');
     var eixoDropdown = $('#filtro-eixo');
+    var molaFreioDropdown = $('#filtro-molaFreio');
+    var tamanhoDropdown = $('#filtro-tamanho');
+    var rodadoDropdown = $('#filtro-rodado');
+    var pneuDropdown = $('#filtro-pneu');
+    var descricaoGenericaDropdown = $('#filtro-descricao-generica');
 
     // Armazenar os valores selecionados atualmente
     var descricaoSelecionada = descricaoDropdown.val();
     var modeloSelecionado = modeloDropdown.val();
     var eixoSelecionado = eixoDropdown.val();
-
+    var molaFreioSelecionado = molaFreioDropdown.val();
+    var tamanhoSelecionado = tamanhoDropdown.val();
+    var rodadoSelecionado = rodadoDropdown.val();
+    var pneuSelecionado = pneuDropdown.val();
+    var descricaoGenericaSelecionado = descricaoGenericaDropdown.val();
+    
     descricaoDropdown.empty();
     modeloDropdown.empty();
     eixoDropdown.empty();
+    molaFreioDropdown.empty();
+    tamanhoDropdown.empty();
+    rodadoDropdown.empty();
+    pneuDropdown.empty();
+    descricaoGenericaDropdown.empty();
 
     // Adicionar a opção "Todos" em todos os dropdowns
     descricaoDropdown.append($('<option>').text('Todos').attr('value', ''));
     modeloDropdown.append($('<option>').text('Todos').attr('value', ''));
     eixoDropdown.append($('<option>').text('Todos').attr('value', ''));
+    molaFreioDropdown.append($('<option>').text('Todos').attr('value',''));
+    tamanhoDropdown.append($('<option>').text('Todos').attr('value',''));
+    rodadoDropdown.append($('<option>').text('Todos').attr('value',''));
+    pneuDropdown.append($('<option>').text('Todos').attr('value',''));
+    descricaoGenericaDropdown.append($('<option>').text('Todos').attr('value',''));
 
     // Preencher os valores dos dropdowns e selecionar o valor atual, se existir
     $.each(descricao, function(index, value) {
@@ -253,20 +330,63 @@
       eixoDropdown.append(option);
     });
 
+    $.each(mola_freio, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === molaFreioSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      molaFreioDropdown.append(option);
+    });
+
+    $.each(tamanho, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === tamanhoSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      tamanhoDropdown.append(option);
+    });
+
+    $.each(rodado, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === rodadoSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      rodadoDropdown.append(option);
+    });
+
+    $.each(pneu, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === pneuSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      pneuDropdown.append(option);
+    });
+
+    $.each(descricao_generica, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === descricaoGenericaSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      descricaoGenericaDropdown.append(option);
+    });
+
+    $("#loading-overlay").hide();
     // Atualize os outros dropdowns conforme necessário
   }
+
 </script>
 
-<script> // Botão para limpar os filtros
+<script>// Botão para limpar os filtros
+  
   function limparFiltros() {
     var descricaoGenericaSelect = $('#filtro-descricao');
     var modeloSelect = $('#filtro-modelo');
     var eixoSelect = $('#filtro-eixo');
     var molaFreioSelect = $('#mola_freio');
-    var tamanhoSelect = $('#tamanho');
-    var rodadoSelect = $('#rodado');
-    var pneuSelect = $('#pneu');
-    var adicionaisSelect = $('#adicionais');
+    var tamanhoSelect = $('#filtro-tamanho');
+    var rodadoSelect = $('#filtro-rodado');
+    var pneuSelect = $('#filtro-pneu');
+    var adicionaisSelect = $('#filtro-descricao-generica');
 
     // Defina o valor "Todos" para cada dropdown
     descricaoGenericaSelect.val('');
@@ -287,6 +407,103 @@
     rodadoSelect.trigger('change');
     pneuSelect.trigger('change');
     adicionaisSelect.trigger('change');
+
+    // Enviar a solicitação AJAX para atualizar os dados
+    $.ajax({
+      url: '/atualizar-dados',
+      method: 'POST',
+      data: {
+        descricao: descricaoGenericaSelect.val(),
+        modelo: modeloSelect.val(),
+        eixo: eixoSelect.val(),
+        mola_freios: molaFreioSelect.val(),
+        tamanho: tamanhoSelect.val(),
+        rodado: rodadoSelect.val(),
+        pneu: pneuSelect.val(),
+        adicionais: adicionaisSelect.val()
+        // inclua outros dropdowns aqui
+      },
+      success: function(response) {
+        // atualizar o DataFrame com os dados retornados
+        var dadosAtualizados = response.dados;
+        var descricaoAtualizada = response.descricao;
+        var modeloAtualizado = response.modelo;
+        var eixoAtualizado = response.eixo;
+        var molaFreioAtualizado = response.mola_freio;
+        var tamanhoAtualizado = response.tamanho;
+        var rodadoAtualizado = response.rodado;
+        var pneuAtualizado = response.pneu;
+        var descricaoGenericaAtualizado = response.adicionais;
+
+        // faça o processamento necessário para atualizar o DataFrame na página
+
+        // atualizar a tabela com os dados retornados
+        atualizarTabela(dadosAtualizados);
+        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado);
+      },
+    });
+  }
+</script>
+
+<script>// Atualizar dados de dropdow de clientes
+  function atualizarCliente() {
+    $("#loading-overlay").show();
+  
+    var nome_cliente = $('#filtro-nome').val();
+    var contato_cliente = $('#filtro-contato').val();
+
+    // obter os valores selecionados em cada dropdown
+
+    // enviar a solicitação AJAX para o servidor
+    $.ajax({
+      url: '/atualizar-cliente',
+      method: 'POST',
+      data: {
+        nome_cliente: nome_cliente,
+        contato_cliente: contato_cliente
+        // inclua outros dropdowns aqui
+      },
+      success: function(response) {
+        // atualizar o DataFrame com os dados retornados
+        var nomeClienteAtualizado = response.nome_cliente;
+        var contatoClienteAtualizado = response.contato_cliente;
+
+        // faça o processamento necessário para atualizar o DataFrame na página
+
+        // atualizar a tabela com os dados retornados
+        atualizarDropdownsCliente(contatoClienteAtualizado)
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
+
+      },
+      error: function(error) {
+        console.log(error);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
+      }
+    });
+  
+  }
+
+  function atualizarDropdownsCliente(contato_cliente) {
+
+    $("#loading-overlay").show();
+    var contatoClienteDropdown = $('#filtro-contato');
+
+    var contatoClienteSelecionado = contatoClienteDropdown.val();
+
+    contatoClienteDropdown.empty();
+
+    contatoClienteDropdown.append($('<option>').text('Todos').attr('value', ''));
+
+    $.each(contato_cliente, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === contatoClienteSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      contatoClienteDropdown.append(option);
+    });
+
+    $("#loading-overlay").hide();
+
   }
 </script>
 

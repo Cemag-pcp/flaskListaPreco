@@ -121,12 +121,22 @@ def lista():
     tamanho_unique = df[['tamanho']].drop_duplicates().values.tolist()
     rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
     pneu_unique = df[['pneu']].drop_duplicates().values.tolist()
+    descricao_generica_unique = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
+
+    query2 = """ SELECT nome, contatos FROM tb_clientes_contatos """
+    cur.execute(query2)
+    cliente_contatos = cur.fetchall()
+    df_cliente_contatos = pd.DataFrame(cliente_contatos)
+
+    nome_cliente = df_cliente_contatos[['nome']].values.tolist()
+    contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
 
     return render_template('lista.html', data=data,
                            descricao_unique=descricao_unique,modelo_unique=modelo_unique,
                            eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
                            tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
-                           pneu_unique=pneu_unique)
+                           pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
+                           nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
 
 @app.route('/move/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -640,6 +650,12 @@ def atualizar_dados():
     descricao = request.form['descricao']
     modelo = request.form['modelo']
     eixo = request.form['eixo']
+    mola_freio = request.form['mola_freio']
+    tamanho = request.form['tamanho']
+    rodado = request.form['rodado']
+    pneu = request.form['pneu']
+    descricao_generica = request.form['descricao_generica']
+    
     # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
 
     # executar a lógica para atualizar o DataFrame com base nas opções selecionadas
@@ -666,26 +682,85 @@ def atualizar_dados():
         query += " AND eixo = %s"
         placeholders.append(eixo)
 
+    if mola_freio:
+        query += " AND mola_freio = %s"
+        placeholders.append(mola_freio)
+
+    if tamanho:
+        query += " AND tamanho = %s"
+        placeholders.append(tamanho)
+
+    if rodado:
+        query += " AND rodado = %s"
+        placeholders.append(rodado)
+
+    if pneu:
+        query += " AND pneu = %s"
+        placeholders.append(pneu)
+
+    if descricao_generica:
+        query += " AND outras_caracteristicas = %s"
+        placeholders.append(descricao_generica)
+
     cur.execute(query, placeholders)
-
     data = cur.fetchall()
-
     df = pd.DataFrame(data)
-
-    print(data)
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
     descricao = df[['descricao_generica']].drop_duplicates().values.tolist()
     modelo = df[['modelo']].drop_duplicates().values.tolist()
     eixo = df[['eixo']].drop_duplicates().values.tolist()
-    
-    print(modelo)
+    mola_freio = df[['mola_freio']].drop_duplicates().values.tolist()
+    tamanho = df[['tamanho']].drop_duplicates().values.tolist()
+    rodado = df[['rodado']].drop_duplicates().values.tolist()
+    pneu = df[['pneu']].drop_duplicates().values.tolist()
+    descricao_generica = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
 
     data = df.values.tolist()
 
     return jsonify(dados=data, descricao=descricao,
-                    modelo=modelo, eixo=eixo)
+                    modelo=modelo, eixo=eixo,
+                    mola_freio=mola_freio, tamanho=tamanho,
+                    rodado=rodado, pneu=pneu,
+                    descricao_generica=descricao_generica)
+
+@app.route('/atualizar-cliente', methods=['POST'])
+def atualizar_cliente():
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    nome_cliente = request.form['nome_cliente']
+    contato_cliente = request.form['contato_cliente']
+
+    query2 = """SELECT nome, contatos FROM tb_clientes_contatos WHERE 1=1"""
+
+    placeholders = []
+    if nome_cliente:
+        query2 += " AND nome = %s"
+        placeholders.append(nome_cliente)
+        
+    # if contato_cliente:
+    #     query2 += " AND contatos = %s"
+    #     placeholders.append(contato_cliente)
+
+    cur.execute(query2, placeholders)
+    data = cur.fetchall()
+    df_clientes = pd.DataFrame(data)
+
+    # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
+    df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
+
+    # Reorganiza o DataFrame para ter um contato por linha
+    df_clientes = df_clientes.drop('contatos', axis=1).join(df_contatos)
+
+    # Limpa os espaços em branco antes e depois dos contatos
+    df_clientes['contatos'] = df_clientes['contatos'].str.strip()
+
+    nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
+    contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
+
+    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente)
 
 
 if __name__ == '__main__':
