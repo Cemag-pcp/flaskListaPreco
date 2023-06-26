@@ -67,7 +67,7 @@
   </div>
 
     <button onclick="enviarDados()">Enviar Dados Selecionados</button>
-    <button id="limpar-filtros-btn" class="btn btn-secondary">Limpar Filtros</button>
+    <button onclick="limparFiltros()">Limpar Filtros</button>
 
 </div>
     <!-- {% for row in data %}
@@ -257,24 +257,37 @@
   }
 </script>
 
-<script>
-  $(document).ready(function() {
-    // ...
+<script> // Botão para limpar os filtros
+  function limparFiltros() {
+    var descricaoGenericaSelect = $('#filtro-descricao');
+    var modeloSelect = $('#filtro-modelo');
+    var eixoSelect = $('#filtro-eixo');
+    var molaFreioSelect = $('#mola_freio');
+    var tamanhoSelect = $('#tamanho');
+    var rodadoSelect = $('#rodado');
+    var pneuSelect = $('#pneu');
+    var adicionaisSelect = $('#adicionais');
 
-    // Manipulador de eventos para o clique no botão de limpar filtros
-    $('#limpar-filtros-btn').click(function() {
-      // Limpar os valores dos dropdowns e selecionar a opção "Todos"
-      $('#filtro-descricao').val('');
-      $('#filtro-modelo').val('');
-      $('#filtro-eixo').val('');
-      // Limpar a tabela e atualizar com os dados originais
-      atualizarTabela(data); // Utilize a variável 'data' que contém os dados originais da tabela
-      // Atualizar os dropdowns com a opção "Todos"
-      atualizarDropdowns(descricao_unique, modelo_unique, eixo_unique);
-    });
+    // Defina o valor "Todos" para cada dropdown
+    descricaoGenericaSelect.val('');
+    modeloSelect.val('');
+    eixoSelect.val('');
+    molaFreioSelect.val('');
+    tamanhoSelect.val('');
+    rodadoSelect.val('');
+    pneuSelect.val('');
+    adicionaisSelect.val('');
 
-    // ...
-  });
+    // Dispare o evento "change" para acionar a ação desejada
+    descricaoGenericaSelect.trigger('change');
+    modeloSelect.trigger('change');
+    eixoSelect.trigger('change');
+    molaFreioSelect.trigger('change');
+    tamanhoSelect.trigger('change');
+    rodadoSelect.trigger('change');
+    pneuSelect.trigger('change');
+    adicionaisSelect.trigger('change');
+  }
 </script>
 
 <script>
