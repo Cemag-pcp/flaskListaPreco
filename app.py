@@ -101,12 +101,6 @@ def lista():
     representante = """'Galo'"""
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # cur.execute("SELECT * FROM tb_lista_precos where representante = {}".format(representante))
-    # #data = pd.read_sql_query("SELECT * FROM tb_lista_precos", conn)
-    # data = cur.fetchall()
-
-    # for row in data:
-    #     row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
 
     query = """ SELECT DISTINCT t1.*, t2.preco
         FROM tb_produtos AS t1
@@ -640,6 +634,59 @@ def checkbox():
     # Por exemplo, você pode imprimir os dados no console
     print(dados_selecionados)
     return 'Dados recebidos com sucesso!'
+
+@app.route('/atualizar-dados', methods=['POST'])
+def atualizar_dados():
+    descricao = request.form['descricao']
+    modelo = request.form['modelo']
+    eixo = request.form['eixo']
+    # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
+
+    # executar a lógica para atualizar o DataFrame com base nas opções selecionadas
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    placeholders = []
+
+    query = """ SELECT DISTINCT t1.*, t2.preco
+        FROM tb_produtos AS t1
+        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+        WHERE t1.crm = 'T' and t2.preco is not null
+    """
+
+    if descricao:
+        query += " AND descricao_generica = %s"
+        placeholders.append(descricao)
+
+    if modelo:
+        query += " AND modelo = %s"
+        placeholders.append(modelo)
+
+    if eixo:
+        query += " AND eixo = %s"
+        placeholders.append(eixo)
+
+    cur.execute(query, placeholders)
+
+    data = cur.fetchall()
+
+    df = pd.DataFrame(data)
+
+    print(data)
+
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    descricao = df[['descricao_generica']].drop_duplicates().values.tolist()
+    modelo = df[['modelo']].drop_duplicates().values.tolist()
+    eixo = df[['eixo']].drop_duplicates().values.tolist()
+    
+    print(modelo)
+
+    data = df.values.tolist()
+
+    return jsonify(dados=data, descricao=descricao,
+                    modelo=modelo, eixo=eixo)
+
 
 if __name__ == '__main__':
     app.run()

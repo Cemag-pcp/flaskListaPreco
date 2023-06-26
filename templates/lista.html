@@ -4,7 +4,7 @@
 <div class="container filter-wrapper">
   <div>
     <label for="filtro-descricao">Descrição:</label>
-    <select id="filtro-descricao" onchange="filtrarTabela()">
+    <select id="filtro-descricao" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for descricao in descricao_unique %}
         <option>{{descricao[0]}}</option>
@@ -13,7 +13,7 @@
   </div>
   <div>
     <label for="filtro-modelo">Modelo:</label>
-    <select id="filtro-modelo" onchange="filtrarTabela()">
+    <select id="filtro-modelo" onchange="atualizarDados()">
       <option value="">Todos</option>
       {% for modelo in modelo_unique %}
       <option>{{modelo[0]}}</option>
@@ -22,7 +22,7 @@
   </div>
   <div>
     <label for="filtro-eixo">Eixo:</label>
-    <select id="filtro-eixo" onchange="filtrarTabela()">
+    <select id="filtro-eixo" onchange="atualizarDados()">
       <option value="">Todos</option>
       {% for eixo in eixo_unique %}  
       <option>{{eixo[0]}}</option>
@@ -31,7 +31,7 @@
   </div>
   <div>
     <label for="filtro-molaFreio">Mola/Freio:</label>
-    <select id="filtro-molaFreio" onchange="filtrarTabela()">
+    <select id="filtro-molaFreio">
         <option value="">Todos</option>
         {% for mola in mola_freio_unique %}
         <option>{{mola[0]}}</option>
@@ -40,7 +40,7 @@
   </div>
   <div>
     <label for="filtro-tamanho">Tamanho:</label>
-    <select id="filtro-tamanho" onchange="filtrarTabela()">
+    <select id="filtro-tamanho">
         <option value="">Todos</option>
         {% for tamanho in tamanho_unique %}
         <option>{{tamanho[0]}}</option>
@@ -49,7 +49,7 @@
   </div>
   <div>
     <label for="filtro-rodado">Rodado:</label>
-    <select id="filtro-rodado" onchange="filtrarTabela()">
+    <select id="filtro-rodado">
         <option value="">Todos</option>
         {% for rodado in rodado_unique %}
         <option>{{rodado[0]}}</option>
@@ -58,7 +58,7 @@
   </div>
   <div>
     <label for="filtro-pneu">Pneu:</label>
-    <select id="filtro-pneu" onchange="filtrarTabela()">
+    <select id="filtro-pneu">
         <option value="">Todas</option>
         {% for pneu in pneu_unique %}
         <option>{{pneu[0]}}</option>
@@ -134,38 +134,118 @@
 </div>
 
 <script>
-  // Função para filtrar a tabela e enviar requisição para o backend
-  function filtrarTabela() {
-    // Obter os valores selecionados nos dropdowns
+  function atualizarDados() {
     var descricao = $('#filtro-descricao').val();
     var modelo = $('#filtro-modelo').val();
     var eixo = $('#filtro-eixo').val();
-    var molaFreio = $('#filtro-molaFreio').val();
-    var tamanho = $('#filtro-tamanho').val();
-    var rodado = $('#filtro-rodado').val();
-    var pneu = $('#filtro-pneu').val();
+    // obter os valores selecionados em cada dropdown
 
-    // Enviar a requisição AJAX para o backend
+    // enviar a solicitação AJAX para o servidor
     $.ajax({
-      url: '/sua-rota-backend', // Substitua '/sua-rota-backend' pela URL correta do seu backend
-      method: 'POST', // Use o método HTTP correto (por exemplo, POST, GET, etc.)
+      url: '/atualizar-dados',
+      method: 'POST',
       data: {
         descricao: descricao,
         modelo: modelo,
-        eixo: eixo,
-        molaFreio: molaFreio,
-        tamanho: tamanho,
-        rodado: rodado,
-        pneu: pneu
+        eixo: eixo
+        // inclua outros dropdowns aqui
       },
       success: function(response) {
-        // Manipular a resposta do backend e atualizar os dropdowns conforme necessário
-        // Por exemplo, você pode usar o retorno JSON do backend para atualizar as opções dos outros dropdowns
+        // atualizar o DataFrame com os dados retornados
+        var dadosAtualizados = response.dados;
+        var descricaoAtualizada = response.descricao;
+        var modeloAtualizado = response.modelo;
+        var eixoAtualizado = response.eixo;
+        // faça o processamento necessário para atualizar o DataFrame na página
+
+        // atualizar a tabela com os dados retornados
+        atualizarTabela(dadosAtualizados);
+        atualizarDropdowns(descricaoAtualizada, modeloAtualizado, eixoAtualizado);
+
       },
-      error: function(xhr, status, error) {
-        // Lidar com erros de requisição, se necessário
+      error: function(error) {
+        console.log(error);
       }
     });
+  }
+
+  function atualizarTabela(dados) {
+    var tabela = $('#table1 tbody');
+    tabela.empty(); // limpar a tabela antes de adicionar os novos dados
+
+    dados.forEach(function(row) {
+      var html = `
+        <tr>
+          <td>${row[11]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td>
+            <select id="cor" class="cor-dropdown">
+              <option value="" selected disabled hidden></option>
+              <option value="Laranja">Laranja</option>
+              <option value="Verde">Verde</option>
+              <option value="Vermelho">Vermelho</option>
+              <option value="Azul">Azul</option>
+              <option value="Amarelo">Amarelo</option>
+            </select>
+          </td>
+          <td style="white-space: nowrap;">${row[23]}</td>
+          <td>
+            <input class="row-data preco-input" name="preco" style="width: 100px;" oninput="formatPriceInput(event);">
+          </td>
+          <td class="row-total"></td>
+          <td>
+            <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
+              <i class="fas fa-star"></i>
+            </a>
+          </td>
+          <td>
+            <input type="checkbox" name="item[]" value="${row.id}" onchange="toggleRowColor(this); toggleCardItem(this);">
+          </td>                    
+        </tr>
+      `;
+      tabela.append(html);
+    });
+  }
+
+  function atualizarDropdowns(descricao, modelo, eixo) {
+    var descricaoDropdown = $('#filtro-descricao');
+    descricaoDropdown.empty();
+    descricaoDropdown.append($('<option>').text('Todos').attr('value', ''));
+
+    $.each(descricao, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === descricaoDropdown.val()) {
+        option.attr('selected', 'selected');
+      }
+      descricaoDropdown.append(option);
+    });
+
+    var modeloDropdown = $('#filtro-modelo');
+    modeloDropdown.empty();
+    modeloDropdown.append($('<option>').text('Todos').attr('value', ''));
+
+    $.each(modelo, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === modeloDropdown.val()) {
+        option.attr('selected', 'selected');
+      }
+      modeloDropdown.append(option);
+    });
+
+    var eixoDropdown = $('#filtro-eixo');
+    eixoDropdown.empty();
+    eixoDropdown.append($('<option>').text('Todos').attr('value', ''));
+
+    $.each(eixo, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === eixoDropdown.val()) {
+        option.attr('selected', 'selected');
+      }
+      eixoDropdown.append(option);
+    });
+
+    // Atualize os outros dropdowns conforme necessário
   }
 </script>
 
