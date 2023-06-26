@@ -1,5 +1,6 @@
 let openShopping = document.querySelector('.shopping');
-let closeShopping = document.querySelector('.closeShopping');
+let enviarShopping = document.querySelector('.enviarShopping');
+let closeX = document.querySelector('.close');
 let list = document.querySelector('.list');
 let listCard = document.querySelector('.listCard');
 let body = document.querySelector('body');
@@ -7,18 +8,20 @@ let total = document.querySelector('.total');
 let quantity = document.querySelector('.quantity');
 
 openShopping.addEventListener('click', () => {
-  body.classList.add('active');
+  card.classList.add('active'); // Adicione a classe "active" ao cartão
+  body.classList.add('active'); // Adicione a classe "active" ao body
 });
 
-closeShopping.addEventListener('click', () => {
-  body.classList.remove('active');
+closeX.addEventListener('click', () => {
+  card.classList.remove('active'); // Remova a classe "active" do cartão
+  body.classList.remove('active'); // Remova a classe "active" do body
 });
-
 list.addEventListener('change', (event) => {
   if (event.target.matches('.itemCheckbox')) {
     toggleCardItem(event.target);
   }
 });
+
 function toggleCardItem(checkbox) {
   const card = document.getElementById('card');
   const listCard = card.querySelector('.listCard');
@@ -131,13 +134,14 @@ function updateTotal() {
   items.forEach((item) => {
     const numElement = item.querySelector('.numeros');
     const precoElement = item.querySelector('span');
-    const quantity = parseFloat(numElement.textContent.replace(/[^0-9.,]+/g, '').replace(',', '.'));
-    const price = parseFloat(precoElement.textContent.replace(/[^0-9.,]+/g, '').replace(',', '.'));
+    const quantity = parseFloat(numElement.textContent);
+    const priceText = precoElement.textContent.replace('R$', '').trim();
+    const price = parseFloat(priceText.replace('.', '').replace(',', '.'));
 
     totalValue += quantity * price;
   });
   
-  total.textContent = 'R$ ' + totalValue.toFixed(3); // Set the total value with two decimal places and format it as "R$ 23,822.00"
+  total.textContent = 'R$ ' + totalValue.toFixed(2);
 }
 
 function formatNumber(number) {
