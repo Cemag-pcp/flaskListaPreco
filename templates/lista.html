@@ -112,7 +112,7 @@
                   {% for row in data %}
                   <tr>
                     <td>{{row[11]}}</td>
-                    <td>{{row[1]}}</td>
+                    <td id ='codigo'>{{row[1]}}</td>
                     <td>{{row[2]}}</td>
                     <td>
                       <select id="cor" class="cor-dropdown">
@@ -198,7 +198,7 @@
       <textarea id="observacao" rows="4" cols="45"></textarea>
     </div>
 
-    <button class="enviarModal">Enviar</button>
+    <button class="enviarModal" onchange="enviarDadosParaBackend()">Enviar</button>
   </div>
 </div>
 
