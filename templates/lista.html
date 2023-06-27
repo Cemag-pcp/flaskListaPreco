@@ -81,14 +81,7 @@
   <button onclick="limparFiltros()">Limpar Filtros</button>
 
 </div>
-    <!-- {% for row in data %}
-      <div class="familia">{{row.familia}}</div>
-      <div class="codigo">{{row.codigo}}</div>
-      <div class="descricao">{{row.descricao}}</div>
-      <input class="row-data cor-input" name="cor" style="width: 60px;">
-      <div class="preco">{{row.preco}}</div>
-      <button onclick=addToCard(1)>Add</button>
-    {% endfor %} -->
+
 <div class="container pt-4" style="transition: 0.5s;">
     <h2>Lista de preços</h2>
     <div class="row">
@@ -659,6 +652,64 @@ function formatPriceInput(event) {
     return formattedValue;
   }
   
+</script>
+
+<script>
+  // Função para enviar os dados para o backend
+  function sendData(items) {
+    // Faça uma requisição POST para o backend usando fetch
+    fetch('/rota-do-backend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(items)
+    })
+    .then(response => {
+      // Verifique a resposta do backend
+      if (response.ok) {
+        alert('Itens enviados com sucesso!');
+      } else {
+        alert('Ocorreu um erro ao enviar os itens.');
+      }
+    })
+    .catch(error => {
+      alert('Ocorreu um erro ao enviar os itens: ' + error);
+    });
+  }
+
+  // Obtenha o botão "Enviar"
+  const enviarButton = document.getElementById('btnEnviar');
+
+  // Adicione um evento de clique ao botão "Enviar"
+  enviarButton.addEventListener('click', () => {
+    const items = [];
+
+    // Obtenha todos os itens da lista
+    const listItems = document.querySelectorAll('.listCard li');
+
+    // Percorra os itens e obtenha os dados
+    listItems.forEach(listItem => {
+      const description = listItem.getAttribute('data-description');
+      const quantityElement = listItem.querySelector('.numeros');
+      const precoElement = listItem.querySelector('.span')
+      
+      const quantity = parseInt(quantityElement.textContent);
+  
+      // Crie um objeto com os dados do item
+      const item = {
+        description: description,
+        quantity: quantity,
+        preco: precoElement
+      };
+
+      // Adicione o item à lista de itens
+      items.push(item);
+    });
+
+    // Chame a função para enviar os dados para o backend
+    sendData(items);
+  });
 </script>
 
 {% endblock %}
