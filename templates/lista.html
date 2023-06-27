@@ -126,7 +126,7 @@
                     </td>
                     <td style="white-space: nowrap;">{{row[23]}}</td>
                     <td>
-                      <input class="row-data preco-input" name="preco" placeholder="Preço com desconto" style="width: 100px;" oninput="formatPriceInput(event);">
+                      <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
                     <td class="row-total"></td>
                     <td>
@@ -155,7 +155,7 @@
     
     <div>
       <label for="filtro-nome">Nome:</label>
-      <select id="filtro-nome" onchange="atualizarCliente()">
+      <select id="filtro-nome" style="width: 90%;" onchange="atualizarCliente()">
           <option value="">Todos</option>
           {% for nome in nome_cliente %}
           <option>{{nome[0]}}</option>
@@ -165,7 +165,7 @@
   
     <div>
       <label for="filtro-contato">Contato:</label>
-      <select id="filtro-contato" onchange="atualizarCliente()">
+      <select id="filtro-contato" style="width: 90%;" onchange="atualizarCliente()">
           <option value="">Todos</option>
           {% for contato in contatos_cliente %}
           <option>{{contato[0]}}</option>
@@ -175,7 +175,7 @@
 
     <div>
       <label for="forma-pagamento">Forma de pagamento:</label>
-      <select id="forma-pagamento">
+      <select id="forma-pagamento" style="width: 90%;" >
         <option>À prazo - 10x</option>
         <option>À prazo - 9x</option>
         <option>À prazo - 8x</option>

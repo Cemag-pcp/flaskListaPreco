@@ -7,6 +7,23 @@ let body = document.querySelector('body');
 let total = document.querySelector('.total');
 let quantity = document.querySelector('.quantity');
 
+// Obtenha uma referência para o botão "closeShopping"
+var btnCloseShopping = document.getElementById("btnEnviar");
+
+// Adicione um evento de clique ao botão
+btnCloseShopping.addEventListener("click", function() {
+  // Obtenha uma referência para o ícone de fechar
+  var iconClose = document.querySelector(".close");
+  
+  // Dispare um evento de clique no ícone de fechar
+  var event = new MouseEvent("click", {
+    view: window,
+    bubbles: true,
+    cancelable: true
+  });
+  iconClose.dispatchEvent(event);
+});
+
 openShopping.addEventListener('click', () => {
   card.classList.add('active'); // Adicione a classe "active" ao cartão
   body.classList.add('active'); // Adicione a classe "active" ao body
@@ -152,6 +169,8 @@ function formatNumber(number) {
   const formattedNumber = number.toLocaleString('pt-BR', options);
   return formattedNumber.replace(',', '.'); // Replace the decimal separator with a comma
 }
+
+
 
 // let products = [
 //     {
