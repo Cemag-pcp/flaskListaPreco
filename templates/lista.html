@@ -191,7 +191,7 @@
       <textarea id="observacao" rows="4" cols="45"></textarea>
     </div>
 
-    <button class="enviarModal" onchange="enviarDadosParaBackend()">Enviar</button>
+    <button class="enviarModal" id="enviar-button" onclick="enviarDados()">Enviar</button>
   </div>
 </div>
 
@@ -226,19 +226,10 @@
       $('#modalEnviar').hide();
     });
 
-    // Ao clicar no botão "Enviar" dentro do modal
-    $('#modalEnviar').on('click', '.enviarModal', function() {
-      // Capturar os valores dos campos
-      var campo1 = $('#campo1').val();
-      var campo2 = $('#campo2').val();
-      var campo3 = $('#campo3').val();
-
-      // Fazer algo com os valores capturados, como enviar para o servidor
-
       // Esconder o modal após o envio
       $('#modalEnviar').hide();
     });
-  });
+
 </script>
 
 <script>// Atualizar dados de dropdown e tabela
@@ -581,108 +572,91 @@
   }
 </script>
 
-<script>
-
-    function enviarDados() {
-        var checkboxes = document.querySelectorAll('input[name="item[]"]:checked');
-        var dadosSelecionados = [];
-    
-        for (var i = 0; i < checkboxes.length; i++) {
-        dadosSelecionados.push(checkboxes[i].value);
-        }
-    
-        // Enviar os dados selecionados para o backend via AJAX
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/checkbox', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-            console.log('Dados enviados com sucesso!');
-        }
-        };
-        xhr.send(JSON.stringify(dadosSelecionados));
-    }
-
-</script>
-
 <script>// Function to format the price input
 
-function formatPriceInput(event) {
-  const input = event.target;
-  const rawValue = input.value;
+  function formatPriceInput(event) {
+    const input = event.target;
+    const rawValue = input.value;
 
-  // Remove any non-digit characters from the input value
-  const cleanedValue = rawValue.replace(/[^0-9]/g, '');
+    // Remove any non-digit characters from the input value
+    const cleanedValue = rawValue.replace(/[^0-9]/g, '');
 
-  // Format the cleaned value as Brazilian Real
-  const formattedValue = formatAsReal(cleanedValue);
+    // Format the cleaned value as Brazilian Real
+    const formattedValue = formatAsReal(cleanedValue);
 
-  // Set the formatted value back to the input
-  input.value = formattedValue;
+    // Set the formatted value back to the input
+    input.value = formattedValue;
 
-  // Clear the input if the formatted value is "0.00"
-  if (formattedValue === "R$ 0,00") {
-    input.value = '';
-  }
-}
-
-  // Function to format a number as Brazilian Real
-  function formatAsReal(value) {
-    // Convert the value to a number
-    const number = Number(value);
-  
-    // Check if the number is valid
-    if (isNaN(number)) {
-      return '';
+    // Clear the input if the formatted value is "0.00"
+    if (formattedValue === "R$ 0,00") {
+      input.value = '';
     }
-  
-    // Split the number into integer and decimal parts
-    const integerPart = Math.floor(number / 100);
-    const decimalPart = number % 100;
-  
-    // Format the integer part with thousands separator
-    const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
-  
-    // Format the decimal part with two decimal places
-    const formattedDecimalPart = decimalPart.toString().padStart(2, '0');
-  
-    // Construct the formatted value as Brazilian Real
-    const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
-  
-    return formattedValue;
   }
-  
+
+    // Function to format a number as Brazilian Real
+    function formatAsReal(value) {
+      // Convert the value to a number
+      const number = Number(value);
+    
+      // Check if the number is valid
+      if (isNaN(number)) {
+        return '';
+      }
+    
+      // Split the number into integer and decimal parts
+      const integerPart = Math.floor(number / 100);
+      const decimalPart = number % 100;
+    
+      // Format the integer part with thousands separator
+      const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
+    
+      // Format the decimal part with two decimal places
+      const formattedDecimalPart = decimalPart.toString().padStart(2, '0');
+    
+      // Construct the formatted value as Brazilian Real
+      const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
+    
+      return formattedValue;
+    }
+    
 </script>
 
 <script>
-  // Função para enviar os dados para o backend
-  function sendData(items) {
+  // Função para enviar os dados para o backend usando fetch
+  function sendData(items, dadosSelecionados, nome, contato, formaPagamento, observacoes) {
+    // Crie um objeto com os dados do formulário
+    var formData = {
+      items: items,
+      dadosSelecionados: dadosSelecionados,
+      nome: nome,
+      contato: contato,
+      formaPagamento: formaPagamento,
+      observacoes: observacoes
+    };
+
     // Faça uma requisição POST para o backend usando fetch
     fetch('/rota-do-backend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(items)
+      body: JSON.stringify(formData)
     })
-    .then(response => {
-      // Verifique a resposta do backend
-      if (response.ok) {
-        alert('Itens enviados com sucesso!');
-      } else {
-        alert('Ocorreu um erro ao enviar os itens.');
-      }
-    })
-    .catch(error => {
-      alert('Ocorreu um erro ao enviar os itens: ' + error);
-    });
+      .then(response => {
+        // Verifique a resposta do backend
+        if (response.ok) {
+          alert('Itens enviados com sucesso!');
+        } else {
+          alert('Ocorreu um erro ao enviar os itens.');
+        }
+      })
+      .catch(error => {
+        alert('Ocorreu um erro ao enviar os itens: ' + error);
+      });
   }
 
-  // Obtenha o botão "Enviar"
-  const enviarButton = document.getElementById('btnEnviar');
-
-  // Adicione um evento de clique ao botão "Enviar"
-  enviarButton.addEventListener('click', () => {
+  // Função para lidar com o clique no botão "Enviar"
+  function handleEnviarButtonClick() {
     const items = [];
 
     // Obtenha todos os itens da lista
@@ -692,24 +666,134 @@ function formatPriceInput(event) {
     listItems.forEach(listItem => {
       const description = listItem.getAttribute('data-description');
       const quantityElement = listItem.querySelector('.numeros');
-      const precoElement = listItem.querySelector('.span')
-      
       const quantity = parseInt(quantityElement.textContent);
-  
+
+      const priceElement = listItem.querySelector('span');
+      const price = priceElement.textContent;
+
       // Crie um objeto com os dados do item
       const item = {
         description: description,
         quantity: quantity,
-        preco: precoElement
+        price: price
       };
 
       // Adicione o item à lista de itens
       items.push(item);
     });
 
-    // Chame a função para enviar os dados para o backend
-    sendData(items);
-  });
+    var checkboxes = document.querySelectorAll('input[name="item[]"]:checked');
+    var dadosSelecionados = [];
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      var listItem = checkboxes[i].closest('tr');
+      var cells = listItem.cells;
+
+      var item = {
+        description: cells[2].textContent,
+        code: cells[1].textContent,
+        color: cells[3].querySelector('select').value,
+        price: cells[4].textContent,
+        finalPrice: cells[5].querySelector('.row-data').value,
+        total: cells[6].textContent
+      };
+
+      dadosSelecionados.push(item);
+    }
+
+    // Obtenha os valores dos campos adicionais do formulário
+    var nome = document.getElementById('filtro-nome').value;
+    var contato = document.getElementById('filtro-contato').value;
+    var formaPagamento = document.getElementById('forma-pagamento').value;
+    var observacoes = document.getElementById('observacao').value;
+
+    // Chame a função para enviar os dados para o backend usando fetch
+    sendData(items, dadosSelecionados, nome, contato, formaPagamento, observacoes);
+  }
+
+  // Obtenha o botão "Enviar"
+  const enviarButton = document.getElementById('enviar-button');
+
+  // Adicione um evento de clique ao botão "Enviar"
+  enviarButton.addEventListener('click', handleEnviarButtonClick);
 </script>
+
+
+
+<!-- 
+<script>
+  function enviarDados() {
+    var checkboxes = document.querySelectorAll('input[name="item[]"]:checked');
+    var dadosSelecionados = [];
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      var listItem = checkboxes[i].closest('tr');
+      var cells = listItem.cells;
+
+      var item = {
+        description: cells[2].textContent,
+        code: cells[1].textContent,
+        color: cells[3].querySelector('select').value,
+        price: cells[4].textContent,
+        finalPrice: cells[5].querySelector('.row-data').value,
+        total: cells[6].textContent
+      };
+
+      dadosSelecionados.push(item);
+    }
+
+    // Obtenha todos os itens da lista
+    const listItems = document.querySelectorAll('.listCard li');
+
+    // Percorra os itens e obtenha os dados
+    listItems.forEach(listItem => {
+      const description = listItem.getAttribute('data-description');
+      const quantityElement = listItem.querySelector('.numeros');
+      const quantity = parseInt(quantityElement.textContent);
+
+      const priceElement = listItem.querySelector('span');
+      const price = priceElement.textContent;
+
+      // Crie um objeto com os dados do item
+      const item = {
+        description2: description,
+        quantity: quantity,
+        price2: price
+      };
+
+      // Adicione o item à lista de dados selecionados
+      dados2.push(item);
+    });
+
+    // Obtenha os valores dos campos adicionais do formulário
+    var nome = document.getElementById('filtro-nome').value;
+    var contato = document.getElementById('filtro-contato').value;
+    var formaPagamento = document.getElementById('forma-pagamento').value;
+    var observacoes = document.getElementById('observacao').value;
+
+    // Crie um objeto com os dados do formulário
+    var formData = {
+      dadosSelecionados: dadosSelecionados,
+      dados2: dados2,
+      nome: nome,
+      contato: contato,
+      formaPagamento: formaPagamento,
+      observacoes: observacoes
+    };
+
+    // Enviar os dados para o backend via AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/rota-do-backend', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        console.log('Dados enviados com sucesso!');
+        // Faça o processamento adicional ou exiba uma mensagem de sucesso para o usuário
+      }
+    };
+    xhr.send(JSON.stringify(formData));
+  }
+
+</script> -->
 
 {% endblock %}

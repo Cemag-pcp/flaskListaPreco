@@ -44,8 +44,6 @@
     margin-top: 10px;
   }
 
-  
-
   @media screen and (max-width: 600px) {
     .modal-content {
       width: 90%; /* Ajuste a largura do conteúdo do modal para se encaixar melhor em telas menores */

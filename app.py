@@ -765,29 +765,12 @@ def atualizar_cliente():
 @app.route('/rota-do-backend', methods=['POST'])
 def process_data():
     data = request.get_json()
-    
-    lista_description = []
-    lista_quantidade = []
-    lista_preco = []
-    
-    # Iterar sobre a lista de itens recebidos
-    for item in data:
-        description = item.get('description')
-        quantity = item.get('quantity')
-        precoElement = item.get('precoElement')
-        
-        lista_description.append(description)
-        lista_quantidade.append(quantity)
-        lista_preco.append(precoElement)
-        
-        # Faça o processamento necessário com os dados
-    
-    print(lista_description)
-    print(lista_quantidade)
-    print(lista_preco)
 
-    # Retorne uma resposta para o frontend
-    return 'Itens recebidos e processados com sucesso!'
+    print(pd.DataFrame(data))
 
+    
+    return 'Dados recebidos com sucesso', 200
+
+        
 if __name__ == '__main__':
     app.run()
