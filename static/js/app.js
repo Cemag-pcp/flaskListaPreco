@@ -66,6 +66,7 @@ function toggleCardItem(checkbox) {
       item.appendChild(itemName);
 
       const precoElement = document.createElement('span');
+      precoElement.classList.add('quanti');
       precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
       item.appendChild(precoElement);
 
@@ -150,7 +151,7 @@ function updateTotal() {
 
   items.forEach((item) => {
     const numElement = item.querySelector('.numeros');
-    const precoElement = item.querySelector('span');
+    const precoElement = item.querySelector('.quanti');
     const quantity = parseFloat(numElement.textContent);
     const priceText = precoElement.textContent.replace('R$', '').trim();
     const price = parseFloat(priceText.replace('.', '').replace(',', '.'));

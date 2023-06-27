@@ -762,6 +762,14 @@ def atualizar_cliente():
 
     return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente)
 
+@app.route('/enviarBackend', methods=['POST'])
+def obs():
+
+    linha = request.get_json()
+
+    
+    return 'Itens recebidos e processados com sucesso!'
+
 @app.route('/rota-do-backend', methods=['POST'])
 def process_data():
     data = request.get_json()
