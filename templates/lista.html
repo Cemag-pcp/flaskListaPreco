@@ -109,8 +109,7 @@
                     <td>{{row[2]}}</td>
                     <td>
                       <select id="cor" class="cor-dropdown">
-                        <option value="" selected disabled hidden></option>
-                        <option value="Laranja">Laranja</option>
+                        <option value="Laranja" selected>Laranja</option>
                         <option value="Verde">Verde</option>
                         <option value="Vermelho">Vermelho</option>
                         <option value="Azul">Azul</option>
@@ -191,7 +190,7 @@
       <textarea id="observacao" rows="4" cols="45"></textarea>
     </div>
 
-    <button class="enviarModal" onchange="enviarDadosParaBackend()">Enviar</button>
+    <button id="btnEnviarObs" class="enviarModal">Enviar</button>
   </div>
 </div>
 
@@ -679,7 +678,7 @@ function formatPriceInput(event) {
   }
 
   // Obtenha o botão "Enviar"
-  const enviarButton = document.getElementById('btnEnviar');
+  const enviarButton = document.getElementById('btnEnviarObs');
 
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', () => {
@@ -692,15 +691,16 @@ function formatPriceInput(event) {
     listItems.forEach(listItem => {
       const description = listItem.getAttribute('data-description');
       const quantityElement = listItem.querySelector('.numeros');
-      const precoElement = listItem.querySelector('.span')
+      const precoElement = listItem.querySelector('span')
       
       const quantity = parseInt(quantityElement.textContent);
-  
+      const preco = precoElement.textContent;
+
       // Crie um objeto com os dados do item
       const item = {
         description: description,
         quantity: quantity,
-        preco: precoElement
+        preco: preco
       };
 
       // Adicione o item à lista de itens

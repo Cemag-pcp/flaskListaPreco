@@ -762,9 +762,18 @@ def atualizar_cliente():
 
     return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente)
 
+@app.route('/enviarBackend', methods=['POST'])
+def obs():
+
+    linha = request.get_json()
+
+    
+    return 'Itens recebidos e processados com sucesso!'
+
 @app.route('/rota-do-backend', methods=['POST'])
 def process_data():
     data = request.get_json()
+    linha = request.get_json()
     
     lista_description = []
     lista_quantidade = []
@@ -774,7 +783,7 @@ def process_data():
     for item in data:
         description = item.get('description')
         quantity = item.get('quantity')
-        precoElement = item.get('precoElement')
+        precoElement = item.get('preco')
         
         lista_description.append(description)
         lista_quantidade.append(quantity)
@@ -785,6 +794,28 @@ def process_data():
     print(lista_description)
     print(lista_quantidade)
     print(lista_preco)
+
+    lista_nome = []
+    lista_contato = []
+    lista_pagamento = []
+    lista_observacao = []
+
+    # Iterar sobre a lista de itens recebidos
+    for ob in linha:
+        filtroNome = ob.get('filtroNome')
+        filtroContato = ob.get('filtroContato')
+        filtroPagamento = ob.get('filtroPagamento')
+        filtroObservacao = ob.get('filtroObservacao')
+        
+        lista_nome.append(filtroNome)
+        lista_contato.append(filtroContato)
+        lista_pagamento.append(filtroPagamento)
+        lista_observacao.append(filtroObservacao)
+
+    print(lista_nome)
+    print(lista_contato)
+    print(lista_pagamento)
+    print(lista_observacao)
 
     # Retorne uma resposta para o frontend
     return 'Itens recebidos e processados com sucesso!'
