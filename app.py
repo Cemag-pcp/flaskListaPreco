@@ -773,10 +773,21 @@ def obs():
 @app.route('/rota-do-backend', methods=['POST'])
 def process_data():
     data = request.get_json()
-
-    print(pd.DataFrame(data))
-
     
+    df = pd.DataFrame(data)
+
+    df_modal = df[['nome','contato','formaPagamento','observacoes']]
+    df_carretas = pd.DataFrame(df['items'].tolist())
+    df_quantidade = pd.DataFrame(df['dadosSelecionados'].tolist())
+
+    print(df_modal)
+    print(df_carretas)
+    print(df_quantidade)
+
+    df_geral = pd.concat([df_modal,df_carretas,df_quantidade], axis=1)
+
+    print(df_geral)
+
     return 'Dados recebidos com sucesso', 200
 
         
