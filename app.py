@@ -776,17 +776,39 @@ def process_data():
     
     df = pd.DataFrame(data)
 
+    representante = session['user_id']
+
     df_modal = df[['nome','contato','formaPagamento','observacoes']]
     df_carretas = pd.DataFrame(df['items'].tolist())
     df_quantidade = pd.DataFrame(df['dadosSelecionados'].tolist())
-
-    print(df_modal)
-    print(df_carretas)
-    print(df_quantidade)
+    
+    unique_id = str(uuid.uuid4())  # Gerar id unico
 
     df_geral = pd.concat([df_modal,df_carretas,df_quantidade], axis=1)
+    df_geral['id'] = unique_id
+    df_geral['representante'] = representante
+    df_geral = df_geral.drop(columns=['price2','finalPrice','description2'])
+    
+    query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,descricao,quantidade,preco_final,codigo,cor,representante) 
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-    print(df_geral)
+    df_geral['quantity'] = df_geral['quantity'].astype(str)
+
+    # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
+    valores = list(zip(df_geral['id'],df_geral['nome'], df_geral['contato'], df_geral['formaPagamento'], df_geral['observacoes'], df_geral['description'],
+                    df_geral['quantity'], df_geral['price'], df_geral['code'], df_geral['color'], df_geral['representante'],
+                    ))
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
+
+    cur = conn.cursor
+
+    # Abre uma transação explícita
+    with conn:
+        # Cria um cursor dentro do contexto da transação
+        with conn.cursor() as cur:
+            # Executa a inserção das linhas usando executemany
+            cur.executemany(query, valores)
 
     return 'Dados recebidos com sucesso', 200
 

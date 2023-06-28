@@ -104,10 +104,10 @@
               <tbody>
                   {% for row in data %}
                   <tr>
-                    <td>{{row[11]}}</td>
-                    <td id ='codigo'>{{row[1]}}</td>
-                    <td>{{row[2]}}</td>
-                    <td>
+                    <td data-label="Modelo">{{row[11]}}</td>
+                    <td data-label="Código" id ='codigo'>{{row[1]}}</td>
+                    <td data-label="Descrição">{{row[2]}}</td>
+                    <td data-label="Cor">
                       <select id="cor" class="cor-dropdown">
                         <option value="Laranja" selected>Laranja</option>
                         <option value="Verde">Verde</option>
@@ -116,17 +116,16 @@
                         <option value="Amarelo">Amarelo</option>
                       </select>
                     </td>
-                    <td style="white-space: nowrap;">{{row[23]}}</td>
-                    <td>
+                    <td data-label="Preço" style="white-space: nowrap;">{{row[23]}}</td>
+                    <td data-label="Preço Final">
                       <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
-                    <td class="row-total"></td>
-                    <td>
+                    <td data-label="Favorito">
                       <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
                         <i class="fas fa-star"></i>
                       </a>
                     </td>
-                    <td>
+                    <td data-label="Selecionar">
                       <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this);">
                     </td>                    
                   </tr>
