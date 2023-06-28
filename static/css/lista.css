@@ -35,6 +35,19 @@ header .shopping{
     }
 }
 
+h2{
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center; 
+    justify-content: flex-start; 
+    position: relative;
+    left: 0%;
+}
+
+#titulo{
+    transition: 0.5s;
+}
+
 header .shopping i{
     font-size: 30px;
 }
@@ -291,6 +304,18 @@ ul.listCard {
     border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
+@media (max-width: 1000px) {
+    button{
+        width: 150px;
+        background-color: #e9e9e9;
+        height: 33px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        position: relative;
+        right: 15px;
+}
+}
+
 button:hover{
     background-color: #d8d6d6;
 }
@@ -323,3 +348,55 @@ input{
     border-radius: 10px;
     background-color: #fffffff1; 
 }
+
+@keyframes fadeOut {
+    0% {
+      opacity: 1;
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  
+  #alerta_Os{
+    margin: 0;
+    padding: 10px;
+    z-index: 9999;
+    width: 30%;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%,100%);
+    animation: fadeOut 10s forwards;
+    opacity: 0;
+    position: absolute;
+  }
+  
+  @media (max-width:600px){
+
+    #alerta_Os{
+        margin: 0;
+        padding: 10px;
+        z-index: 9999;
+        width: 80%;
+        left: 50%;
+        top: 10%;
+        transform: translate(-50%,0%);
+        animation: fadeOut 10s forwards;
+        opacity: 0;
+        position: absolute;
+  }
+}
+
+.label-text {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .label-text {
+      display: inline;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+  }

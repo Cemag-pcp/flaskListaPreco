@@ -810,8 +810,9 @@ def process_data():
             # Executa a inserção das linhas usando executemany
             cur.executemany(query, valores)
 
-    return 'Dados recebidos com sucesso', 200
+    flash("Enviado com sucesso", 'success')
 
+    return jsonify({'message':'success'})
         
 if __name__ == '__main__':
     app.run()
