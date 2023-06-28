@@ -788,8 +788,9 @@ def process_data():
 
     print(df_geral)
 
-    return 'Dados recebidos com sucesso', 200
+    flash("Enviado com sucesso", 'success')
 
+    return jsonify({'message':'success'})
         
 if __name__ == '__main__':
     app.run()

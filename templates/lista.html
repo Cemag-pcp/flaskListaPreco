@@ -1,9 +1,24 @@
 {% extends "layout.html" %}
 {% block body %}
 
+{% with messages = get_flashed_messages()  %}
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-success alert-dismissible fade show" id="alerta_Os" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+<div class="container" id="titulo">
+  <h2>Lista de preços</h2>
+</div>
 <div class="container filter-wrapper">
   <div>
-    <label for="filtro-descricao">Descrição:</label>
+    <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for descricao in descricao_unique %}
@@ -66,7 +81,7 @@
     </select>
   </div>
   <div>
-    <label for="filtro-descricao-generica">Adicionais:</label>
+    <label for="filtro-descricao-generica">Opcionais:</label>
     <select id="filtro-descricao-generica" onchange="atualizarDados()">
         <option value="">Todos</option>
         {% for descricao_generica in descricao_generica_unique %}
@@ -83,7 +98,6 @@
 </div>
 
 <div class="container pt-4" style="transition: 0.5s;">
-    <h2>Lista de preços</h2>
     <div class="row">
         <div style="position: relative;">
             <a href="/export/pdf-all">
@@ -102,11 +116,11 @@
                   </tr>
               </thead>
               <tbody>
-                  {% for row in data %}
+                {% for row in data %}
                   <tr>
-                    <td>{{row[11]}}</td>
-                    <td id ='codigo'>{{row[1]}}</td>
-                    <td>{{row[2]}}</td>
+                    <td>{{ row[11] }}</td>
+                    <td id='codigo'>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
                     <td>
                       <select id="cor" class="cor-dropdown">
                         <option value="Laranja" selected>Laranja</option>
@@ -116,19 +130,19 @@
                         <option value="Amarelo">Amarelo</option>
                       </select>
                     </td>
-                    <td style="white-space: nowrap;">{{row[23]}}</td>
+                    <td style="white-space: nowrap;">{{ row[23] }}</td>
                     <td>
                       <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
                     <td class="row-total"></td>
                     <td>
-                      <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
+                      <a id='favorito' href="" class="btn btn-secondary btn-sm">
                         <i class="fas fa-star"></i>
                       </a>
                     </td>
                     <td>
-                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this);">
-                    </td>                    
+                      <input type="checkbox" name="item[]" value="{{ row.id }}" onchange="toggleRowColor(this); toggleCardItem(this);">
+                    </td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -193,6 +207,16 @@
     <button class="enviarModal" id="enviar-button" onclick="enviarDados()">Enviar</button>
   </div>
 </div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const tdElement = document.querySelector('td');
+    const labelElement = document.createElement('label');
+    labelElement.classList.add('label-column');
+    labelElement.innerHTML = '<span class="label-text">Modelo:</span>';
+    tdElement.prepend(labelElement);
+  });
+</script>
 
 <script>
   // Selecionar o elemento do botão de fechar
@@ -634,24 +658,25 @@
     };
 
     // Faça uma requisição POST para o backend usando fetch
-    fetch('/rota-do-backend', {
+      fetch('/rota-do-backend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     })
-      .then(response => {
-        // Verifique a resposta do backend
-        if (response.ok) {
-          alert('Itens enviados com sucesso!');
-        } else {
-          alert('Ocorreu um erro ao enviar os itens.');
-        }
-      })
-      .catch(error => {
-        alert('Ocorreu um erro ao enviar os itens: ' + error);
-      });
+    .then(response => {
+      if (response.ok) {
+        // Recarrega a página após um breve intervalo de tempo
+        $("#loading-overlay").show();
+        location.reload();
+      } else {
+        console.error('Ocorreu um erro ao enviar os itens.');
+      }
+    })
+    .catch(error => {
+      console.error('Ocorreu um erro ao enviar os itens:', error);
+    });
   }
 
   // Função para lidar com o clique no botão "Enviar"
