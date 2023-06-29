@@ -96,17 +96,23 @@ def login_required(view):
 def lista():
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-
-    representante = "'"+session['user_id']+"'"
-    representante = """'Galo'"""
-
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    query = """ SELECT DISTINCT t1.*, t2.preco
+    representante = "'"+session['user_id']+"'"
+
+    query = """SELECT regiao FROM users WHERE username = {}""".format(representante)
+    cur.execute(query)
+    regiao = cur.fetchall()
+    regiao = pd.DataFrame(regiao)
+    regiao = "'" + regiao['regiao'][0] + "'"
+
+    # representante = """'Galo'"""
+
+    query = """ SELECT DISTINCT t1.*, t2.preco, t2.lista
         FROM tb_produtos AS t1
         LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-        WHERE t1.crm = 'T' and t2.preco is not null; 
-    """
+        WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = {}; 
+    """.format(regiao)
 
     df = pd.read_sql_query(query, conn)
 
@@ -123,7 +129,13 @@ def lista():
     pneu_unique = df[['pneu']].drop_duplicates().values.tolist()
     descricao_generica_unique = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
 
-    query2 = """ SELECT nome, contatos FROM tb_clientes_contatos """
+    query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND responsavel = {} 
+            """.format(representante)
+    
     cur.execute(query2)
     cliente_contatos = cur.fetchall()
     df_cliente_contatos = pd.DataFrame(cliente_contatos)
@@ -727,17 +739,25 @@ def atualizar_dados():
 
 @app.route('/atualizar-cliente', methods=['POST'])
 def atualizar_cliente():
-
+    
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = "'"+session['user_id']+"'"
 
     nome_cliente = request.form['nome_cliente']
     contato_cliente = request.form['contato_cliente']
 
-    query2 = """SELECT nome, contatos FROM tb_clientes_contatos WHERE 1=1"""
+    query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND t1.responsavel = {} 
+            """.format(representante)
 
     placeholders = []
     if nome_cliente:
-        query2 += " AND nome = %s"
+        query2 += " AND t2.nome = %s"
         placeholders.append(nome_cliente)
         
     # if contato_cliente:
@@ -766,11 +786,10 @@ def atualizar_cliente():
 def obs():
 
     linha = request.get_json()
-
     
     return 'Itens recebidos e processados com sucesso!'
 
-@app.route('/rota-do-backend', methods=['POST'])
+@app.route('/receber-dados', methods=['POST'])
 def process_data():
     data = request.get_json()
     
