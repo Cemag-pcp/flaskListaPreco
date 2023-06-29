@@ -46,6 +46,8 @@
 
   @media screen and (max-width: 600px) {
     .modal-content {
+      position: relative;
+      z-index: 2;
       width: 90%; /* Ajuste a largura do conteúdo do modal para se encaixar melhor em telas menores */
       margin: 10% auto; /* Ajuste a margem para posicionar o modal centralizado verticalmente */
       padding: 10px; /* Reduza o preenchimento interno do conteúdo do modal */

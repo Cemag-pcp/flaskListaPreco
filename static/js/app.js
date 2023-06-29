@@ -27,11 +27,18 @@ btnCloseShopping.addEventListener("click", function() {
 openShopping.addEventListener('click', () => {
   card.classList.add('active'); // Adicione a classe "active" ao cartão
   body.classList.add('active'); // Adicione a classe "active" ao body
+
+  if (window.innerWidth <= 886) {
+    body.style.overflow = 'hidden'; // Hide the body overflow
+    card.style.overflow = 'auto'; // Enable scrolling within the card
+  }
 });
 
 closeX.addEventListener('click', () => {
   card.classList.remove('active'); // Remova a classe "active" do cartão
   body.classList.remove('active'); // Remova a classe "active" do body
+  body.style.overflow = 'auto'; // Restore the body overflow
+  card.style.overflow = 'hidden'; // Disable scrolling within the card
 });
 list.addEventListener('change', (event) => {
   if (event.target.matches('.itemCheckbox')) {
@@ -173,7 +180,9 @@ function formatNumber(number) {
   return formattedNumber.replace(',', '.'); // Replace the decimal separator with a comma
 }
 
-
+window.addEventListener('load', function() {
+  window.scrollTo(0, 0);
+});
 
 // let products = [
 //     {

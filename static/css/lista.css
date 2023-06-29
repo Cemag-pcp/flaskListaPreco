@@ -10,8 +10,9 @@ body{
 
 @media (max-width: 1000px){
     .principal{
-        width: 400px;
-        margin: auto;
+        width: 100px;
+        margin-left: auto;
+        margin-right: 0;
         transition: 0.5s;
 }
 }
@@ -29,7 +30,8 @@ header .shopping{
 
 @media (max-width: 600px) { 
     header .shopping{
-        position: relative;
+        position: fixed;
+        z-index: 1;
         text-align: right;
         max-width: 60px;
     }
