@@ -20,7 +20,7 @@
   <div>
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for descricao in descricao_unique %}
         <option>{{descricao[0]}}</option>
         {% endfor %}
@@ -29,7 +29,7 @@
   <div>
     <label for="filtro-modelo">Modelo:</label>
     <select id="filtro-modelo" onchange="atualizarDados()">
-      <option value="">Todos</option>
+      <option value="">Selecionar</option>
       {% for modelo in modelo_unique %}
       <option>{{modelo[0]}}</option>
       {% endfor %}
@@ -38,7 +38,7 @@
   <div>
     <label for="filtro-eixo">Eixo:</label>
     <select id="filtro-eixo" onchange="atualizarDados()">
-      <option value="">Todos</option>
+      <option value="">Selecionar</option>
       {% for eixo in eixo_unique %}  
       <option>{{eixo[0]}}</option>
       {% endfor %}
@@ -47,7 +47,7 @@
   <div>
     <label for="filtro-molaFreio">Mola/Freio:</label>
     <select id="filtro-molaFreio" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for mola in mola_freio_unique %}
         <option>{{mola[0]}}</option>
         {% endfor %}
@@ -56,7 +56,7 @@
   <div>
     <label for="filtro-tamanho">Tamanho:</label>
     <select id="filtro-tamanho" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for tamanho in tamanho_unique %}
         <option>{{tamanho[0]}}</option>
         {% endfor %}
@@ -65,7 +65,7 @@
   <div>
     <label for="filtro-rodado">Rodado:</label>
     <select id="filtro-rodado" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for rodado in rodado_unique %}
         <option>{{rodado[0]}}</option>
         {% endfor %}
@@ -74,7 +74,7 @@
   <div>
     <label for="filtro-pneu">Pneu:</label>
     <select id="filtro-pneu" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for pneu in pneu_unique %}
         <option>{{pneu[0]}}</option>
         {% endfor %}
@@ -83,7 +83,7 @@
   <div>
     <label for="filtro-descricao-generica">Opcionais:</label>
     <select id="filtro-descricao-generica" onchange="atualizarDados()">
-        <option value="">Todos</option>
+        <option value="">Selecionar</option>
         {% for descricao_generica in descricao_generica_unique %}
         <option>{{descricao_generica[0]}}</option>
         {% endfor %}
@@ -93,7 +93,7 @@
     <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
-  <button onclick="limparFiltros()">Limpar Filtros</button>
+  <button id="limpar" onclick="limparFiltros()">Limpar Filtros</button>
 
 </div>
 
@@ -140,8 +140,8 @@
                       </a>
                     </td>
                     <td data-label="Selecionar">
-                      <input type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this);">
-                    </td>                    
+                      <input class="custom-checkbox" type="checkbox" name="item[]" value="{{row.id}}" onchange="toggleRowColor(this); toggleCardItem(this);">
+                    </td>                  
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -160,8 +160,8 @@
     
     <div>
       <label for="filtro-nome">Nome:</label>
-      <select id="filtro-nome" style="width: 90%;" onchange="atualizarCliente()">
-          <option value="">Todos</option>
+      <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
+          <option value="">Selecionar</option>
           {% for nome in nome_cliente %}
           <option>{{nome[0]}}</option>
           {% endfor %}
@@ -170,8 +170,8 @@
   
     <div>
       <label for="filtro-contato">Contato:</label>
-      <select id="filtro-contato" style="width: 90%;" onchange="atualizarCliente()">
-          <option value="">Todos</option>
+      <select id="filtro-contato" class="form-control"  style="width: 90%;" onchange="atualizarCliente()">
+          <option value="">Selecionar</option>
           {% for contato in contatos_cliente %}
           <option>{{contato[0]}}</option>
           {% endfor %}
@@ -180,7 +180,7 @@
 
     <div>
       <label for="forma-pagamento">Forma de pagamento:</label>
-      <select id="forma-pagamento" style="width: 90%;" >
+      <select id="forma-pagamento" class="form-control"  style="width: 90%;" >
         <option>À prazo - 10x</option>
         <option>À prazo - 9x</option>
         <option>À prazo - 8x</option>
@@ -208,12 +208,9 @@
 </div>
 
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const tdElement = document.querySelector('td');
-    const labelElement = document.createElement('label');
-    labelElement.classList.add('label-column');
-    labelElement.innerHTML = '<span class="label-text">Modelo:</span>';
-    tdElement.prepend(labelElement);
+  // Inicialize o Select2 no elemento 'mySelect'
+  $(document).ready(function() {
+    $('#filtro-nome').select2();
   });
 </script>
 
@@ -319,32 +316,30 @@
     dados.forEach(function(row) {
       var html = `
         <tr>
-          <td>${row[11]}</td>
-          <td>${row[1]}</td>
-          <td>${row[2]}</td>
-          <td>
-            <select id="cor" class="cor-dropdown">
-              <option value="" selected disabled hidden></option>
-              <option value="Laranja">Laranja</option>
-              <option value="Verde">Verde</option>
-              <option value="Vermelho">Vermelho</option>
-              <option value="Azul">Azul</option>
-              <option value="Amarelo">Amarelo</option>
-            </select>
-          </td>
-          <td style="white-space: nowrap;">${row[23]}</td>
-          <td>
-            <input class="row-data preco-input" name="preco" style="width: 100px;" oninput="formatPriceInput(event);">
-          </td>
-          <td class="row-total"></td>
-          <td>
-            <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
-              <i class="fas fa-star"></i>
-            </a>
-          </td>
-          <td>
-            <input type="checkbox" name="item[]" value="${row.id}" onchange="toggleRowColor(this); toggleCardItem(this);">
-          </td>                    
+          <td data-label="Modelo">${row[11]}</td>
+            <td data-label="Código" id ='codigo'>${row[1]}</td>
+            <td data-label="Descrição">${row[2]}</td>
+            <td data-label="Cor">
+              <select id="cor" class="cor-dropdown">
+                <option value="Laranja" selected>Laranja</option>
+                <option value="Verde">Verde</option>
+                <option value="Vermelho">Vermelho</option>
+                <option value="Azul">Azul</option>
+                <option value="Amarelo">Amarelo</option>
+              </select>
+            </td>
+            <td data-label="Preço" style="white-space: nowrap;">${row[23]}</td>
+            <td data-label="Preço Final">
+              <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
+            </td>
+            <td data-label="Favorito">
+              <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
+                <i class="fas fa-star"></i>
+              </a>
+            </td>
+            <td data-label="Selecionar">
+              <input class="custom-checkbox" type="checkbox" name="item[]" value="${row.id}" onchange="toggleRowColor(this); toggleCardItem(this);">
+            </td>                     
         </tr>
       `;
       tabela.append(html);
@@ -383,14 +378,14 @@
     descricaoGenericaDropdown.empty();
 
     // Adicionar a opção "Todos" em todos os dropdowns
-    descricaoDropdown.append($('<option>').text('Todos').attr('value', ''));
-    modeloDropdown.append($('<option>').text('Todos').attr('value', ''));
-    eixoDropdown.append($('<option>').text('Todos').attr('value', ''));
-    molaFreioDropdown.append($('<option>').text('Todos').attr('value',''));
-    tamanhoDropdown.append($('<option>').text('Todos').attr('value',''));
-    rodadoDropdown.append($('<option>').text('Todos').attr('value',''));
-    pneuDropdown.append($('<option>').text('Todos').attr('value',''));
-    descricaoGenericaDropdown.append($('<option>').text('Todos').attr('value',''));
+    descricaoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    modeloDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    eixoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    molaFreioDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    tamanhoDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    rodadoDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    pneuDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    descricaoGenericaDropdown.append($('<option>').text('Selecionar').attr('value',''));
 
     // Preencher os valores dos dropdowns e selecionar o valor atual, se existir
     $.each(descricao, function(index, value) {
@@ -469,7 +464,7 @@
     var descricaoGenericaSelect = $('#filtro-descricao');
     var modeloSelect = $('#filtro-modelo');
     var eixoSelect = $('#filtro-eixo');
-    var molaFreioSelect = $('#mola_freio');
+    var molaFreioSelect = $('#filtro-molaFreio');
     var tamanhoSelect = $('#filtro-tamanho');
     var rodadoSelect = $('#filtro-rodado');
     var pneuSelect = $('#filtro-pneu');
@@ -579,7 +574,7 @@
 
     contatoClienteDropdown.empty();
 
-    contatoClienteDropdown.append($('<option>').text('Todos').attr('value', ''));
+    contatoClienteDropdown.append($('<option>').text('Selecionar').attr('value', ''));
 
     $.each(contato_cliente, function(index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);

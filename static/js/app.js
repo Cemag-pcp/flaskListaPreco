@@ -71,6 +71,7 @@ function toggleCardItem(checkbox) {
       item.appendChild(precoElement);
 
       const decreaseButton = document.createElement('button');
+      decreaseButton.classList.add('diminuir');
       decreaseButton.textContent = '-';
       decreaseButton.addEventListener('click', () => {
         let nume = parseInt(numElement.textContent);
@@ -93,6 +94,7 @@ function toggleCardItem(checkbox) {
       item.appendChild(numElement);
 
       const increaseButton = document.createElement('button');
+      increaseButton.classList.add('aumentar');
       increaseButton.textContent = '+';
       increaseButton.addEventListener('click', () => {
         let nume = parseInt(numElement.textContent);
