@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/entrar.css') }}">
 </head>
 <body>
-    <h1>Login</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
@@ -14,12 +16,29 @@
             </ul>
         {% endif %}
     {% endwith %}
-    <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
+
+    <div class="container">
+        <div class="logreg-box">
+            <div class="form-box login">
+                <div class="form-content">
+                <form method="post">
+                    <h2>Login</h2>
+                    <div class="input-box center">
+                        <span class="icon"><ion-icon style="color: white;"></ion-icon></span>
+                        <input type="text" id="username" name="username" required><br><br>
+                        <label class="opacity-100" for="username">Nome:</label>
+                    </div>
+                    <div class="input-box center">
+                        <span class="icon"><ion-icon name="lock-closed" style="color: white;"></ion-icon></span>
+                        <input type="password" id="password" name="password" required><br><br>
+                        <label class="opacity-100" for="password">Senha:</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-light" style="text-align: center;">Login</button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
