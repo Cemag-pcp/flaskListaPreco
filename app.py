@@ -106,7 +106,7 @@ def lista():
     regiao = pd.DataFrame(regiao)
     regiao = "'" + regiao['regiao'][0] + "'"
 
-    # representante = """'Galo'"""
+    print(representante)
 
     query = """ SELECT DISTINCT t1.*, t2.preco, t2.lista
         FROM tb_produtos AS t1
@@ -116,7 +116,7 @@ def lista():
 
     df = pd.read_sql_query(query, conn)
 
-    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+    #df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
     data = df.values.tolist()
 
@@ -740,34 +740,61 @@ def atualizar_dados():
 @app.route('/atualizar-cliente', methods=['POST'])
 def atualizar_cliente():
     
+    opcoes = ['À prazo - 1x','À prazo - 2x','À prazo - 3x','À prazo - 4x',
+              'À prazo - 5x','À prazo - 6x','À prazo - 7x','À prazo - 8x',
+              'À prazo - 9x','À prazo - 10x','A Vista','Antecipado','Personalizado']
+
+    def obter_condicoes_pagamento(tabela_clientes,cliente,opcoes):
+        if cliente in tabela_clientes:
+            condicoes_cliente = tabela_clientes[cliente].split(";")
+            condicoes_disponiveis = []
+            for condicao in condicoes_cliente:
+                if condicao in opcoes:
+                    if "À prazo" in condicao:
+                        x = int(condicao[9:11].split()[0])
+                        condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
+                    else:
+                        condicoes_disponiveis.append(condicao)
+            condicoes_disponiveis = list(set(condicoes_disponiveis))
+            condicoes_disponiveis.sort(key=lambda x: opcoes.index(x))
+            return condicoes_disponiveis
+        else:
+            return []
+
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor()
 
     representante = "'"+session['user_id']+"'"
 
+    print(representante)
+
     nome_cliente = request.form['nome_cliente']
     contato_cliente = request.form['contato_cliente']
+
+    query = """SELECT nome,condicao FROM tb_clientes_condicao WHERE nome = %s"""
+    
+    cur.execute(query,[nome_cliente])
+    tabela_clientes = cur.fetchall()
+    tabela_clientes = dict(tabela_clientes)
+
+    condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
 
     query2 = """
             SELECT t2.*, t1.responsavel
             FROM tb_clientes_representante as t1
             RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND t1.responsavel = {} 
+            WHERE 1=1 AND t1.responsavel = {}
             """.format(representante)
 
     placeholders = []
     if nome_cliente:
         query2 += " AND t2.nome = %s"
-        placeholders.append(nome_cliente)
+        placeholders.append("'"+nome_cliente+"'")
         
-    # if contato_cliente:
-    #     query2 += " AND contatos = %s"
-    #     placeholders.append(contato_cliente)
+    print(query2)
 
-    cur.execute(query2, placeholders)
-    data = cur.fetchall()
-    df_clientes = pd.DataFrame(data)
-
+    df_clientes = pd.read_sql_query(query2,conn,placeholders)
+    print(df_clientes)
     # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
     df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
 
@@ -780,7 +807,7 @@ def atualizar_cliente():
     nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
     contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
 
-    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente)
+    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente,condicoes=condicoes)
 
 @app.route('/enviarBackend', methods=['POST'])
 def obs():
