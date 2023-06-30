@@ -96,21 +96,27 @@ def login_required(view):
 def lista():
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-
-    representante = "'"+session['user_id']+"'"
-    representante = """'Galo'"""
-
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    query = """ SELECT DISTINCT t1.*, t2.preco
+    representante = "'"+session['user_id']+"'"
+
+    query = """SELECT regiao FROM users WHERE username = {}""".format(representante)
+    cur.execute(query)
+    regiao = cur.fetchall()
+    regiao = pd.DataFrame(regiao)
+    regiao = "'" + regiao['regiao'][0] + "'"
+
+    print(representante)
+
+    query = """ SELECT DISTINCT t1.*, t2.preco, t2.lista
         FROM tb_produtos AS t1
         LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-        WHERE t1.crm = 'T' and t2.preco is not null; 
-    """
+        WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = {}; 
+    """.format(regiao)
 
     df = pd.read_sql_query(query, conn)
 
-    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+    #df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
     data = df.values.tolist()
 
@@ -123,7 +129,13 @@ def lista():
     pneu_unique = df[['pneu']].drop_duplicates().values.tolist()
     descricao_generica_unique = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
 
-    query2 = """ SELECT nome, contatos FROM tb_clientes_contatos """
+    query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND responsavel = {} 
+            """.format(representante)
+    
     cur.execute(query2)
     cliente_contatos = cur.fetchall()
     df_cliente_contatos = pd.DataFrame(cliente_contatos)
@@ -727,27 +739,62 @@ def atualizar_dados():
 
 @app.route('/atualizar-cliente', methods=['POST'])
 def atualizar_cliente():
+    
+    opcoes = ['À prazo - 1x','À prazo - 2x','À prazo - 3x','À prazo - 4x',
+              'À prazo - 5x','À prazo - 6x','À prazo - 7x','À prazo - 8x',
+              'À prazo - 9x','À prazo - 10x','A Vista','Antecipado','Personalizado']
 
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    def obter_condicoes_pagamento(tabela_clientes,cliente,opcoes):
+        if cliente in tabela_clientes:
+            condicoes_cliente = tabela_clientes[cliente].split(";")
+            condicoes_disponiveis = []
+            for condicao in condicoes_cliente:
+                if condicao in opcoes:
+                    if "À prazo" in condicao:
+                        x = int(condicao[9:11].split()[0])
+                        condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
+                    else:
+                        condicoes_disponiveis.append(condicao)
+            condicoes_disponiveis = list(set(condicoes_disponiveis))
+            condicoes_disponiveis.sort(key=lambda x: opcoes.index(x))
+            return condicoes_disponiveis
+        else:
+            return []
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+
+    representante = "'"+session['user_id']+"'"
+
+    print(representante)
 
     nome_cliente = request.form['nome_cliente']
     contato_cliente = request.form['contato_cliente']
 
-    query2 = """SELECT nome, contatos FROM tb_clientes_contatos WHERE 1=1"""
+    query = """SELECT nome,condicao FROM tb_clientes_condicao WHERE nome = %s"""
+    
+    cur.execute(query,[nome_cliente])
+    tabela_clientes = cur.fetchall()
+    tabela_clientes = dict(tabela_clientes)
+
+    condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
+
+    query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND t1.responsavel = {}
+            """.format(representante)
 
     placeholders = []
     if nome_cliente:
-        query2 += " AND nome = %s"
-        placeholders.append(nome_cliente)
+        query2 += " AND t2.nome = %s"
+        placeholders.append("'"+nome_cliente+"'")
         
-    # if contato_cliente:
-    #     query2 += " AND contatos = %s"
-    #     placeholders.append(contato_cliente)
+    print(query2)
 
-    cur.execute(query2, placeholders)
-    data = cur.fetchall()
-    df_clientes = pd.DataFrame(data)
-
+    df_clientes = pd.read_sql_query(query2,conn,placeholders)
+    print(df_clientes)
     # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
     df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
 
@@ -760,17 +807,16 @@ def atualizar_cliente():
     nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
     contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
 
-    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente)
+    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente,condicoes=condicoes)
 
 @app.route('/enviarBackend', methods=['POST'])
 def obs():
 
     linha = request.get_json()
-
     
     return 'Itens recebidos e processados com sucesso!'
 
-@app.route('/rota-do-backend', methods=['POST'])
+@app.route('/receber-dados', methods=['POST'])
 def process_data():
     data = request.get_json()
     

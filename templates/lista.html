@@ -533,6 +533,7 @@
   
     var nome_cliente = $('#filtro-nome').val();
     var contato_cliente = $('#filtro-contato').val();
+    var condicoes = $('#forma-pagamento').val();
 
     // obter os valores selecionados em cada dropdown
 
@@ -542,18 +543,20 @@
       method: 'POST',
       data: {
         nome_cliente: nome_cliente,
-        contato_cliente: contato_cliente
+        contato_cliente: contato_cliente,
+        condicoes: condicoes
         // inclua outros dropdowns aqui
       },
       success: function(response) {
         // atualizar o DataFrame com os dados retornados
         var nomeClienteAtualizado = response.nome_cliente;
         var contatoClienteAtualizado = response.contato_cliente;
+        var formaPagamento = response.condicoes;
 
         // faça o processamento necessário para atualizar o DataFrame na página
 
         // atualizar a tabela com os dados retornados
-        atualizarDropdownsCliente(contatoClienteAtualizado)
+        atualizarDropdownsCliente(contatoClienteAtualizado,formaPagamento)
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
@@ -565,16 +568,20 @@
   
   }
 
-  function atualizarDropdownsCliente(contato_cliente) {
+  function atualizarDropdownsCliente(contato_cliente,formaPagamento) {
 
     $("#loading-overlay").show();
     var contatoClienteDropdown = $('#filtro-contato');
+    var formaPagamentoDropdown = $('forma-pagamento');
 
     var contatoClienteSelecionado = contatoClienteDropdown.val();
+    var formaPagamentoSelecionado = formaPagamentoDropdown.val();
 
     contatoClienteDropdown.empty();
+    formaPagamentoDropdown.empty();
 
     contatoClienteDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    formaPagamentoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
 
     $.each(contato_cliente, function(index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
@@ -583,6 +590,15 @@
       }
       contatoClienteDropdown.append(option);
     });
+
+    $.each(formaPagamento, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === formaPagamentoSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      formaPagamentoDropdown.append(option);
+    });
+
 
     $("#loading-overlay").hide();
 
@@ -652,7 +668,7 @@
     };
 
     // Faça uma requisição POST para o backend usando fetch
-      fetch('/rota-do-backend', {
+      fetch('/receber-dados', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -735,8 +751,6 @@
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', handleEnviarButtonClick);
 </script>
-
-
 
 <!-- 
 <script>
