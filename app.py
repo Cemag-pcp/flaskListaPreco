@@ -19,6 +19,13 @@ import uuid
 from sqlalchemy import create_engine
 import warnings
 from babel.numbers import format_currency
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
 
 warnings.filterwarnings("ignore")
 
@@ -98,25 +105,38 @@ def lista():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    representante = "'"+session['user_id']+"'"
+    representante = session['user_id']
 
-    query = """SELECT regiao FROM users WHERE username = {}""".format(representante)
-    cur.execute(query)
+    query = """SELECT regiao FROM users WHERE username = %s"""
+    placeholders = [representante]
+
+    cur.execute(query, placeholders)
+    
     regiao = cur.fetchall()
     regiao = pd.DataFrame(regiao)
     regiao = "'" + regiao['regiao'][0] + "'"
 
-    print(representante)
+    print(regiao)
 
-    query = """ SELECT DISTINCT t1.*, t2.preco, t2.lista
-        FROM tb_produtos AS t1
-        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-        WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = {}; 
-    """.format(regiao)
-
+    query = """ 
+            SELECT *
+            FROM (
+                SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                    COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteriscticas_tratadas,
+                    COALESCE(t1.tamanho,'N/A') as tamanho_tratados
+                FROM tb_produtos AS t1
+                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = {}
+            ) subquery
+            WHERE 1=1
+            """.format(regiao)
+    
     df = pd.read_sql_query(query, conn)
 
-    #df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    df['pneu'] = df['pneu'].fillna('Sem pneu')
 
     data = df.values.tolist()
 
@@ -124,19 +144,20 @@ def lista():
     modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
     eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
     mola_freio_unique = df[['mola_freio']].drop_duplicates().values.tolist()
-    tamanho_unique = df[['tamanho']].drop_duplicates().values.tolist()
+    tamanho_unique = df[['tamanho_tratados']].drop_duplicates().values.tolist()
     rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
-    pneu_unique = df[['pneu']].drop_duplicates().values.tolist()
-    descricao_generica_unique = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
+    pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
+    descricao_generica_unique = df[['outras_caracteriscticas_tratadas']].drop_duplicates().values.tolist()
 
     query2 = """
             SELECT t2.*, t1.responsavel
             FROM tb_clientes_representante as t1
             RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND responsavel = {} 
-            """.format(representante)
+            WHERE 1=1 AND responsavel = %s 
+            """
     
-    cur.execute(query2)
+    placeholders = [representante]
+    cur.execute(query2, placeholders)
     cliente_contatos = cur.fetchall()
     df_cliente_contatos = pd.DataFrame(cliente_contatos)
 
@@ -674,13 +695,32 @@ def atualizar_dados():
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    placeholders = []
+    representante = session['user_id']
 
-    query = """ SELECT DISTINCT t1.*, t2.preco
-        FROM tb_produtos AS t1
-        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-        WHERE t1.crm = 'T' and t2.preco is not null
-    """
+    query = """SELECT regiao FROM users WHERE username = %s"""
+    placeholders = [representante]
+
+    cur.execute(query, placeholders)
+    
+    regiao = cur.fetchall()
+    regiao = pd.DataFrame(regiao)
+    regiao = regiao['regiao'][0]
+
+    placeholders = [regiao]
+
+    query = """ 
+            SELECT *
+            FROM (
+                SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                    COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteriscticas_tratadas,
+                    COALESCE(t1.tamanho,'N/A') as tamanho_tratados
+                FROM tb_produtos AS t1
+                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = %s
+            ) subquery
+            WHERE 1=1
+            """
 
     if descricao:
         query += " AND descricao_generica = %s"
@@ -699,7 +739,7 @@ def atualizar_dados():
         placeholders.append(mola_freio)
 
     if tamanho:
-        query += " AND tamanho = %s"
+        query += " AND tamanho_tratados = %s"
         placeholders.append(tamanho)
 
     if rodado:
@@ -707,11 +747,11 @@ def atualizar_dados():
         placeholders.append(rodado)
 
     if pneu:
-        query += " AND pneu = %s"
+        query += " AND pneu_tratado = %s"
         placeholders.append(pneu)
 
     if descricao_generica:
-        query += " AND outras_caracteristicas = %s"
+        query += " AND outras_caracteriscticas_tratadas = %s"
         placeholders.append(descricao_generica)
 
     cur.execute(query, placeholders)
@@ -724,10 +764,10 @@ def atualizar_dados():
     modelo = df[['modelo']].drop_duplicates().values.tolist()
     eixo = df[['eixo']].drop_duplicates().values.tolist()
     mola_freio = df[['mola_freio']].drop_duplicates().values.tolist()
-    tamanho = df[['tamanho']].drop_duplicates().values.tolist()
+    tamanho = df[['tamanho_tratados']].drop_duplicates().values.tolist()
     rodado = df[['rodado']].drop_duplicates().values.tolist()
-    pneu = df[['pneu']].drop_duplicates().values.tolist()
-    descricao_generica = df[['outras_caracteristicas']].drop_duplicates().values.tolist()
+    pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
+    descricao_generica = df[['outras_caracteriscticas_tratadas']].drop_duplicates().values.tolist()
 
     data = df.values.tolist()
 
@@ -764,12 +804,12 @@ def atualizar_cliente():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
 
-    representante = "'"+session['user_id']+"'"
-
-    print(representante)
+    representante = session['user_id']
 
     nome_cliente = request.form['nome_cliente']
     contato_cliente = request.form['contato_cliente']
+
+    print(representante,nome_cliente)
 
     query = """SELECT nome,condicao FROM tb_clientes_condicao WHERE nome = %s"""
     
@@ -780,23 +820,27 @@ def atualizar_cliente():
     condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
 
     query2 = """
-            SELECT t2.*, t1.responsavel
-            FROM tb_clientes_representante as t1
-            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND t1.responsavel = {}
-            """.format(representante)
+        SELECT t2.*, t1.responsavel
+        FROM tb_clientes_representante as t1
+        RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+        WHERE 1=1 AND t1.responsavel = %s
+        """
 
-    placeholders = []
+    placeholders = [representante]
     if nome_cliente:
         query2 += " AND t2.nome = %s"
-        placeholders.append("'"+nome_cliente+"'")
+        placeholders.append(nome_cliente)
         
-    print(query2)
+    cur.execute(query2,placeholders)
+    data = cur.fetchall()
 
-    df_clientes = pd.read_sql_query(query2,conn,placeholders)
-    print(df_clientes)
+    nome_colunas = ['id','estado','cidade','nome','contatos','telefones','responsavel']
+
+    df_clientes = pd.DataFrame(data, columns=nome_colunas)
+
     # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
     df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
+    print(df_contatos)
 
     # Reorganiza o DataFrame para ter um contato por linha
     df_clientes = df_clientes.drop('contatos', axis=1).join(df_contatos)
@@ -806,6 +850,8 @@ def atualizar_cliente():
 
     nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
     contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
+
+    print(condicoes)
 
     return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente,condicoes=condicoes)
 
@@ -859,6 +905,233 @@ def process_data():
     flash("Enviado com sucesso", 'success')
 
     return jsonify({'message':'success'})
+
+# @app.route('/acionar-botao', methods=['POST'])
+# def acionar_botao():
+
+#     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+#     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+#     query = """SELECT * FROM tb_orcamento"""
+
+#     cur.execute(query)
+#     data = cur.fetchall()
+
+#     cur.close()
+#     conn.close()
+
+#     data = pd.DataFrame(data)
+#     data.sort_values(by='data_atual', inplace=True)
+#     data.reset_index(drop=True, inplace=True)
+#     data = data[data['rpa'].empty | data['rpa'].isna()]
+
+#     id_unico = data['id'].unique()
+    
+#     for i in range(len(id_unico)):
+
+#         data_novo = data[data['id'] == id_unico[i]].reset_index(drop=True)
+#         cliente = data[data['id'] == id_unico[i]].reset_index(drop=True)['nome_cliente'][0]
+#         contato = data[data['id'] == id_unico[i]].reset_index(drop=True)['contato_cliente'][0]
+#         forma_pagamento = data[data['id'] == id_unico[i]].reset_index(drop=True)['forma_pagamento'][0]
+#         observacao = data[data['id'] == id_unico[i]].reset_index(drop=True)['observacoes'][0]
         
+#         # chrome_options = webdriver.ChromeOptions()
+#         # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+#         # chrome_options.add_argument("--headless")
+#         # chrome_options.add_argument("--disable-dev-shm-usage")
+#         # chrome_options.add_argument("--no-sandbox")
+
+#         link1 = "https://app10.ploomes.com/login"
+#         nav = webdriver.Chrome()
+#         nav.get(link1)
+
+#         wait = WebDriverWait(nav, 10)
+
+#         # Email
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[1]/div/input').click()
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[1]/div/input').send_keys("luan@cemag.com.br")
+
+#         # Password
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[2]/div/input').click()
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[2]/div/input').send_keys('cemag2023')
+
+#         # Entrar
+#         nav.find_element(By.ID, 'centerRender').click()
+
+#         button_novo = ''
+#         while button_novo == '':
+#             try:
+#                 print("carregando")
+#                 button_novo = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/horizontal-menu/div/button')
+#             except:
+#                 pass
+
+#         # Clicar em Negócios
+#         nav.find_element(By.XPATH, '//*[@id="modules"]/div[3]/div[2]/button').click()
+
+#         # Clicar em funil de vendas
+#         nav.get('https://app10.ploomes.com/Deals/funnel')
+#         time.sleep(5)
+
+#         # Clicar em nova venda
+#         wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/div/aside/div/header/div/aside[3]/a'))).click()
+#         # nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/div/aside/div/header/div/aside[3]/a').click()
+#         time.sleep(2)
+
+#         campo_cliente = ''
+#         while campo_cliente == '':
+#             try:
+#                 print("Carregando")
+#                 campo_cliente = nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]')
+#             except:
+#                 pass
+
+#         # Nome cliente
+#         nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]').send_keys(cliente)
+#         time.sleep(2)
+
+#         # Enter no cliente
+#         nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]').send_keys(Keys.ENTER)
+
+#         # Nome contato
+#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).click()
+#         # nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]').click()
+#         time.sleep(2)
+#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).send_keys(contato)
+#         time.sleep(1)
+#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).send_keys(Keys.ENTER)
+#         time.sleep(1)
+
+#         # Salvar
+#         nav.find_element(By.CSS_SELECTOR, 'button.button.button-action.pull-right').click()
+
+#         button_propostas = ''
+#         while button_propostas == '':
+#             try:
+#                 print("Carregando")
+#                 button_propostas = nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/div/deal-page-tabs/div/ul/li[2]')
+#             except:
+#                 pass
+#         time.sleep(2)
+
+#         # Propostas
+#         nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/div/deal-page-tabs/div/ul/li[2]').click()
+#         time.sleep(2)
+
+#         # Nova proposta
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/deal-page-main/div/div/deal-page-entity-table/div/div/div[1]/div/aside[2]').click()
+#         time.sleep(2)
+
+#         # Toggle button atualizar dados
+#         toggle_button = ''
+#         while toggle_button == '':
+#             try:
+#                 print("Carregando")
+#                 toggle_button = nav.find_element(By.XPATH, "/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[2]/div/div/div/new-field/span/div/div/aside/div").click()
+#             except:
+#                 pass
+
+#         # Clicar em condições de pagamento
+#         condicao_pagamento = ''
+#         while condicao_pagamento == '':
+#             try:
+#                 print('carregando')
+#                 condicao_pagamento = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
+#             except:
+#                 pass
+
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(forma_pagamento)
+#         time.sleep(2)
+#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(Keys.ENTER)
+#         time.sleep(1.5)
+
+#         for j in range(len(data_novo)):
+            
+#             codigo_carreta = data_novo['codigo'][j]
+#             quantidade = data_novo['quantidade'][j]
+#             preco_final = data_novo['preco_final'][j]
+#             cor = data_novo['cor'][j]
+                
+#             # Adicionar produto
+#             nav.find_element(By.XPATH, '//*[@id="proposalProducts_quote_sections_0_0"]/div/div[1]/a').click()
+#             time.sleep(1)
+
+#             # Adicionar código do produto
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[1]/input').click()
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[1]/input').send_keys(codigo_carreta)
+#             time.sleep(5)
+
+#             # Clique no item 
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[2]/div/section/table/tbody/tr[1]').click()
+#             time.sleep(1.5)
+
+#             # Quantidade
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').click()
+#             time.sleep(1.5)
+
+#             # Inputar quantidade
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(Keys.CONTROL + 'A')
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(Keys.DELETE)
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(quantidade)
+#             time.sleep(1.5)
+
+#             # Escolhendo cor
+#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/span/a/div/i').click()
+#             time.sleep(1.5)
+#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
+#             time.sleep(1)
+#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(cor)
+#             time.sleep(1)
+#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(Keys.ENTER)
+#             time.sleep(1)
+
+#             # Valor praticado
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').click()
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(Keys.CONTROL + 'A')
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(Keys.DELETE)
+#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(preco_final)
+#             time.sleep(1.5)
+
+#             # Clicar em Inserir Produto
+#             button_inserir = ''
+#             while button_inserir == '':
+#                 try:
+#                     print('carregando')
+#                     button_inserir = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[3]/div/aside[2]/a[2]').click()
+#                 except:
+#                     pass
+
+#             time.sleep(1)
+
+
+#         # observação
+
+#         wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[13]/div/div/div/new-field/span/div/div/div/div/iframe'))).click()
+#         wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[13]/div/div/div/new-field/span/div/div/div/div/iframe'))).send_keys(observacao)
+        
+#         # clicar em salvar
+#         nav.find_element(By.XPATH, "/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[2]/div/div/ng-transclude/div/div/aside/button").click()
+
+#         conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+#         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+#         query = """
+#                 UPDATE tb_orcamento
+#                 SET rpa = 'ok'    
+#                 WHERE id = %s
+#                 """
+
+#         cur.execute(query, (id_unico[i],))
+#         conn.commit()
+
+#         cur.close()
+#         conn.close()
+
+#     nav.close()
+
+#     return 'Botão acionado com sucesso!'
+
+
 if __name__ == '__main__':
     app.run()

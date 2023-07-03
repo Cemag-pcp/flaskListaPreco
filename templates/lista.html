@@ -171,30 +171,14 @@
     <div>
       <label for="filtro-contato">Contato:</label>
       <select id="filtro-contato" class="form-control"  style="width: 90%;" onchange="atualizarCliente()">
-          <option value="">Selecionar</option>
-          {% for contato in contatos_cliente %}
-          <option>{{contato[0]}}</option>
-          {% endfor %}
+          <option></option>
       </select>
     </div>
 
     <div>
       <label for="forma-pagamento">Forma de pagamento:</label>
       <select id="forma-pagamento" class="form-control"  style="width: 90%;" >
-        <option>À prazo - 10x</option>
-        <option>À prazo - 9x</option>
-        <option>À prazo - 8x</option>
-        <option>À prazo - 7x</option>
-        <option>À prazo - 6x</option>
-        <option>À prazo - 5x</option>
-        <option>À prazo - 4x</option>
-        <option>À prazo - 3x</option>
-        <option>À prazo - 2x</option>
-        <option>À prazo - 1x</option>
-        <option>A Vista</option>
-        <option>Antecipado</option>
-        <option>Cartão de crédito</option>
-        <option>Personalizado</option>
+        <option></option>
       </select>
     </div>
 
@@ -551,12 +535,12 @@
         // atualizar o DataFrame com os dados retornados
         var nomeClienteAtualizado = response.nome_cliente;
         var contatoClienteAtualizado = response.contato_cliente;
-        var formaPagamento = response.condicoes;
+        var formaPagamentoAtualizado = response.condicoes;
 
         // faça o processamento necessário para atualizar o DataFrame na página
 
         // atualizar a tabela com os dados retornados
-        atualizarDropdownsCliente(contatoClienteAtualizado,formaPagamento)
+        atualizarDropdownsCliente(contatoClienteAtualizado,formaPagamentoAtualizado)
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
@@ -572,7 +556,7 @@
 
     $("#loading-overlay").show();
     var contatoClienteDropdown = $('#filtro-contato');
-    var formaPagamentoDropdown = $('forma-pagamento');
+    var formaPagamentoDropdown = $('#forma-pagamento');
 
     var contatoClienteSelecionado = contatoClienteDropdown.val();
     var formaPagamentoSelecionado = formaPagamentoDropdown.val();
@@ -592,8 +576,8 @@
     });
 
     $.each(formaPagamento, function(index, value) {
-      var option = $('<option>').text(value[0]).attr('value', value[0]);
-      if (value[0] === formaPagamentoSelecionado) {
+      var option = $('<option>').text(value).attr('value', value);
+      if (value === formaPagamentoSelecionado) {
         option.attr('selected', 'selected');
       }
       formaPagamentoDropdown.append(option);
