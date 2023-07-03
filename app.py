@@ -19,13 +19,6 @@ import uuid
 from sqlalchemy import create_engine
 import warnings
 from babel.numbers import format_currency
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-import time
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
 
 warnings.filterwarnings("ignore")
 
@@ -782,7 +775,8 @@ def atualizar_cliente():
     
     opcoes = ['À prazo - 1x','À prazo - 2x','À prazo - 3x','À prazo - 4x',
               'À prazo - 5x','À prazo - 6x','À prazo - 7x','À prazo - 8x',
-              'À prazo - 9x','À prazo - 10x','A Vista','Antecipado','Personalizado']
+              'À prazo - 9x','À prazo - 10x','A Vista','Antecipado','Cartão de Crédito',
+              'Personalizado']
 
     def obter_condicoes_pagamento(tabela_clientes,cliente,opcoes):
         if cliente in tabela_clientes:
@@ -793,8 +787,14 @@ def atualizar_cliente():
                     if "À prazo" in condicao:
                         x = int(condicao[9:11].split()[0])
                         condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
+                        condicoes_disponiveis.append('A Vista')
+                        condicoes_disponiveis.append('Antecipado')
+                        condicoes_disponiveis = list(set(condicoes_disponiveis))
                     else:
                         condicoes_disponiveis.append(condicao)
+                        condicoes_disponiveis.append('A Vista')
+                        condicoes_disponiveis.append('Antecipado')
+                        condicoes_disponiveis = list(set(condicoes_disponiveis))
             condicoes_disponiveis = list(set(condicoes_disponiveis))
             condicoes_disponiveis.sort(key=lambda x: opcoes.index(x))
             return condicoes_disponiveis
