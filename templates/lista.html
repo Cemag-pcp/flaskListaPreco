@@ -140,7 +140,7 @@
                       </a>
                     </td>
                     <td data-label="Selecionar">
-                      <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);">Adicionar ao Carrinho</button>
+                      <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);" id ='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i>   Enviar</button>
                     </td>                
                   </tr>
                   {% endfor %}
@@ -322,8 +322,8 @@
               </a>
             </td>
             <td data-label="Selecionar">
-              <input class="custom-checkbox" type="checkbox" name="item[]" value="${row.id}" onchange="toggleRowColor(this); toggleCardItem(this);">
-            </td>                     
+              <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);" id ='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i>   Enviar</button>
+            </td>                      
         </tr>
       `;
       tabela.append(html);

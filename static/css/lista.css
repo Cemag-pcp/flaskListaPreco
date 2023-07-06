@@ -81,7 +81,7 @@ header .shopping span{
     z-index: 9999;
     top: 0;
     right: 100%;
-    width: 500px; /* Updated width */
+    width: 580px; /* Updated width */
     max-width: 100%; /* Added max-width */
     background-color: #2c2928;
     height: 100vh;
@@ -140,6 +140,7 @@ header .shopping span{
     align-items: center;
     font-weight: bold;
     cursor: pointer;
+    margin-bottom: 100px;
 }
 
 .card .checkOut div:nth-child(2) {
@@ -211,7 +212,6 @@ ul.listCard {
 }
 
 .listCard div{
-    margin-left: 5px;
     margin-top: 20px;
 }
 
@@ -224,8 +224,7 @@ ul.listCard {
     }
     
     .listCard div{
-        width: 100%;
-        margin-right: 30px;
+        width: 95%;
         margin-top: 15px;
     }
 }
@@ -235,9 +234,14 @@ ul.listCard {
     width: 90%;
 }
 
-.listCard span{
+.listCard .quanti{
     margin-top: 30px;
     width: 90px;
+}
+
+.listCard .cor{
+    margin-top: 30px;
+    width: 70px;
 }
 
 .listCard li button {
@@ -444,4 +448,16 @@ input{
     border: none; /* Remova as bordas das células se necessário */
   }
   
-  
+.btn-primary{
+    background-color: rgb(255, 161, 113);
+    font-weight: bold;
+    border: none;
+}
+
+.btn-primary:hover{
+    background-color: rgb(247, 135, 79);
+}
+
+.btn-primary:active{
+    background-color: rgb(247, 135, 79);
+}

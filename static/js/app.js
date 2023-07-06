@@ -139,6 +139,7 @@ list.addEventListener('change', (event) => {
 function toggleCardItem(button) {
   const card = document.getElementById('card');
   const listCard = card.querySelector('.listCard');
+  const quantitySpan = document.querySelector(".quantity");
 
   const row = button.parentNode.parentNode;
   const columns = row.getElementsByTagName('td');
@@ -177,6 +178,14 @@ function toggleCardItem(button) {
       updateTotal(); // Update the total value
     } else {
       listCard.removeChild(item);
+
+      const currentQuantity = parseInt(quantitySpan.innerText);
+      if (currentQuantity > 1) {
+        quantitySpan.innerText = currentQuantity - 1; // Decrement the quantity by 1
+      } else {
+        quantitySpan.innerText = 0; // Set the quantity to 0 if it would become negative
+      }
+
       updateTotal(); // Update the total value
     }
   });
@@ -200,9 +209,15 @@ function toggleCardItem(button) {
 
   listCard.appendChild(item);
 
+  updateQuantity(); // Update the quantity
   updateTotal(); // Update the total value
-}
 
+  function updateQuantity() {
+    const items = listCard.querySelectorAll('li');
+    const quantity = items.length;
+    quantitySpan.innerText = quantity.toString();
+  }
+}
 function toggleRowColor(checkbox) {
   var row = checkbox.parentNode.parentNode;
   var quantitySpan = document.querySelector(".quantity");
