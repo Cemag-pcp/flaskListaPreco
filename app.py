@@ -784,7 +784,11 @@ def atualizar_cliente():
             condicoes_disponiveis = []
             for condicao in condicoes_cliente:
                 if condicao in opcoes:
-                    if "À prazo" in condicao:
+                    if "A Vista" in condicoes_cliente and len(condicoes_cliente) == 1:
+                        condicoes_disponiveis.append('A Vista')
+                    elif "Antecipado" in condicoes_cliente and len(condicoes_cliente) == 1:
+                        condicoes_disponiveis.append('Antecipado')
+                    elif "À prazo" in condicao:
                         x = int(condicao[9:11].split()[0])
                         condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
                         condicoes_disponiveis.append('A Vista')
@@ -865,30 +869,34 @@ def obs():
 @app.route('/receber-dados', methods=['POST'])
 def process_data():
     data = request.get_json()
-    
-    df = pd.DataFrame(data)
 
     representante = session['user_id']
 
-    df_modal = df[['nome','contato','formaPagamento','observacoes']]
-    df_carretas = pd.DataFrame(df['items'].tolist())
-    df_quantidade = pd.DataFrame(df['dadosSelecionados'].tolist())
-    
+    items = data['items']
+    nome = data['nome']
+    contato = data['contato']
+    formaPagamento = data['formaPagamento']
+    observacoes = data['observacoes']
+
     unique_id = str(uuid.uuid4())  # Gerar id unico
-
-    df_geral = pd.concat([df_modal,df_carretas,df_quantidade], axis=1)
-    df_geral['id'] = unique_id
-    df_geral['representante'] = representante
-    df_geral = df_geral.drop(columns=['price2','finalPrice','description2'])
     
-    query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,descricao,quantidade,preco_final,codigo,cor,representante) 
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    # Crie um DataFrame a partir dos dados dos itens
+    df_items = pd.DataFrame(items)
+    df_items['nome'] = nome
+    df_items['contato'] = contato
+    df_items['formaPagamento'] = formaPagamento
+    df_items['observacoes'] = observacoes
+    df_items['representante'] = representante
+    df_items['id'] = unique_id
 
-    df_geral['quantity'] = df_geral['quantity'].astype(str)
+    query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+    # df_geral['quantity'] = df_geral['quantity'].astype(str)
 
     # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
-    valores = list(zip(df_geral['id'],df_geral['nome'], df_geral['contato'], df_geral['formaPagamento'], df_geral['observacoes'], df_geral['description'],
-                    df_geral['quantity'], df_geral['price'], df_geral['code'], df_geral['color'], df_geral['representante'],
+    valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
+                    df_items['quanti'], df_items['numeros'], df_items['description'], df_items['cor'], df_items['representante'],
                     ))
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
@@ -905,233 +913,6 @@ def process_data():
     flash("Enviado com sucesso", 'success')
 
     return jsonify({'message':'success'})
-
-# @app.route('/acionar-botao', methods=['POST'])
-# def acionar_botao():
-
-#     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-#     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-#     query = """SELECT * FROM tb_orcamento"""
-
-#     cur.execute(query)
-#     data = cur.fetchall()
-
-#     cur.close()
-#     conn.close()
-
-#     data = pd.DataFrame(data)
-#     data.sort_values(by='data_atual', inplace=True)
-#     data.reset_index(drop=True, inplace=True)
-#     data = data[data['rpa'].empty | data['rpa'].isna()]
-
-#     id_unico = data['id'].unique()
-    
-#     for i in range(len(id_unico)):
-
-#         data_novo = data[data['id'] == id_unico[i]].reset_index(drop=True)
-#         cliente = data[data['id'] == id_unico[i]].reset_index(drop=True)['nome_cliente'][0]
-#         contato = data[data['id'] == id_unico[i]].reset_index(drop=True)['contato_cliente'][0]
-#         forma_pagamento = data[data['id'] == id_unico[i]].reset_index(drop=True)['forma_pagamento'][0]
-#         observacao = data[data['id'] == id_unico[i]].reset_index(drop=True)['observacoes'][0]
-        
-#         # chrome_options = webdriver.ChromeOptions()
-#         # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-#         # chrome_options.add_argument("--headless")
-#         # chrome_options.add_argument("--disable-dev-shm-usage")
-#         # chrome_options.add_argument("--no-sandbox")
-
-#         link1 = "https://app10.ploomes.com/login"
-#         nav = webdriver.Chrome()
-#         nav.get(link1)
-
-#         wait = WebDriverWait(nav, 10)
-
-#         # Email
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[1]/div/input').click()
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[1]/div/input').send_keys("luan@cemag.com.br")
-
-#         # Password
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[2]/div/input').click()
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div/form/div[2]/div/input').send_keys('cemag2023')
-
-#         # Entrar
-#         nav.find_element(By.ID, 'centerRender').click()
-
-#         button_novo = ''
-#         while button_novo == '':
-#             try:
-#                 print("carregando")
-#                 button_novo = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/horizontal-menu/div/button')
-#             except:
-#                 pass
-
-#         # Clicar em Negócios
-#         nav.find_element(By.XPATH, '//*[@id="modules"]/div[3]/div[2]/button').click()
-
-#         # Clicar em funil de vendas
-#         nav.get('https://app10.ploomes.com/Deals/funnel')
-#         time.sleep(5)
-
-#         # Clicar em nova venda
-#         wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/div/aside/div/header/div/aside[3]/a'))).click()
-#         # nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/div/aside/div/header/div/aside[3]/a').click()
-#         time.sleep(2)
-
-#         campo_cliente = ''
-#         while campo_cliente == '':
-#             try:
-#                 print("Carregando")
-#                 campo_cliente = nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]')
-#             except:
-#                 pass
-
-#         # Nome cliente
-#         nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]').send_keys(cliente)
-#         time.sleep(2)
-
-#         # Enter no cliente
-#         nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealcontact-"]').send_keys(Keys.ENTER)
-
-#         # Nome contato
-#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).click()
-#         # nav.find_element(By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]').click()
-#         time.sleep(2)
-#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).send_keys(contato)
-#         time.sleep(1)
-#         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[id^="select-fk-dealperson-"]'))).send_keys(Keys.ENTER)
-#         time.sleep(1)
-
-#         # Salvar
-#         nav.find_element(By.CSS_SELECTOR, 'button.button.button-action.pull-right').click()
-
-#         button_propostas = ''
-#         while button_propostas == '':
-#             try:
-#                 print("Carregando")
-#                 button_propostas = nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/div/deal-page-tabs/div/ul/li[2]')
-#             except:
-#                 pass
-#         time.sleep(2)
-
-#         # Propostas
-#         nav.find_element(By.XPATH, '//*[@id="react-root"]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/div/deal-page-tabs/div/ul/li[2]').click()
-#         time.sleep(2)
-
-#         # Nova proposta
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/section/div/aside[2]/div/deal-page-wrapper/div/new-deal-page/div/div/section/div/aside[2]/div/deal-page-main/div/div/deal-page-entity-table/div/div/div[1]/div/aside[2]').click()
-#         time.sleep(2)
-
-#         # Toggle button atualizar dados
-#         toggle_button = ''
-#         while toggle_button == '':
-#             try:
-#                 print("Carregando")
-#                 toggle_button = nav.find_element(By.XPATH, "/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[2]/div/div/div/new-field/span/div/div/aside/div").click()
-#             except:
-#                 pass
-
-#         # Clicar em condições de pagamento
-#         condicao_pagamento = ''
-#         while condicao_pagamento == '':
-#             try:
-#                 print('carregando')
-#                 condicao_pagamento = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
-#             except:
-#                 pass
-
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(forma_pagamento)
-#         time.sleep(2)
-#         nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[7]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(Keys.ENTER)
-#         time.sleep(1.5)
-
-#         for j in range(len(data_novo)):
-            
-#             codigo_carreta = data_novo['codigo'][j]
-#             quantidade = data_novo['quantidade'][j]
-#             preco_final = data_novo['preco_final'][j]
-#             cor = data_novo['cor'][j]
-                
-#             # Adicionar produto
-#             nav.find_element(By.XPATH, '//*[@id="proposalProducts_quote_sections_0_0"]/div/div[1]/a').click()
-#             time.sleep(1)
-
-#             # Adicionar código do produto
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[1]/input').click()
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[1]/input').send_keys(codigo_carreta)
-#             time.sleep(5)
-
-#             # Clique no item 
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/product-select/form/div/div[2]/div/section/table/tbody/tr[1]').click()
-#             time.sleep(1.5)
-
-#             # Quantidade
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').click()
-#             time.sleep(1.5)
-
-#             # Inputar quantidade
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(Keys.CONTROL + 'A')
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(Keys.DELETE)
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[1]/div/div/div/new-field/span/input').send_keys(quantidade)
-#             time.sleep(1.5)
-
-#             # Escolhendo cor
-#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/span/a/div/i').click()
-#             time.sleep(1.5)
-#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').click()
-#             time.sleep(1)
-#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(cor)
-#             time.sleep(1)
-#             nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[2]/section/form/div/forms/form/span[2]/div/div/div/new-field/span/select-fk/div/div/input[2]').send_keys(Keys.ENTER)
-#             time.sleep(1)
-
-#             # Valor praticado
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').click()
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(Keys.CONTROL + 'A')
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(Keys.DELETE)
-#             nav.find_element(By.XPATH, '//*[@id="size-slide-5"]/div/div[2]/section/form/div/forms/form/span[4]/div/div/div/new-field/span/input').send_keys(preco_final)
-#             time.sleep(1.5)
-
-#             # Clicar em Inserir Produto
-#             button_inserir = ''
-#             while button_inserir == '':
-#                 try:
-#                     print('carregando')
-#                     button_inserir = nav.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/product-slide/div/div[1]/div/div[3]/div/aside[2]/a[2]').click()
-#                 except:
-#                     pass
-
-#             time.sleep(1)
-
-
-#         # observação
-
-#         wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[13]/div/div/div/new-field/span/div/div/div/div/iframe'))).click()
-#         wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[1]/ng-transclude/div[2]/section/forms/form/span[13]/div/div/div/new-field/span/div/div/div/div/iframe'))).send_keys(observacao)
-        
-#         # clicar em salvar
-#         nav.find_element(By.XPATH, "/html/body/div[1]/div/div[2]/main-wrapper/app-wrapper/div/new-quote-outside-modal/div/div/ng-transclude/div[2]/div/div/ng-transclude/div/div/aside/button").click()
-
-#         conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-#         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-#         query = """
-#                 UPDATE tb_orcamento
-#                 SET rpa = 'ok'    
-#                 WHERE id = %s
-#                 """
-
-#         cur.execute(query, (id_unico[i],))
-#         conn.commit()
-
-#         cur.close()
-#         conn.close()
-
-#     nav.close()
-
-#     return 'Botão acionado com sucesso!'
-
 
 if __name__ == '__main__':
     app.run()

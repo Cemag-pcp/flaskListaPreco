@@ -46,92 +46,159 @@ list.addEventListener('change', (event) => {
   }
 });
 
-function toggleCardItem(checkbox) {
+// function toggleCardItem(checkbox) {
+//   const card = document.getElementById('card');
+//   const listCard = card.querySelector('.listCard');
+
+//   const row = checkbox.parentNode.parentNode;
+//   const columns = row.getElementsByTagName('td');
+
+//   const description = columns[1].textContent; // Assuming the description is in the 2nd column
+//   const preco = columns[4].textContent; // Assuming the preco is in the 5th column
+//   const precoFinalInput = row.querySelector('.preco-input');
+//   const precoFinal = precoFinalInput.value.trim();
+
+//   if (checkbox.checked) {
+//     const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
+//     if (existingItem) {
+//       const numElement = existingItem.querySelector('.numeros');
+//       let nume = parseInt(numElement.textContent);
+//       numElement.textContent = nume.toString();
+//     } else {
+//       const item = document.createElement('li');
+//       item.dataset.description = description;
+
+//       const itemName = document.createElement('div');
+//       itemName.textContent = description; // Set the item description
+//       item.appendChild(itemName);
+
+//       const precoElement = document.createElement('span');
+//       precoElement.classList.add('quanti');
+//       precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
+//       item.appendChild(precoElement);
+
+//       const decreaseButton = document.createElement('button');
+//       decreaseButton.classList.add('diminuir');
+//       decreaseButton.textContent = '-';
+//       decreaseButton.addEventListener('click', () => {
+//         let nume = parseInt(numElement.textContent);
+//         if (nume > 1) {
+//           nume--;
+//           numElement.textContent = nume.toString();
+//           updateTotal(); // Update the total value
+//         } else {
+//           listCard.removeChild(item);
+//           checkbox.checked = false;
+//           updateTotal(); // Update the total value
+//           toggleRowColor(checkbox); // Update the row color and quantity
+//         }
+//       });
+//       item.appendChild(decreaseButton);
+
+//       const numElement = document.createElement('div');
+//       numElement.classList.add('numeros');
+//       numElement.textContent = '1';
+//       item.appendChild(numElement);
+
+//       const increaseButton = document.createElement('button');
+//       increaseButton.classList.add('aumentar');
+//       increaseButton.textContent = '+';
+//       increaseButton.addEventListener('click', () => {
+//         let nume = parseInt(numElement.textContent);
+//         nume++;
+//         numElement.textContent = nume.toString();
+//         updateTotal(); // Update the total value
+//       });
+//       item.appendChild(increaseButton);
+
+//       listCard.appendChild(item);
+//     }
+//   } else {
+//     const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
+
+//     if (existingItem) {
+//       listCard.removeChild(existingItem);
+//       var cardItem = checkbox.parentNode.parentNode;
+//       var cardList = document.querySelector(".listCard");
+//       cardList.removeChild(cardItem);
+//       checkbox.checked = false;
+
+//       if (listCard.children.length === 0) {
+//         card.style.display = 'none'; // Hide the card when it has no items
+//       }
+//     }
+
+//     // Reset the div.numeros to 0
+//     const numElement = row.querySelector('.numeros');
+//     numElement.textContent = '0';
+//   }
+
+//   updateTotal(); // Update the total value
+// }
+
+function toggleCardItem(button) {
   const card = document.getElementById('card');
   const listCard = card.querySelector('.listCard');
 
-  const row = checkbox.parentNode.parentNode;
+  const row = button.parentNode.parentNode;
   const columns = row.getElementsByTagName('td');
 
   const description = columns[1].textContent; // Assuming the description is in the 2nd column
   const preco = columns[4].textContent; // Assuming the preco is in the 5th column
+  const corSelect = row.querySelector('.cor-dropdown');
+  const cor = corSelect.value;
   const precoFinalInput = row.querySelector('.preco-input');
   const precoFinal = precoFinalInput.value.trim();
 
-  if (checkbox.checked) {
-    const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
-    if (existingItem) {
-      const numElement = existingItem.querySelector('.numeros');
-      let nume = parseInt(numElement.textContent);
+  const item = document.createElement('li');
+  item.dataset.description = description;
+  const itemName = document.createElement('div');
+  itemName.textContent = description; // Set the item description
+  item.appendChild(itemName);
+
+  const corElement = document.createElement('span');
+  corElement.classList.add('cor');
+  corElement.textContent = cor;
+  item.appendChild(corElement);
+
+  const precoElement = document.createElement('span');
+  precoElement.classList.add('quanti');
+  precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
+  item.appendChild(precoElement);
+
+  const decreaseButton = document.createElement('button');
+  decreaseButton.classList.add('diminuir');
+  decreaseButton.textContent = '-';
+  decreaseButton.addEventListener('click', () => {
+    let nume = parseInt(numElement.textContent);
+    if (nume > 1) {
+      nume--;
       numElement.textContent = nume.toString();
+      updateTotal(); // Update the total value
     } else {
-      const item = document.createElement('li');
-      item.dataset.description = description;
-
-      const itemName = document.createElement('div');
-      itemName.textContent = description; // Set the item description
-      item.appendChild(itemName);
-
-      const precoElement = document.createElement('span');
-      precoElement.classList.add('quanti');
-      precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
-      item.appendChild(precoElement);
-
-      const decreaseButton = document.createElement('button');
-      decreaseButton.classList.add('diminuir');
-      decreaseButton.textContent = '-';
-      decreaseButton.addEventListener('click', () => {
-        let nume = parseInt(numElement.textContent);
-        if (nume > 1) {
-          nume--;
-          numElement.textContent = nume.toString();
-          updateTotal(); // Update the total value
-        } else {
-          listCard.removeChild(item);
-          checkbox.checked = false;
-          updateTotal(); // Update the total value
-          toggleRowColor(checkbox); // Update the row color and quantity
-        }
-      });
-      item.appendChild(decreaseButton);
-
-      const numElement = document.createElement('div');
-      numElement.classList.add('numeros');
-      numElement.textContent = '1';
-      item.appendChild(numElement);
-
-      const increaseButton = document.createElement('button');
-      increaseButton.classList.add('aumentar');
-      increaseButton.textContent = '+';
-      increaseButton.addEventListener('click', () => {
-        let nume = parseInt(numElement.textContent);
-        nume++;
-        numElement.textContent = nume.toString();
-        updateTotal(); // Update the total value
-      });
-      item.appendChild(increaseButton);
-
-      listCard.appendChild(item);
+      listCard.removeChild(item);
+      updateTotal(); // Update the total value
     }
-  } else {
-    const existingItem = listCard.querySelector(`li[data-description="${description}"]`);
+  });
+  item.appendChild(decreaseButton);
 
-    if (existingItem) {
-      listCard.removeChild(existingItem);
-      var cardItem = checkbox.parentNode.parentNode;
-      var cardList = document.querySelector(".listCard");
-      cardList.removeChild(cardItem);
-      checkbox.checked = false;
+  const numElement = document.createElement('div');
+  numElement.classList.add('numeros');
+  numElement.textContent = '1';
+  item.appendChild(numElement);
 
-      if (listCard.children.length === 0) {
-        card.style.display = 'none'; // Hide the card when it has no items
-      }
-    }
+  const increaseButton = document.createElement('button');
+  increaseButton.classList.add('aumentar');
+  increaseButton.textContent = '+';
+  increaseButton.addEventListener('click', () => {
+    let nume = parseInt(numElement.textContent);
+    nume++;
+    numElement.textContent = nume.toString();
+    updateTotal(); // Update the total value
+  });
+  item.appendChild(increaseButton);
 
-    // Reset the div.numeros to 0
-    const numElement = row.querySelector('.numeros');
-    numElement.textContent = '0';
-  }
+  listCard.appendChild(item);
 
   updateTotal(); // Update the total value
 }
