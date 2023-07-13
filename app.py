@@ -108,23 +108,24 @@ def lista():
     
     regiao = cur.fetchall()
     regiao = pd.DataFrame(regiao)
-    regiao = "'" + regiao['regiao'][0] + "'"
+    regiao = regiao['regiao'][0]
 
     print(regiao)
 
     query = """ 
-            SELECT *
+            SELECT subquery.*, t3.representante, t3.favorito
             FROM (
                 SELECT DISTINCT t1.*, t2.preco, t2.lista,
                     COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteriscticas_tratadas,
-                    COALESCE(t1.tamanho,'N/A') as tamanho_tratados
+                    COALESCE(t1.outras_caracteristicas,'N/A') AS outras_caracteriscticas_tratadas,
+                    COALESCE(t1.tamanho,'N/A') AS tamanho_tratados
                 FROM tb_produtos AS t1
                 LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = {}
+                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL AND t2.lista = '{}'
             ) subquery
-            WHERE 1=1
-            """.format(regiao)
+            LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+            WHERE 1=1 AND representante = '{}' OR representante ISNULL 
+            """.format(regiao, representante)
     
     df = pd.read_sql_query(query, conn)
 
@@ -213,13 +214,15 @@ def lista_favoritos():
         conn.commit()
         conn.close()
 
-
     else:
         """QUERY PARA EXCLUIR O ITEM DA TABELA DE FAVORITOS"""
-        print('excluir')
+        query = """DELETE FROM tb_favoritos WHERE codigo = '{}' and representante = '{}'""".format(codigo_carreta, representante)
+        cur.execute(query)
+
+        conn.commit()
+        conn.close()
 
     return 'Sucesso' 
-
 
 
 @app.route('/remove/<string:id>', methods = ['POST','GET'])

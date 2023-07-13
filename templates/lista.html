@@ -134,14 +134,21 @@
                     <td data-label="Preço Final">
                       <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
+                    
                     <td data-label="Favorito">
                       <div class="toggle" id="maquina-parada-toggle">
                         <label class="switch2">
-                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito-{{row_id}}" id="favorito-{{row_id}}" data-row-id="{{row[1]}}"> 
+                          {% if row[29] == 'on' %}:
+                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito-{{row_id}}" id="favorito-{{row_id}}" data-row-id="{{row[1]}}" checked> 
                           <span class="slider round"></span>
+                          {% else %}
+                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito-{{row_id}}" id="favorito-{{row_id}}" data-row-id="{{row[1]}}" > 
+                          <span class="slider round"></span>
+                          {% endif %}
                         </label>
                       </div>
                     </td>
+
                     <td data-label="Selecionar">
                       <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);" id ='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i>   Enviar</button>
                     </td>                
@@ -339,9 +346,9 @@
               <select id="cor" class="cor-dropdown">
                 <option value="Laranja" selected>Laranja</option>
                 <option value="Verde">Verde</option>
-                <option value="Vermelha">Vermelho</option>
+                <option value="Vermelha">Vermelha</option>
                 <option value="Azul">Azul</option>
-                <option value="Amarela">Amarelo</option>
+                <option value="Amarela">Amarela</option>
               </select>
             </td>
             <td data-label="Preço" style="white-space: nowrap;">${row[23]}</td>
