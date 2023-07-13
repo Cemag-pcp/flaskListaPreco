@@ -897,7 +897,7 @@ def process_data():
 
     # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
     valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
-                    df_items['quanti'], df_items['numeros'], df_items['description'], df_items['cor'], df_items['representante'],
+                    df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
                     ))
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
@@ -916,4 +916,4 @@ def process_data():
     return jsonify({'message':'success'})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=8000)

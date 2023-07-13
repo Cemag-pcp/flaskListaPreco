@@ -661,7 +661,6 @@
       .then(response => {
         if (response.ok) {
           // Recarrega a página após um breve intervalo de tempo
-          $("#loading-overlay").show();
           location.reload();
         } else {
           console.error('Ocorreu um erro ao enviar os itens.');
@@ -674,6 +673,9 @@
 
   // Função para lidar com o clique no botão "Enviar"
   function handleEnviarButtonClick() {
+    // Exibe o carregamento
+    $("#loading-overlay").show();
+
     const items = [];
 
     // Obtenha todos os itens da lista
