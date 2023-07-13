@@ -112,7 +112,7 @@
                       <th>Cor</th>
                       <th>Preço</th>
                       <th>Preço c/ desconto</th>
-                      <th>Total</th>
+                      <th>Favorito</th>
                   </tr>
               </thead>
               <tbody>
@@ -135,9 +135,12 @@
                       <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
                     <td data-label="Favorito">
-                      <a id= 'favorito' href="" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-star"></i>
-                      </a>
+                      <div class="toggle" id="maquina-parada-toggle">
+                        <label class="switch2">
+                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito-{{row_id}}" id="favorito-{{row_id}}" data-row-id="{{row[1]}}"> 
+                          <span class="slider round"></span>
+                        </label>
+                      </div>
                     </td>
                     <td data-label="Selecionar">
                       <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);" id ='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i>   Enviar</button>
@@ -190,6 +193,35 @@
     <button class="enviarModal" id="enviar-button" onclick="enviarDados()">Enviar</button>
   </div>
 </div>
+
+<script>
+  // Manipulador de evento de clique para botões favoritos
+  document.querySelectorAll('.favorito-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(event) {
+      // Obter o estado do favorito e o ID da linha
+      var favoriteState = this.checked ? 'on' : 'off';
+      var rowId = this.getAttribute('data-row-id');
+
+      // Enviar a solicitação POST ao backend do Python
+      fetch('/favoritos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          favorite: favoriteState,
+          rowId: rowId
+        })
+      })
+      .then(function(response) {
+        // Lidar com a resposta do servidor, se necessário
+      })
+      .catch(function(error) {
+        // Lidar com erros de solicitação, se necessário
+      });
+    });
+  });
+</script>
 
 <script>
   // Inicialize o Select2 no elemento 'mySelect'

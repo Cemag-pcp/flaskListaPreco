@@ -188,22 +188,39 @@ def move(id):
     
     return redirect(url_for('lista'))
 
-@app.route('/favoritos')
+@app.route('/favoritos', methods=['POST'])
 @login_required
 def lista_favoritos():
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-
-    representante = "'"+session['user_id']+"'"
-    # representante = """'Galo'"""
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute("SELECT * FROM tb_favoritos where representante = {}".format(representante))
-    data = cur.fetchall()
 
-    for row in data:
-        row['preco'] = "R$ {:,.2f}".format(row['preco']).replace(",", "X").replace(".", ",").replace("X", ".")
-  
-    return render_template("favoritos.html", data=data)
+    favorite_state = request.json.get('favorite')  # Obter o estado do favorito da solicitação
+    codigo_carreta = request.json.get('rowId')
+    representante = ""+session['user_id']+""
+
+    print(favorite_state)
+    print(codigo_carreta)
+    # Faça o processamento necessário com os dados recebidos
+
+    if favorite_state == 'on':
+        """QUERY PARA ADICIONAR ITEM NA TABELA DE FAVORITOS"""
+        query = """ insert into tb_favoritos (codigo,representante,favorito) 
+                    values ('{}','{}','{}')""".format(codigo_carreta,representante,favorite_state)
+        
+        cur.execute(query)
+
+        conn.commit()
+        conn.close()
+
+
+    else:
+        """QUERY PARA EXCLUIR O ITEM DA TABELA DE FAVORITOS"""
+        print('excluir')
+
+    return 'Sucesso' 
+
+
 
 @app.route('/remove/<string:id>', methods = ['POST','GET'])
 @login_required
