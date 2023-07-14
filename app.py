@@ -721,21 +721,36 @@ def atualizar_dados():
     regiao = pd.DataFrame(regiao)
     regiao = regiao['regiao'][0]
 
-    placeholders = [regiao]
+    placeholders = [regiao, representante]
+
+    # query = """ 
+    #         SELECT *
+    #         FROM (
+    #             SELECT DISTINCT t1.*, t2.preco, t2.lista,
+    #                 COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+    #                 COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteriscticas_tratadas,
+    #                 COALESCE(t1.tamanho,'N/A') as tamanho_tratados
+    #             FROM tb_produtos AS t1
+    #             LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+    #             WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = %s
+    #         ) subquery
+    #         WHERE 1=1
+    #         """
 
     query = """ 
-            SELECT *
-            FROM (
-                SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteriscticas_tratadas,
-                    COALESCE(t1.tamanho,'N/A') as tamanho_tratados
-                FROM tb_produtos AS t1
-                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = %s
-            ) subquery
-            WHERE 1=1
-            """
+        SELECT subquery.*, t3.representante, t3.favorito
+        FROM (
+            SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                COALESCE(t1.outras_caracteristicas,'N/A') AS outras_caracteriscticas_tratadas,
+                COALESCE(t1.tamanho,'N/A') AS tamanho_tratados
+            FROM tb_produtos AS t1
+            LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+            WHERE t1.crm = 'T' AND t2.preco IS NOT NULL AND t2.lista = %s
+        ) subquery
+        LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+        WHERE 1=1 AND representante = %s OR representante ISNULL
+        """
 
     if descricao:
         query += " AND descricao_generica = %s"
@@ -769,6 +784,8 @@ def atualizar_dados():
         query += " AND outras_caracteriscticas_tratadas = %s"
         placeholders.append(descricao_generica)
 
+    query += ' ORDER BY favorito ASC'
+
     cur.execute(query, placeholders)
     data = cur.fetchall()
     df = pd.DataFrame(data)
@@ -783,6 +800,8 @@ def atualizar_dados():
     rodado = df[['rodado']].drop_duplicates().values.tolist()
     pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
     descricao_generica = df[['outras_caracteriscticas_tratadas']].drop_duplicates().values.tolist()
+
+    print(df)
 
     data = df.values.tolist()
 
