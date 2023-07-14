@@ -338,19 +338,23 @@
     tabela.empty(); // limpar a tabela antes de adicionar os novos dados
 
     dados.forEach(function(row) {
-      
+
+        var variavel1 = `${row[29]}`;
+
         var favoritoCheckbox = '';
-          if (`${row[29]}` === 'on') {
+          if (variavel1 === 'on') {
             favoritoCheckbox = `
-              <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}" checked> 
+              <input class=s"btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}" checked> 
               <span class="slider round"></span>
             `;
           } else {
-            favoritoCheckbox = `
+            favoritoCheckbox = ` 
               <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}"> 
               <span class="slider round"></span>
             `;
           }
+
+        console.log(favoritoCheckbox);
 
         var html = `
           <tr>
@@ -383,10 +387,13 @@
           </tr>`;
 
         tabela.append(html);
+      
       });
 
       $("#loading-overlay").hide();
     }
+
+
   function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica) {
     $("#loading-overlay").show();
     var descricaoDropdown = $('#filtro-descricao');
