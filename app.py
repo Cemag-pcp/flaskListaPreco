@@ -124,7 +124,8 @@ def lista():
                 WHERE t1.crm = 'T' AND t2.preco IS NOT NULL AND t2.lista = '{}'
             ) subquery
             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
-            WHERE 1=1 AND representante = '{}' OR representante ISNULL 
+            WHERE 1=1 AND representante = '{}' OR representante ISNULL
+            ORDER BY favorito ASC 
             """.format(regiao, representante)
     
     df = pd.read_sql_query(query, conn)
