@@ -1,0 +1,11 @@
+Tabelas para serem atualizadas
+
+tb_lista_precos
+    essa tabela vem do innovaro
+    Precificação > Consultas > Preços vigentes da tabela
+    escolher os campos: 1o. Agrupamento, FAT_RECURSOORIG.CODIGO, FAT_INICIO
+    Exportar sem nome das colunas e em csv
+    No postgree escolher a codificação LATIN8
+    Periodicidade: Mensal
+
+tb_clientes_representante
