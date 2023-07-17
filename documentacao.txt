@@ -1,4 +1,4 @@
-Tabelas para serem atualizadas
+Atualização de Tabelas
 
 tb_lista_precos
     essa tabela vem do innovaro
@@ -17,4 +17,11 @@ tb_clientes_representante
     Excluir linha que contém o nome das colunas
     Adicionar coluna de id
     salvar como excel
+    Periodicidade: 
 
+tb_produtos
+    essa tabela vem do innovaro
+    Produtos > carretas agricolas > exportar
+    Exportar todas as colunas
+    Sem nome de coluna
+    Periodicidade: Mensal
