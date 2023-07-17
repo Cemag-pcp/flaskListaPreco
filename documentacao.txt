@@ -5,7 +5,16 @@ tb_lista_precos
     Precificação > Consultas > Preços vigentes da tabela
     escolher os campos: 1o. Agrupamento, FAT_RECURSOORIG.CODIGO, FAT_INICIO
     Exportar sem nome das colunas e em csv
+    Adicionar coluna de id
     No postgree escolher a codificação LATIN8
     Periodicidade: Mensal
 
 tb_clientes_representante
+    essa tabela vem do ploomes
+    https://app10.ploomes.com/Contacts/table
+    Opção "Revendas Ativas"
+    Exportar como excel
+    Excluir linha que contém o nome das colunas
+    Adicionar coluna de id
+    salvar como excel
+
