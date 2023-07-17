@@ -728,48 +728,47 @@ def atualizar_dados():
             FROM (
                 SELECT DISTINCT t1.*, t2.preco, t2.lista,
                     COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas,'N/A') as outras_caracteristicas_tratada,
-                    COALESCE(t1.tamanho,'N/A') as tamanho_tratados
+                    COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
+                    COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                 FROM tb_produtos AS t1
                 LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' and t2.preco is not null and t2.lista = %s"""
+                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL AND t2.lista = %s
+            """
 
     if descricao:
-        query += " AND descricao_generica = %s"
+        query += " AND t1.descricao_generica = %s"
         placeholders.append(descricao)
 
     if modelo:
-        query += " AND modelo = %s"
+        query += " AND t1.modelo = %s"
         placeholders.append(modelo)
 
     if eixo:
-        query += " AND eixo = %s"
+        query += " AND t1.eixo = %s"
         placeholders.append(eixo)
 
     if mola_freio:
-        query += " AND mola_freio = %s"
+        query += " AND t1.mola_freio = %s"
         placeholders.append(mola_freio)
 
     if rodado:
-        query += " AND rodado = %s"
+        query += " AND t1.rodado = %s"
         placeholders.append(rodado)
-
-    placeholders.append(representante)
-    query += ') subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE representante = %s OR representante ISNULL'
-
+    
     if tamanho:
-        query += " AND tamanho_tratados = %s"
+        query += " AND COALESCE(t1.tamanho, 'N/A') = %s"
         placeholders.append(tamanho)
 
     if pneu:
-        query += " AND pneu_tratado = %s"
+        query += " AND COALESCE(t1.pneu, 'Sem pneu') = %s"
         placeholders.append(pneu)
 
     if descricao_generica:
-        query += " AND outras_caracteristicas_tratada = %s"
+        query += " AND COALESCE(t1.outras_caracteristicas, 'N/A') = %s"
         placeholders.append(descricao_generica)
-
-    query += ' ORDER BY favorito ASC'
+    
+    placeholders.append(representante)
+    query += ') subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE representante = %s OR representante IS NULL ORDER BY t3.favorito ASC;'
     
     #query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE 1=1 AND (representante = %s OR representante ISNULL) ORDER BY favorito ASC;"
 
