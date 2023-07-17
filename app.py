@@ -202,6 +202,7 @@ def lista_favoritos():
 
     print(favorite_state)
     print(codigo_carreta)
+    print(representante)
     # Faça o processamento necessário com os dados recebidos
 
     if favorite_state == 'on':
