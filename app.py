@@ -11,7 +11,6 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
-from bs4 import BeautifulSoup
 from datetime import date
 import json
 from datetime import datetime
