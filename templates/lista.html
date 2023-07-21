@@ -13,10 +13,10 @@
   {% endfor %}
   {% endif %}
   {% endwith %}
-<div class="container hidden" id="titulo">
+<div class="container" id="titulo">
   <h2>Lista de preços</h2>
 </div>
-<div class="container filter-wrapper">
+<div class="container filter-wrapper2">
   <div>
       <label for="filtro-nome">Nome:</label>
       <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
@@ -35,16 +35,16 @@
     </div>
 
     <div>
-      <label for="forma-pagamento">Forma de pagamento:</label>
+      <label for="forma-pagamento">Pagamento:</label>
       <select id="forma-pagamento" class="form-control"  style="width: 90%;" onchange="atualizarCliente()" >
         <option></option>
       </select>
     </div>
-
     <div>
       <button id="filtrar" onclick="atualizar_regiao();atualizar_regiao2()">Filtrar Preço</button>
     </div>
-    
+</div>
+<div class="container filter-wrapper" style="margin-top: 20px;">
   <div class="hidden">
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
@@ -117,12 +117,10 @@
         {% endfor %}
     </select>
   </div>
-
-    <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
+   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
   <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button>
-
 </div>
 
 <div class="container pt-4 hidden" style="transition: 0.5s;">
@@ -150,7 +148,7 @@
                     <td data-label="Código" id ='codigo'>{{row[1]}}</td>
                     <td data-label="Descrição">{{row[2]}}</td>
                     <td data-label="Cor">
-                      <select id="cor" class="cor-dropdown">
+                      <select id="cor" class="cor-dropdown" style="width:160px;">
                         <option value="Laranja" selected>Laranja</option>
                         <option value="Verde">Verde</option>
                         <option value="Vermelha">Vermelha</option>
@@ -810,6 +808,17 @@
         // atualizar o DataFrame com os dados retornados
         var nomeClienteAtualizado = response.nome_cliente;
 
+        const filtroNome = document.getElementById('filtro-nome').value;
+        const filtroContato = document.getElementById('filtro-contato').value;
+        const formaPagamento = document.getElementById('forma-pagamento').value;
+
+        // Verifica se algum dos campos está vazio
+        if (filtroNome === '' || filtroContato === '' || formaPagamento === '') {
+          $("#loading-overlay").hide();
+          return;
+        }
+
+        // Se todos os campos estiverem preenchidos, mostra os filtros e o botão de limpar
         const filtros = document.querySelectorAll('.hidden');
         const botaoFiltrar = document.getElementById('filtrar');
         const botaoLimpar = document.getElementById('limpar');
