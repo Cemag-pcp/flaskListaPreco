@@ -134,20 +134,19 @@ def lista():
 
     query = """ 
             SELECT subquery.*, t3.representante, t3.favorito
-            FROM (
-                SELECT DISTINCT t1.*, t2.preco,
-                    REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista,
-                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas, 'N/A') AS outras_caracteristicas_tratadas,
-                    COALESCE(t1.tamanho, 'N/A') AS tamanho_tratados
-                FROM tb_produtos AS t1
-                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
-            ) subquery
-            LEFT JOIN tb_favoritos AS t3 ON subquery.codigo = t3.codigo
-            WHERE subquery.lista = '{}'
-            ORDER BY favorito ASC;
-            """.format(regiao)
+                FROM (
+                    SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                        REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                    FROM tb_produtos AS t1
+                    LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+            LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
+            WHERE subquery.lista_nova = '{}' AND (t3.representante = '{}' OR t3.representante IS NULL)
+            ORDER BY t3.favorito ASC;
+            """.format(regiao, representante)
     
     df = pd.read_sql_query(query, conn)
 
@@ -166,6 +165,10 @@ def lista():
     pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
     descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
 
+    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
+    nome_completo = pd.read_sql_query(query_nome_completo, conn)
+    nome_completo = nome_completo['nome_completo'][0]
+
     query2 = """
             SELECT t2.*, t1.responsavel
             FROM tb_clientes_representante as t1
@@ -173,7 +176,7 @@ def lista():
             WHERE 1=1 AND responsavel = %s 
             """
     
-    placeholders = [representante]
+    placeholders = [nome_completo]
     cur.execute(query2, placeholders)
     cliente_contatos = cur.fetchall()
     df_cliente_contatos = pd.DataFrame(cliente_contatos)
@@ -720,6 +723,7 @@ def checkbox():
 def atualizar_dados():
     
     nome_cliente = request.form['filtro_nome']
+    print(nome_cliente)
     descricao = request.form['descricao']
     modelo = request.form['modelo']
     eixo = request.form['eixo']
@@ -894,6 +898,10 @@ def atualizar_cliente():
 
     condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
 
+    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
+    nome_completo = pd.read_sql_query(query_nome_completo, conn)
+    nome_completo = nome_completo['nome_completo'][0]
+
     query2 = """
         SELECT t2.*, t1.responsavel
         FROM tb_clientes_representante as t1
@@ -901,7 +909,7 @@ def atualizar_cliente():
         WHERE 1=1 AND t1.responsavel = %s
         """
 
-    placeholders = [representante]
+    placeholders = [nome_completo]
     if nome_cliente:
         query2 += " AND t2.nome = %s"
         placeholders.append(nome_cliente)

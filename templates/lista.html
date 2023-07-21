@@ -41,9 +41,10 @@
       </select>
     </div>
     <div>
-      <button id="filtrar" onclick="atualizar_regiao();atualizar_regiao2()">Filtrar Preço</button>
+      <button id="filtrar" onclick="atualizar_regiao()">Filtrar Preço</button>
     </div>
 </div>
+
 <div class="container filter-wrapper" style="margin-top: 20px;">
   <div class="hidden">
     <label for="filtro-descricao">Categoria:</label>
@@ -120,7 +121,7 @@
    <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
-  <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button>
+  <!-- <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button> -->
 </div>
 
 <div class="container pt-4 hidden" style="transition: 0.5s;">
@@ -164,7 +165,7 @@
                     <td data-label="Favorito">
                       <div class="toggle" id="maquina-parada-toggle">
                         <label class="switch2">
-                          {% if row[29] == 'on' %}:
+                          {% if row[30] == 'on' %}:
                           <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="{{row[1]}}" checked> 
                           <span class="slider round"></span>
                           {% else %}
@@ -342,7 +343,7 @@
 
     dados.forEach(function(row) {
 
-        var variavel1 = `${row[29]}`;
+        var variavel1 = `${row[30]}`;
 
         var favoritoCheckbox = '';
           if (variavel1 === 'on') {
@@ -821,14 +822,13 @@
         // Se todos os campos estiverem preenchidos, mostra os filtros e o botão de limpar
         const filtros = document.querySelectorAll('.hidden');
         const botaoFiltrar = document.getElementById('filtrar');
-        const botaoLimpar = document.getElementById('limpar');
 
         if (filtros.length > 0) {
           filtros.forEach((filtro) => {
             filtro.classList.remove('hidden');
           });
-          botaoLimpar.classList.remove('hidden');
         }
+
         $("#loading-overlay").hide();
       },
       error: function(error) {

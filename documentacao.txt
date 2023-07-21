@@ -17,6 +17,8 @@ tb_clientes_representante
     Excluir linha que contém o nome das colunas
     Adicionar coluna de id
     salvar como excel
+    tipo: UTF8
+    sep = ';'
     Periodicidade: 
 
 tb_produtos
