@@ -225,7 +225,6 @@ def lista_favoritos():
 
     return 'Sucesso' 
 
-
 @app.route('/remove/<string:id>', methods = ['POST','GET'])
 @login_required
 def remove(id):
@@ -944,6 +943,7 @@ def process_data():
     flash("Enviado com sucesso", 'success')
 
     return jsonify({'message':'success'})
+
 
 if __name__ == '__main__':
     app.run(port=8000)
