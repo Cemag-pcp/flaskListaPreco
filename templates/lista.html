@@ -783,6 +783,7 @@
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', handleEnviarButtonClick);
 </script>
+
 <script>// Atualizar dados de dropdow de clientes
   function atualizar_regiao() {
     $("#loading-overlay").show();
@@ -795,7 +796,7 @@
 
     // enviar a solicitação AJAX para o servidor
     $.ajax({
-      url: '/filtrar_regiao',
+      url: '/',
       method: 'POST',
       data: {
         nome_cliente: nome_cliente

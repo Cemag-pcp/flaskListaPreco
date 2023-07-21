@@ -91,80 +91,99 @@ def login_required(view):
 
     return wrapped_view
 
-@app.route('/')
+@app.route('/', methods=['POST','GET'])
 @login_required
 def lista():
 
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    if request.method == 'POST':
 
-    representante = session['user_id']
+        # Recebendo o nome do cliente de outra rota
+        nome_cliente = request.form['nome_cliente']
 
-    query = """SELECT regiao FROM users WHERE username = %s"""
-    placeholders = [representante]
+        conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    cur.execute(query, placeholders)
-    
-    regiao = cur.fetchall()
-    regiao = pd.DataFrame(regiao)
-    regiao = regiao['regiao'][0]
+        representante = session['user_id']
 
-    print(regiao)
+        query = """
+                SELECT * 
+                FROM tb_clientes_representante
+                WHERE nome = %s;
+                """
+        
+        placeholders = [nome_cliente]
 
-    query = """ 
-            SELECT subquery.*, t3.representante, t3.favorito
-            FROM (
-                SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas,'N/A') AS outras_caracteriscticas_tratadas,
-                    COALESCE(t1.tamanho,'N/A') AS tamanho_tratados
-                FROM tb_produtos AS t1
-                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL AND t2.lista = '{}'
-            ) subquery
-            LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
-            WHERE 1=1 AND representante = '{}' OR representante ISNULL
-            ORDER BY favorito ASC 
-            """.format(regiao, representante)
-    
-    df = pd.read_sql_query(query, conn)
+        cur.execute(query, placeholders)
+        
+        regiao = cur.fetchall()
+        regiao = pd.DataFrame(regiao)
+        regiao = regiao['tabela_de_preco'][0]
 
-    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+        print(regiao)
 
-    df['pneu'] = df['pneu'].fillna('Sem pneu')
+        query = """ 
+                SELECT subquery.*, t3.representante, t3.favorito
+                FROM (
+                    SELECT DISTINCT t1.*, t2.preco,
+                        REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') AS outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') AS tamanho_tratados
+                    FROM tb_produtos AS t1
+                    LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
+                ) subquery
+                LEFT JOIN tb_favoritos AS t3 ON subquery.codigo = t3.codigo
+                WHERE subquery.lista = '{}'
+                ORDER BY favorito ASC; 
+                """.format(regiao)
+        
+        df = pd.read_sql_query(query, conn)
 
-    data = df.values.tolist()
+        df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
-    descricao_unique = df[['descricao_generica']].drop_duplicates().values.tolist()
-    modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
-    eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
-    mola_freio_unique = df[['mola_freio']].drop_duplicates().values.tolist()
-    tamanho_unique = df[['tamanho_tratados']].drop_duplicates().values.tolist()
-    rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
-    pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
-    descricao_generica_unique = df[['outras_caracteriscticas_tratadas']].drop_duplicates().values.tolist()
+        df['pneu'] = df['pneu'].fillna('Sem pneu')
 
-    query2 = """
-            SELECT t2.*, t1.responsavel
-            FROM tb_clientes_representante as t1
-            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND responsavel = %s 
-            """
-    
-    placeholders = [representante]
-    cur.execute(query2, placeholders)
-    cliente_contatos = cur.fetchall()
-    df_cliente_contatos = pd.DataFrame(cliente_contatos)
+        data = df.values.tolist()
 
-    nome_cliente = df_cliente_contatos[['nome']].values.tolist()
-    contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
+        descricao_unique = df[['descricao_generica']].drop_duplicates().values.tolist()
+        modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
+        eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
+        mola_freio_unique = df[['mola_freio']].drop_duplicates().values.tolist()
+        tamanho_unique = df[['tamanho_tratados']].drop_duplicates().values.tolist()
+        rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
+        pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
+        descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
 
-    return render_template('lista.html', data=data,
-                           descricao_unique=descricao_unique,modelo_unique=modelo_unique,
-                           eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
-                           tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
-                           pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                           nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
+        return render_template('lista.html', data=data,
+                            descricao_unique=descricao_unique,modelo_unique=modelo_unique,
+                            eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
+                            tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
+                            pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique)
+
+    else:
+
+        representante = session['user_id']
+
+        conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        query2 = """
+                SELECT t2.*, t1.responsavel
+                FROM tb_clientes_representante as t1
+                RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+                WHERE 1=1 AND responsavel = %s 
+                """
+        
+        placeholders = [representante]
+        cur.execute(query2, placeholders)
+        cliente_contatos = cur.fetchall()
+        df_cliente_contatos = pd.DataFrame(cliente_contatos)
+
+        nome_cliente = df_cliente_contatos[['nome']].values.tolist()
+        contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
+
+        return render_template('lista.html',nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
 
 @app.route('/move/<string:id>', methods = ['POST','GET'])
 @login_required
@@ -951,7 +970,7 @@ def atualizar_regiao():
 
     print(nome_cliente_regiao)
 
-    return jsonify(nome_cliente_regiao=nome_cliente_regiao)
+    jsonify()
 
 if __name__ == '__main__':
     app.run(port=8000)
