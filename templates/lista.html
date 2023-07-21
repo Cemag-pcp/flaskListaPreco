@@ -22,7 +22,7 @@
       <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
           <option value="">Selecionar</option>
           {% for nome in nome_cliente %}
-          <option>{{nome[0]}}</option>
+          <option value="{{nome[0]}}">{{nome[0]}}</option>
           {% endfor %}
       </select>
     </div>
@@ -42,7 +42,7 @@
     </div>
 
     <div>
-      <button id="filtrar" onclick="atualizar_regiao()">Filtrar Preço</button>
+      <button id="filtrar" onclick="atualizar_regiao();atualizar_regiao2()">Filtrar Preço</button>
     </div>
     
   <div class="hidden">
@@ -287,6 +287,7 @@
     var rodado = $('#filtro-rodado').val();
     var pneu = $('#filtro-pneu').val();
     var descricao_generica = $('#filtro-descricao-generica').val();
+    var filtro_nome = $('#filtro-nome').val();
 
     // obter os valores selecionados em cada dropdown
 
@@ -303,6 +304,7 @@
         rodado: rodado,
         pneu: pneu,
         descricao_generica: descricao_generica,
+        filtro_nome:filtro_nome,
         // inclua outros dropdowns aqui
       },
       success: function(response) {
@@ -316,6 +318,7 @@
         var rodadoAtualizado = response.rodado;
         var pneuAtualizado = response.pneu;
         var descricaoGenericaAtualizado = response.descricao_generica;
+        var filtroNomeAtualizado = response.descricao_generica;
 
         // faça o processamento necessário para atualizar o DataFrame na página
 
@@ -406,6 +409,7 @@
     var rodadoDropdown = $('#filtro-rodado');
     var pneuDropdown = $('#filtro-pneu');
     var descricaoGenericaDropdown = $('#filtro-descricao-generica');
+    var filtroSelect = $('#filtro-nome');
 
     // Armazenar os valores selecionados atualmente
     var descricaoSelecionada = descricaoDropdown.val();
@@ -783,6 +787,7 @@
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', handleEnviarButtonClick);
 </script>
+
 <script>// Atualizar dados de dropdow de clientes
   function atualizar_regiao() {
     $("#loading-overlay").show();
