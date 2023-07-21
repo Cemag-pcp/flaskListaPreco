@@ -366,7 +366,7 @@ ul.listCard {
 }
 
 select{
-    width: 150px;
+    width: 90%;
     padding-left: 10px;
     padding: 5px;
     border: 1px solid rgba(0, 0, 0, 0.3);
@@ -550,4 +550,35 @@ input{
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  #filtrar {
+    -webkit-appearance: none;
+    background: rgb(255, 161, 113);
+    border: 2px solid rgb(255, 142, 85);
+    border-radius: 4px;
+    outline: none;
+    padding: 0.5em 0.8em;
+    width: 90%;
+    margin-right: 15px;
+    color: #ffffff;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  #filtrar:hover {
+    background: rgb(255, 142, 85);;
+    outline: none;
+  }
+  
+  #filtrar:active {
+    background: rgb(255, 142, 85);;
+    outline: none;
   }

@@ -13,11 +13,39 @@
   {% endfor %}
   {% endif %}
   {% endwith %}
-<div class="container" id="titulo">
+<div class="container hidden" id="titulo">
   <h2>Lista de preços</h2>
 </div>
 <div class="container filter-wrapper">
   <div>
+      <label for="filtro-nome">Nome:</label>
+      <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
+          <option value="">Selecionar</option>
+          {% for nome in nome_cliente %}
+          <option>{{nome[0]}}</option>
+          {% endfor %}
+      </select>
+    </div>
+  
+    <div>
+      <label for="filtro-contato">Contato:</label>
+      <select id="filtro-contato" class="form-control" style="width: 90%;" onchange="atualizarCliente()">
+          <option></option>
+      </select>
+    </div>
+
+    <div>
+      <label for="forma-pagamento">Forma de pagamento:</label>
+      <select id="forma-pagamento" class="form-control"  style="width: 90%;" onchange="atualizarCliente()" >
+        <option></option>
+      </select>
+    </div>
+
+    <div>
+      <button id="filtrar" onclick="atualizar_regiao()">Filtrar Preço</button>
+    </div>
+    
+  <div class="hidden">
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -26,7 +54,7 @@
         {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-modelo">Modelo:</label>
     <select id="filtro-modelo" onchange="atualizarDados()">
       <option value="">Selecionar</option>
@@ -35,7 +63,7 @@
       {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-eixo">Eixo:</label>
     <select id="filtro-eixo" onchange="atualizarDados()">
       <option value="">Selecionar</option>
@@ -44,7 +72,7 @@
       {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-molaFreio">Mola/Freio:</label>
     <select id="filtro-molaFreio" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -53,7 +81,7 @@
         {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-tamanho">Tamanho:</label>
     <select id="filtro-tamanho" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -62,7 +90,7 @@
         {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-rodado">Rodado:</label>
     <select id="filtro-rodado" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -71,7 +99,7 @@
         {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-pneu">Pneu:</label>
     <select id="filtro-pneu" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -80,7 +108,7 @@
         {% endfor %}
     </select>
   </div>
-  <div>
+  <div class="hidden">
     <label for="filtro-descricao-generica">Opcionais:</label>
     <select id="filtro-descricao-generica" onchange="atualizarDados()">
         <option value="">Selecionar</option>
@@ -93,11 +121,11 @@
     <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
-  <button id="limpar" onclick="limparFiltros()">Limpar Filtros</button>
+  <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button>
 
 </div>
 
-<div class="container pt-4" style="transition: 0.5s;">
+<div class="container pt-4 hidden" style="transition: 0.5s;">
     <div class="row">
         <div style="position: relative;">
             <a href="/export/pdf-all">
@@ -168,30 +196,6 @@
   <div class="modal-content">
     <span class="close">&times;</span> <!-- Botão de fechar -->
     
-    <div>
-      <label for="filtro-nome">Nome:</label>
-      <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
-          <option value="">Selecionar</option>
-          {% for nome in nome_cliente %}
-          <option>{{nome[0]}}</option>
-          {% endfor %}
-      </select>
-    </div>
-  
-    <div>
-      <label for="filtro-contato">Contato:</label>
-      <select id="filtro-contato" class="form-control"  style="width: 90%;" onchange="atualizarCliente()">
-          <option></option>
-      </select>
-    </div>
-
-    <div>
-      <label for="forma-pagamento">Forma de pagamento:</label>
-      <select id="forma-pagamento" class="form-control"  style="width: 90%;" >
-        <option></option>
-      </select>
-    </div>
-
     <div>
       <label for="observacao">Observações:</label>
       <textarea id="observacao" rows="4" cols="45"></textarea>
@@ -610,7 +614,6 @@
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
       }
     });
-  
   }
 
   function atualizarDropdownsCliente(contato_cliente,formaPagamento) {
@@ -780,6 +783,47 @@
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', handleEnviarButtonClick);
 </script>
+<script>// Atualizar dados de dropdow de clientes
+  function atualizar_regiao() {
+    $("#loading-overlay").show();
+  
+    var nome_cliente = $('#filtro-nome').val();
+    var contato_cliente = $('#filtro-contato').val();
+    var condicoes = $('#forma-pagamento').val();
 
+    // obter os valores selecionados em cada dropdown
+
+    // enviar a solicitação AJAX para o servidor
+    $.ajax({
+      url: '/filtrar_regiao',
+      method: 'POST',
+      data: {
+        nome_cliente: nome_cliente
+        // inclua outros dropdowns aqui
+      },
+      success: function(response) {
+        // atualizar o DataFrame com os dados retornados
+        var nomeClienteAtualizado = response.nome_cliente;
+
+        const filtros = document.querySelectorAll('.hidden');
+        const botaoFiltrar = document.getElementById('filtrar');
+        const botaoLimpar = document.getElementById('limpar');
+
+        if (filtros.length > 0) {
+          filtros.forEach((filtro) => {
+            filtro.classList.remove('hidden');
+          });
+          botaoLimpar.classList.remove('hidden');
+        }
+        $("#loading-overlay").hide();
+      },
+      error: function(error) {
+        console.log(error);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
+      }
+    });
+    
+  }
+</script>
 
 {% endblock %}

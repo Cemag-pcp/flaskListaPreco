@@ -945,5 +945,14 @@ def process_data():
 
     return jsonify({'message':'success'})
 
+@app.route('/filtrar_regiao', methods=['POST'])
+def atualizar_regiao():
+
+    nome_cliente_regiao = request.form['nome_cliente']
+
+    print(nome_cliente_regiao)
+
+    return jsonify(nome_cliente_regiao=nome_cliente_regiao)
+
 if __name__ == '__main__':
     app.run(port=8000)
