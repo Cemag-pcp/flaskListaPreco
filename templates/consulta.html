@@ -169,6 +169,30 @@
     <span class="close">&times;</span> <!-- Botão de fechar -->
     
     <div>
+      <label for="filtro-nome">Nome:</label>
+      <select id="filtro-nome" class="form-control" sdata-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
+          <option value="">Selecionar</option>
+          {% for nome in nome_cliente %}
+          <option value="{{nome[0]}}">{{nome[0]}}</option>
+          {% endfor %}
+      </select>
+    </div>
+  
+    <div>
+      <label for="filtro-contato">Contato:</label>
+      <select id="filtro-contato" class="form-control" style="width: 90%;" onchange="atualizarCliente()">
+          <option></option>
+      </select>
+    </div>
+
+    <div>
+      <label for="forma-pagamento">Pagamento:</label>
+      <select id="forma-pagamento" class="form-control"  style="width: 90%;" onchange="atualizarCliente()" >
+        <option></option>
+      </select>
+    </div>
+    <div>
+    <div>
       <label for="observacao">Observações:</label>
       <textarea id="observacao" rows="4" cols="45"></textarea>
     </div>
