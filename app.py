@@ -1002,5 +1002,107 @@ def atualizar_regiao():
 
     return redirect(url_for('lista', nome_cliente=nome_cliente_regiao))
 
+@app.route('/opcoes', methods=['GET', 'POST'])
+def opcoes():
+    if request.method == 'POST':
+        
+        selected_option = request.form['option']
+        
+        if selected_option == 'lista':
+            return redirect(url_for('lista'))
+        elif selected_option == 'consulta':
+            return redirect(url_for('consulta'))
+        
+    return render_template('opcoes.html')
+
+@app.route('/consulta')
+@login_required
+def consulta():
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = session['user_id']
+    
+    query = """ SELECT DISTINCT(
+                    REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                FROM tb_clientes_representante
+                WHERE marcadores = %s; """
+
+    placeholders = [representante]
+
+    cur.execute(query, placeholders)
+    
+    regiao = cur.fetchall()
+    regiao = pd.DataFrame(regiao)
+    regiao = regiao.values.tolist()
+
+    # Transforme a lista de listas em uma lista de strings planas
+    regiao_plana = [item for sublist in regiao for item in sublist]
+
+    # Transforme a lista em uma string com os itens separados por vírgulas
+    regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
+
+    query = """ 
+            SELECT subquery.*, t3.representante, t3.favorito
+                FROM (
+                    SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                        REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                    FROM tb_produtos AS t1
+                    LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+            LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
+            WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL)
+            ORDER BY t3.favorito ASC;
+            """.format(regiao_string, representante)
+    
+    df = pd.read_sql_query(query, conn)
+
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    df['pneu'] = df['pneu'].fillna('Sem pneu')
+
+    data = df.values.tolist()
+
+    descricao_unique = df[['descricao_generica']].drop_duplicates().values.tolist()
+    modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
+    eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
+    mola_freio_unique = df[['mola_freio']].drop_duplicates().values.tolist()
+    tamanho_unique = df[['tamanho_tratados']].drop_duplicates().values.tolist()
+    rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
+    pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
+    descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
+
+    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
+    nome_completo = pd.read_sql_query(query_nome_completo, conn)
+    nome_completo = nome_completo['nome_completo'][0]
+
+    query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND responsavel = %s 
+            """
+    
+    placeholders = [nome_completo]
+    cur.execute(query2, placeholders)
+    cliente_contatos = cur.fetchall()
+    df_cliente_contatos = pd.DataFrame(cliente_contatos)
+
+    nome_cliente = df_cliente_contatos[['nome']].values.tolist()
+    contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
+
+    print('funcionou')
+
+    return render_template('consulta.html', data=data,
+                        descricao_unique=descricao_unique,modelo_unique=modelo_unique,
+                        eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
+                        tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
+                        pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
+                        nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
+
 if __name__ == '__main__':
     app.run(port=8000)
