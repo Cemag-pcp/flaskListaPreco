@@ -13,7 +13,6 @@
   {% endfor %}
   {% endif %}
   {% endwith %}
-
 <div class="container" id="titulo">
   <h2>Lista de preços</h2>
 </div>
@@ -91,6 +90,15 @@
         {% endfor %}
     </select>
   </div>
+  <div>
+    <label for="filtro-lista">Lista de preço:</label>
+    <select id="filtro-lista" onchange="atualizarDados()">
+        <option value="">Selecionar</option>
+        {% for lista in lista_unique %}
+        <option>{{lista[0]}}</option>
+        {% endfor %}
+    </select>
+  </div>
    <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
@@ -106,6 +114,7 @@
             <table id="table1" class="table table-striped responsive-table">
               <thead>
                   <tr>
+                      <th>Lista</th>
                       <th>Família</th>
                       <th>Código</th>
                       <th>Descrição</th>
@@ -118,6 +127,7 @@
               <tbody>
                 {% for row in data %}
                   <tr>
+                    <td data-label="Modelo">{{row[25]}}</td>
                     <td data-label="Modelo">{{row[11]}}</td>
                     <td data-label="Código" id ='codigo'>{{row[1]}}</td>
                     <td data-label="Descrição">{{row[2]}}</td>
@@ -260,12 +270,13 @@
     var pneu = $('#filtro-pneu').val();
     var descricao_generica = $('#filtro-descricao-generica').val();
     var filtro_nome = $('#filtro-nome').val();
+    var lista_preco = $('#filtro-lista').val();
 
     // obter os valores selecionados em cada dropdown
 
     // enviar a solicitação AJAX para o servidor
     $.ajax({
-      url: '/atualizar-dados',
+      url: '/atualizar-dados-sem-cliente',
       method: 'POST',
       data: {
         descricao: descricao,
@@ -277,6 +288,7 @@
         pneu: pneu,
         descricao_generica: descricao_generica,
         filtro_nome:filtro_nome,
+        lista_preco:lista_preco
         // inclua outros dropdowns aqui
       },
       success: function(response) {
@@ -290,13 +302,14 @@
         var rodadoAtualizado = response.rodado;
         var pneuAtualizado = response.pneu;
         var descricaoGenericaAtualizado = response.descricao_generica;
-        var filtroNomeAtualizado = response.descricao_generica;
+        var filtroNomeAtualizado = response.filtro_nome;
+        var listaAtualizado = response.lista_preco;
 
         // faça o processamento necessário para atualizar o DataFrame na página
 
         // atualizar a tabela com os dados retornados
         atualizarTabela(dadosAtualizados);
-        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado);
+        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado, listaAtualizado);
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
@@ -308,7 +321,6 @@
   
   }
 
-  
   function atualizarTabela(dados) {
     $("#loading-overlay").show();
     var tabela = $('#table1 tbody');
@@ -335,6 +347,7 @@
 
         var html = `
           <tr>
+            <td data-label="Modelo">${row[25]}</td>
             <td data-label="Modelo">${row[11]}</td>
             <td data-label="Código" id="codigo">${row[1]}</td>
             <td data-label="Descrição">${row[2]}</td>
@@ -371,7 +384,7 @@
     }
 
 
-  function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica) {
+  function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica, lista_preco) {
     $("#loading-overlay").show();
     var descricaoDropdown = $('#filtro-descricao');
     var modeloDropdown = $('#filtro-modelo');
@@ -382,6 +395,7 @@
     var pneuDropdown = $('#filtro-pneu');
     var descricaoGenericaDropdown = $('#filtro-descricao-generica');
     var filtroSelect = $('#filtro-nome');
+    var listaDropdown = $('#filtro-lista');
 
     // Armazenar os valores selecionados atualmente
     var descricaoSelecionada = descricaoDropdown.val();
@@ -392,7 +406,8 @@
     var rodadoSelecionado = rodadoDropdown.val();
     var pneuSelecionado = pneuDropdown.val();
     var descricaoGenericaSelecionado = descricaoGenericaDropdown.val();
-    
+    var listaSelecionado = listaDropdown.val();
+
     descricaoDropdown.empty();
     modeloDropdown.empty();
     eixoDropdown.empty();
@@ -401,6 +416,7 @@
     rodadoDropdown.empty();
     pneuDropdown.empty();
     descricaoGenericaDropdown.empty();
+    listaDropdown.empty();
 
     // Adicionar a opção "Todos" em todos os dropdowns
     descricaoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
@@ -411,6 +427,7 @@
     rodadoDropdown.append($('<option>').text('Selecionar').attr('value',''));
     pneuDropdown.append($('<option>').text('Selecionar').attr('value',''));
     descricaoGenericaDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    listaDropdown.append($('<option>').text('Selecionar').attr('value',''));
 
     // Preencher os valores dos dropdowns e selecionar o valor atual, se existir
     $.each(descricao, function(index, value) {
@@ -475,6 +492,14 @@
         option.attr('selected', 'selected');
       }
       descricaoGenericaDropdown.append(option);
+    });
+
+    $.each(lista_preco, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === listaSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      listaDropdown.append(option);
     });
 
     $("#loading-overlay").hide();

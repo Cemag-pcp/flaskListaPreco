@@ -733,6 +733,8 @@ def atualizar_dados():
     pneu = request.form['pneu']
     descricao_generica = request.form['descricao_generica']
     
+    print(modelo)
+
     # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
 
     # executar a lógica para atualizar o DataFrame com base nas opções selecionadas
@@ -1075,6 +1077,7 @@ def consulta():
     rodado_unique = df[['rodado']].drop_duplicates().values.tolist()
     pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
     descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
+    lista_unique = df[['lista_nova']].drop_duplicates().values.tolist()
 
     query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
     nome_completo = pd.read_sql_query(query_nome_completo, conn)
@@ -1102,7 +1105,134 @@ def consulta():
                         eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
                         tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
                         pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                        nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
+                        lista_unique=lista_unique,nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
+
+@app.route('/atualizar-dados-sem-cliente', methods=['POST'])
+def atualizar_dados_sem_cliente():
+    
+    descricao = request.form['descricao']
+    modelo = request.form['modelo']
+    eixo = request.form['eixo']
+    mola_freio = request.form['mola_freio']
+    tamanho = request.form['tamanho']
+    rodado = request.form['rodado']
+    pneu = request.form['pneu']
+    descricao_generica = request.form['descricao_generica']
+    lista_preco = request.form['lista_preco']
+
+    # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
+
+    # executar a lógica para atualizar o DataFrame com base nas opções selecionadas
+    
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    representante = session['user_id']
+
+    # query = """SELECT regiao FROM users WHERE username = %s"""
+    # placeholders = [representante]
+
+    # cur.execute(query, placeholders)
+    
+    # regiao = cur.fetchall()
+    # regiao = pd.DataFrame(regiao)
+    # regiao = regiao['regiao'][0]
+
+    query = """ 
+            SELECT subquery.*, t3.representante, t3.favorito
+            FROM (
+                SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                    REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                    COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
+                    COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                FROM tb_produtos AS t1
+                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
+            """
+
+    if descricao:
+        query += " AND t1.descricao_generica = '{}'".format(descricao)
+
+    if modelo:
+        query += " AND t1.modelo = '{}'".format(modelo)
+
+    if eixo:
+        query += " AND t1.eixo = '{}'".format(eixo)
+
+    if mola_freio:
+        query += " AND t1.mola_freio = '{}'".format(mola_freio)
+
+    if rodado:
+        query += " AND t1.rodado = '{}'".format(rodado)
+    
+    if tamanho:
+        query += " AND COALESCE(t1.tamanho, 'N/A') = '{}'".format(tamanho)
+
+    if pneu:
+        query += " AND COALESCE(t1.pneu, 'Sem pneu') = '{}'".format(pneu)
+
+    if descricao_generica:
+        query += " AND COALESCE(t1.outras_caracteristicas, 'N/A') = '{}'".format(descricao_generica)
+    
+    if lista_preco: 
+        query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(lista_preco, representante)
+
+    else:
+        representante = session['user_id']
+        
+        query_regiao = """ SELECT DISTINCT(
+                        REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                    FROM tb_clientes_representante
+                    WHERE marcadores = %s; """
+
+        placeholders_regiao = [representante]
+
+        cur.execute(query_regiao, placeholders_regiao)
+        
+        regiao = cur.fetchall()
+        regiao = pd.DataFrame(regiao)
+        regiao = regiao.values.tolist()
+
+        # Transforme a lista de listas em uma lista de strings planas
+        regiao_plana = [item for sublist in regiao for item in sublist]
+
+        # Transforme a lista em uma string com os itens separados por vírgulas
+        regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
+
+        query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(regiao_string, representante)
+    
+
+    print(query)
+
+    cur.execute(query)
+    data = cur.fetchall()
+    df = pd.DataFrame(data)
+    
+    print(df)
+
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    descricao = df[['descricao_generica']].drop_duplicates().values.tolist()
+    modelo = df[['modelo']].drop_duplicates().values.tolist()
+    eixo = df[['eixo']].drop_duplicates().values.tolist()
+    mola_freio = df[['mola_freio']].drop_duplicates().values.tolist()
+    tamanho = df[['tamanho_tratados']].drop_duplicates().values.tolist()
+    rodado = df[['rodado']].drop_duplicates().values.tolist()
+    pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
+    descricao_generica = df[['outras_caracteristicas_tratada']].drop_duplicates().values.tolist()
+    lista_preco = df[['lista_nova']].drop_duplicates().values.tolist()
+
+    print(df)
+
+    data = df.values.tolist()
+
+    return jsonify(dados=data, descricao=descricao,
+                    modelo=modelo, eixo=eixo,
+                    mola_freio=mola_freio, tamanho=tamanho,
+                    rodado=rodado, pneu=pneu,
+                    descricao_generica=descricao_generica, lista_preco=lista_preco)
+
 
 if __name__ == '__main__':
     app.run(port=8000)
