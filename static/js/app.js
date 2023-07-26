@@ -155,8 +155,12 @@ function toggleCardItem(button) {
   const precoFloat = parseFloat(preco.replace(/\s|[R$,]/g, ''));
   const precoFinalFloat = parseFloat(precoFinal.replace(/\s|[R$,]/g, ''));
 
-  if (precoFinalFloat > precoFloat) {
-    alert('O preço final não pode ser maior que o preço real!');
+  const valorMaximo = precoFloat * 0.81;
+
+  console.log(valorMaximo)
+
+  if (precoFinalFloat < valorMaximo) {
+    alert('O valor mínimo para esse item é: ' + valorMaximo.toFixed(3));
     return; // Sai da função sem continuar a execução
   }
 
