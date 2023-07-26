@@ -168,9 +168,11 @@ function toggleCardItem(button) {
   console.log(valorMaximo);
 
   if (precoFinalFloat < valorMaximo) {
-    alert('O valor mínimo para esse item é: ' + valorMaximo.toFixed(2));
-    return; // Sai da função sem continuar a execução
+    alert('Item adicionado. O valor excedeu o desconto máximo');
+    // return; // Sai da função sem continuar a execução
   }
+
+  alert('Item adicionado');
 
   const item = document.createElement('li');
   item.dataset.description = description;
