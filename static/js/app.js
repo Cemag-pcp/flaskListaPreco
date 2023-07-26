@@ -150,17 +150,25 @@ function toggleCardItem(button) {
   const cor = corSelect.value;
   const precoFinalInput = row.querySelector('.preco-input');
   const precoFinal = precoFinalInput.value.trim();
-
+  
   // Convertendo os preços para valores numéricos antes da comparação
-  const precoFloat = parseFloat(preco.replace(/\s|[R$,]/g, ''));
-  const precoFinalFloat = parseFloat(precoFinal.replace(/\s|[R$,]/g, ''));
+  const precoFloat = (parseFloat(preco.replace('R$', '')) * 1000).toFixed(2);
+  const precoFinalFloat = (parseFloat(precoFinal.replace('R$', '')) * 1000).toFixed(2);
+
+  console.log(precoFinalFloat);
+  console.log(precoFloat);
+
 
   const valorMaximo = precoFloat * 0.81;
 
-  console.log(valorMaximo)
+  // console.log(valorMaximo)
+  // console.log(precoFinalFloat)
+  // console.log(precoFloat)
+
+  console.log(valorMaximo);
 
   if (precoFinalFloat < valorMaximo) {
-    alert('O valor mínimo para esse item é: ' + valorMaximo.toFixed(3));
+    alert('O valor mínimo para esse item é: ' + valorMaximo.toFixed(2));
     return; // Sai da função sem continuar a execução
   }
 
