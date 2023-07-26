@@ -334,6 +334,7 @@ ul.listCard {
     .filter-wrapper2 {
         display: grid;
         grid-template-columns: 1fr fr;
+        max-width: 200px;
         gap: 20px;
         align-content: center;
         justify-content: space-evenly;
@@ -347,7 +348,6 @@ ul.listCard {
 }
 
 #limpar {
-  -webkit-appearance: none;
   background: rgb(255, 161, 113);
   border: 2px solid rgb(255, 142, 85);
   border-radius: 4px;
@@ -609,7 +609,6 @@ input{
   }
 
   #filtrar {
-    -webkit-appearance: none;
     background: rgb(255, 161, 113);
     border: 2px solid rgb(255, 142, 85);
     border-radius: 4px;
@@ -625,24 +624,6 @@ input{
     cursor: pointer;
     outline: none;
   }
-@media (max-width:1000px){
-  #filtrar {
-    background: rgb(255, 161, 113);
-    border: 2px solid rgb(255, 142, 85);
-    border-radius: 4px;
-    outline: none;
-    padding: 0.5em 0.8em;
-    width: 90%;
-    margin-right: 15px;
-  
-    color: #ffffff;
-    font-size: 1em;
-    font-family: 'Poppins', sans-serif;
-    font-weight: bold;
-    cursor: pointer;
-    outline: none;
-  }
-}
   #filtrar:hover {
     background: rgb(255, 142, 85);;
     outline: none;
@@ -653,12 +634,124 @@ input{
     outline: none;
   }
 
-  #filtro-contato{
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+  .gerar_proposta{
+    background: rgb(255, 161, 113);
+    border: 2px solid rgb(255, 142, 85);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 250px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
   }
 
-  #forma-pagamento{
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+  .gerar_proposta:hover {
+    background: rgb(255, 142, 85);;
+    outline: none;
   }
+  
+  .gerar_proposta:active {
+    background: rgb(255, 142, 85);;
+    outline: none;
+  }
+
+  .consulta_precos{
+    background: rgb(2, 199, 117);
+    border: 2px solid rgb(0, 170, 99);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 250px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .consulta_precos:hover {
+    background: rgb(0, 158, 92);
+    outline: none;
+  }
+  
+  .consulta_precos:active {
+    background: rgb(0, 158, 92);
+    outline: none;
+  }
+
+@media (max-width:1000px){
+  #filtrar {
+    background: rgb(255, 161, 113);
+    border: 2px solid rgb(255, 142, 85);
+    border-radius: 4px;
+    outline: none;
+    padding: 0.5em 0.8em;
+    width: 90%;
+    margin-right: 15px;
+    color: #ffffff;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  .gerar_proposta{
+    background: rgb(255, 161, 113);
+    border: 2px solid rgb(255, 142, 85);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 60%;
+    margin-right: 15px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  .consulta_precos{
+    background: rgb(0, 185, 108);
+    border: 2px solid rgb(0, 194, 113);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 60%;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  .botoes_gerar_consultar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-content: center;
+    flex-wrap: wrap;
+    height: 50vh; /* Ocupa 100% da altura da janela do navegador */
+  }
+}
+
+.botoes_gerar_consultar{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-content: center;
+  flex-wrap: wrap;
+  height: 50vh; /* Ocupa 100% da altura da janela do navegador */
+}
