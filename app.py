@@ -114,26 +114,12 @@ def lista():
     regiao = pd.DataFrame(regiao)
     regiao = regiao['tabela_de_preco'][0]
 
-    print(regiao)
-
-    # conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    # cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
     representante = session['user_id']
 
-    # query = """SELECT regiao FROM users WHERE username = %s"""
-    # placeholders = [representante]
-
-    # cur.execute(query, placeholders)
-    
-    # regiao = cur.fetchall()
-    # regiao = pd.DataFrame(regiao)
-    # regiao = regiao['regiao'][0]
-
-    # print(regiao)
-
-    query = """ 
-            SELECT subquery.*, t3.representante, t3.favorito
+    if representante == 'Sônia':
+        
+        query = """ 
+            SELECT subquery.*, t3.favorito
                 FROM (
                     SELECT DISTINCT t1.*, t2.preco, t2.lista,
                         REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
@@ -144,9 +130,24 @@ def lista():
                     LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
                     WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
-            WHERE subquery.lista_nova = '{}' AND (t3.representante = '{}' OR t3.representante IS NULL)
             ORDER BY t3.favorito ASC;
-            """.format(regiao, representante)
+            """
+    else:
+        query = """ 
+                SELECT subquery.*, t3.representante, t3.favorito
+                    FROM (
+                        SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                            REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                            COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                            COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                            COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                        FROM tb_produtos AS t1
+                        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                        WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
+                WHERE subquery.lista_nova = '{}' AND (t3.representante = '{}' OR t3.representante IS NULL)
+                ORDER BY t3.favorito ASC;
+                """.format(regiao, representante)
     
     df = pd.read_sql_query(query, conn)
 
@@ -165,21 +166,36 @@ def lista():
     pneu_unique = df[['pneu_tratado']].drop_duplicates().values.tolist()
     descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
 
-    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
-    nome_completo = pd.read_sql_query(query_nome_completo, conn)
-    nome_completo = nome_completo['nome_completo'][0]
+    if representante == 'Sônia':
 
-    query2 = """
-            SELECT t2.*, t1.responsavel
-            FROM tb_clientes_representante as t1
-            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND responsavel = %s 
-            """
+        query2 = """
+        SELECT t2.*, t1.responsavel
+        FROM tb_clientes_representante as t1
+        RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+        WHERE 1=1
+        """
+
+        df_cliente_contatos = pd.read_sql_query(query2, conn)
+    else:
+        query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
     
-    placeholders = [nome_completo]
-    cur.execute(query2, placeholders)
-    cliente_contatos = cur.fetchall()
-    df_cliente_contatos = pd.DataFrame(cliente_contatos)
+        nome_completo = pd.read_sql_query(query_nome_completo, conn)
+        nome_completo = nome_completo['nome_completo'][0]
+
+        query2 = """
+                SELECT t2.*, t1.responsavel
+                FROM tb_clientes_representante as t1
+                RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+                WHERE 1=1 AND responsavel = %s 
+                """
+    
+        placeholders = [nome_completo]
+        cur.execute(query2, placeholders)
+        cliente_contatos = cur.fetchall()
+
+        df_cliente_contatos = pd.DataFrame(cliente_contatos)
+    
+    df_cliente_contatos = df_cliente_contatos.drop_duplicates()
 
     nome_cliente = df_cliente_contatos[['nome']].values.tolist()
     contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
@@ -899,19 +915,32 @@ def atualizar_cliente():
     tabela_clientes = dict(tabela_clientes)
 
     condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
+    
+    placeholders = []
 
-    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
-    nome_completo = pd.read_sql_query(query_nome_completo, conn)
-    nome_completo = nome_completo['nome_completo'][0]
+    if representante == 'Sônia':
+        
+        query2 = """
+                SELECT t2.*, t1.responsavel
+                FROM tb_clientes_representante as t1
+                RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+                WHERE 1=1
+                """
+        df_clientes = pd.read_sql_query(query2, conn)
+    else:
+        query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
+        nome_completo = pd.read_sql_query(query_nome_completo, conn)
+        nome_completo = nome_completo['nome_completo'][0]
 
-    query2 = """
-        SELECT t2.*, t1.responsavel
-        FROM tb_clientes_representante as t1
-        RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-        WHERE 1=1 AND t1.responsavel = %s
-        """
+        query2 = """
+            SELECT t2.*, t1.responsavel
+            FROM tb_clientes_representante as t1
+            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+            WHERE 1=1 AND t1.responsavel = %s
+            """
 
-    placeholders = [nome_completo]
+        placeholders = [nome_completo]
+
     if nome_cliente:
         query2 += " AND t2.nome = %s"
         placeholders.append(nome_cliente)
@@ -1027,17 +1056,28 @@ def consulta():
 
     representante = session['user_id']
     
-    query = """ SELECT DISTINCT(
-                    REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
-                FROM tb_clientes_representante
-                WHERE marcadores = %s; """
+    if representante == 'Sônia':
 
-    placeholders = [representante]
+        query = """ SELECT DISTINCT(
+                REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+            FROM tb_clientes_representante """
+        
+        regiao = pd.read_sql_query(query, conn)
 
-    cur.execute(query, placeholders)
+    else:
+
+        query = """ SELECT DISTINCT(
+                        REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                    FROM tb_clientes_representante
+                    WHERE marcadores = %s; """
+
+        placeholders = [representante]
+
+        cur.execute(query, placeholders)
     
-    regiao = cur.fetchall()
-    regiao = pd.DataFrame(regiao)
+        regiao = cur.fetchall()
+        regiao = pd.DataFrame(regiao)
+    
     regiao = regiao.values.tolist()
 
     # Transforme a lista de listas em uma lista de strings planas
@@ -1047,7 +1087,25 @@ def consulta():
     # Transforme a lista em uma string com os itens separados por vírgulas
     regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
 
-    query = """ 
+    if representante == 'Sônia':
+
+            query = """ 
+                SELECT subquery.*, t3.representante, t3.favorito
+                    FROM (
+                        SELECT DISTINCT t1.*, t2.preco, t2.lista,
+                            REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                            COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                            COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                            COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                        FROM tb_produtos AS t1
+                        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+                        WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
+                ORDER BY t3.favorito ASC;
+                """
+    else:
+        
+        query = """ 
             SELECT subquery.*, t3.representante, t3.favorito
                 FROM (
                     SELECT DISTINCT t1.*, t2.preco, t2.lista,
@@ -1081,21 +1139,36 @@ def consulta():
     descricao_generica_unique = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
     lista_unique = df[['lista_nova']].drop_duplicates().values.tolist()
 
-    query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
-    nome_completo = pd.read_sql_query(query_nome_completo, conn)
-    nome_completo = nome_completo['nome_completo'][0]
+    if representante == 'Sônia':
 
-    query2 = """
-            SELECT t2.*, t1.responsavel
-            FROM tb_clientes_representante as t1
-            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND responsavel = %s 
-            """
+        query2 = """
+        SELECT t2.*, t1.responsavel
+        FROM tb_clientes_representante as t1
+        RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+        WHERE 1=1
+        """
+
+        df_cliente_contatos = pd.read_sql_query(query2, conn)
+    else:
+        query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
     
-    placeholders = [nome_completo]
-    cur.execute(query2, placeholders)
-    cliente_contatos = cur.fetchall()
-    df_cliente_contatos = pd.DataFrame(cliente_contatos)
+        nome_completo = pd.read_sql_query(query_nome_completo, conn)
+        nome_completo = nome_completo['nome_completo'][0]
+
+        query2 = """
+                SELECT t2.*, t1.responsavel
+                FROM tb_clientes_representante as t1
+                RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
+                WHERE 1=1 AND responsavel = %s 
+                """
+    
+        placeholders = [nome_completo]
+        cur.execute(query2, placeholders)
+        cliente_contatos = cur.fetchall()
+
+        df_cliente_contatos = pd.DataFrame(cliente_contatos)
+
+    df_cliente_contatos = df_cliente_contatos.drop_duplicates()
 
     nome_cliente = df_cliente_contatos[['nome']].values.tolist()
     contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
@@ -1183,17 +1256,26 @@ def atualizar_dados_sem_cliente():
     else:
         representante = session['user_id']
         
-        query_regiao = """ SELECT DISTINCT(
-                        REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
-                    FROM tb_clientes_representante
-                    WHERE marcadores = %s; """
-
-        placeholders_regiao = [representante]
-
-        cur.execute(query_regiao, placeholders_regiao)
+        if representante == 'Sônia':
         
-        regiao = cur.fetchall()
-        regiao = pd.DataFrame(regiao)
+            query_regiao = """ SELECT DISTINCT(
+                    REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                FROM tb_clientes_representante """
+
+            regiao = pd.read_sql_query(query_regiao, conn)
+        else:
+            query_regiao = """ SELECT DISTINCT(
+                    REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                FROM tb_clientes_representante
+                WHERE marcadores = %s; """
+
+            placeholders_regiao = [representante]
+
+            cur.execute(query_regiao, placeholders_regiao)
+        
+            regiao = cur.fetchall()
+            regiao = pd.DataFrame(regiao)
+        
         regiao = regiao.values.tolist()
 
         # Transforme a lista de listas em uma lista de strings planas
@@ -1203,7 +1285,11 @@ def atualizar_dados_sem_cliente():
         # Transforme a lista em uma string com os itens separados por vírgulas
         regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
 
-        query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(regiao_string, representante)
+
+        if representante == 'Sônia':
+            query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') ORDER BY t3.favorito ASC;".format(regiao_string)
+        else:
+            query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(regiao_string, representante)
     
 
     print(query)
