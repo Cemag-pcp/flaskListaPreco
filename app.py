@@ -52,7 +52,7 @@ def login():
             session['user_id'] = user['username']
             print(session['user_id'])
             flash('Logged in successfully.')
-            return redirect(url_for('lista'))
+            return redirect(url_for('opcoes'))
 
         flash('Invalid username or password.')
 
@@ -1005,6 +1005,7 @@ def atualizar_regiao():
     return redirect(url_for('lista', nome_cliente=nome_cliente_regiao))
 
 @app.route('/opcoes', methods=['GET', 'POST'])
+@login_required
 def opcoes():
     if request.method == 'POST':
         
