@@ -1041,6 +1041,7 @@ def consulta():
 
     # Transforme a lista de listas em uma lista de strings planas
     regiao_plana = [item for sublist in regiao for item in sublist]
+    regiao_plana = [item for item in regiao_plana if item is not None]
 
     # Transforme a lista em uma string com os itens separados por vírgulas
     regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
@@ -1196,7 +1197,8 @@ def atualizar_dados_sem_cliente():
 
         # Transforme a lista de listas em uma lista de strings planas
         regiao_plana = [item for sublist in regiao for item in sublist]
-
+        regiao_plana = [item for item in regiao_plana if item is not None]
+        
         # Transforme a lista em uma string com os itens separados por vírgulas
         regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
 
@@ -1232,7 +1234,6 @@ def atualizar_dados_sem_cliente():
                     mola_freio=mola_freio, tamanho=tamanho,
                     rodado=rodado, pneu=pneu,
                     descricao_generica=descricao_generica, lista_preco=lista_preco)
-
 
 if __name__ == '__main__':
     app.run(port=8000)

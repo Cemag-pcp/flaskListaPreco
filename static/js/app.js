@@ -144,12 +144,21 @@ function toggleCardItem(button) {
   const row = button.parentNode.parentNode;
   const columns = row.getElementsByTagName('td');
 
-  const description = columns[1].textContent; // Assuming the description is in the 2nd column
-  const preco = columns[4].textContent; // Assuming the preco is in the 5th column
+  const description = columns[2].textContent; // Assuming the description is in the 2nd column
+  const preco = columns[5].textContent; // Assuming the preco is in the 5th column
   const corSelect = row.querySelector('.cor-dropdown');
   const cor = corSelect.value;
   const precoFinalInput = row.querySelector('.preco-input');
   const precoFinal = precoFinalInput.value.trim();
+
+  // Convertendo os preços para valores numéricos antes da comparação
+  const precoFloat = parseFloat(preco.replace(/\s|[R$,]/g, ''));
+  const precoFinalFloat = parseFloat(precoFinal.replace(/\s|[R$,]/g, ''));
+
+  if (precoFinalFloat > precoFloat) {
+    alert('O preço final não pode ser maior que o preço real!');
+    return; // Sai da função sem continuar a execução
+  }
 
   const item = document.createElement('li');
   item.dataset.description = description;
@@ -230,7 +239,7 @@ function toggleRowColor(checkbox) {
     var currentQuantity = parseInt(quantitySpan.innerText);
     updateTotal()
     if (currentQuantity > 0) {
-      quantitySpan.innerText = currentQuantity - 1;
+      quantitySpan.innerText = currentQuantity - 0;
     }
   }
 }
