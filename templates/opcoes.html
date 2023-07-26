@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h1>Selecione uma opção:</h1>
-<form method="post">
-    <input type="radio" name="option" value="lista"> Rota 1<br>
-    <input type="radio" name="option" value="consulta"> Rota 2<br>
-    <input type="submit" value="Enviar">
+<form class="botoes_gerar_consultar" method="post">
+    <h1 style="font-size: 30px;">Selecione uma opção:</h1>
+    <button class="gerar_proposta" type="submit" name="option"  value="lista">Gerar Proposta<br>
+    <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços<br>
 </form>
 
 {% endblock %}  
