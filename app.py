@@ -760,16 +760,6 @@ def atualizar_dados():
 
     representante = session['user_id']
 
-    # query = """SELECT regiao FROM users WHERE username = %s"""
-    # placeholders = [representante]
-
-    # cur.execute(query, placeholders)
-    
-    # regiao = cur.fetchall()
-    # regiao = pd.DataFrame(regiao)
-    # regiao = regiao['regiao'][0]
-
-
     query = """SELECT tabela_de_preco FROM tb_clientes_representante WHERE nome = %s"""
     placeholders = [nome_cliente]
 
@@ -785,7 +775,7 @@ def atualizar_dados():
             SELECT subquery.*, t3.representante, t3.favorito
             FROM (
                 SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                    REPLACE(REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e '), 'Lista Norte e Nordeste','Lista Preço N e NE') AS lista_nova,
                     COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
                     COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
                     COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
