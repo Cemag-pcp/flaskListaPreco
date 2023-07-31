@@ -175,6 +175,7 @@
 </div>
 
 <div id="modalEnviar" class="modal">
+
   <div class="modal-content">
     <span class="close">&times;</span> <!-- Botão de fechar -->
     
@@ -208,7 +209,9 @@
     </div>
 
     <button class="enviarModal" id="enviar-button" onclick="enviarDados()">Enviar</button>
+
   </div>
+
 </div>
 
 <script>
@@ -801,12 +804,64 @@
     // Chame a função para enviar os dados para o backend usando fetch
     sendData(items, nome, contato, formaPagamento, observacoes);
   }
-
+  
   // Obtenha o botão "Enviar"
   const enviarButton = document.getElementById('enviar-button');
 
   // Adicione um evento de clique ao botão "Enviar"
   enviarButton.addEventListener('click', handleEnviarButtonClick);
+
+</script>
+
+<script>
+  // Função para copiar os itens e o total para a área de transferência
+  function copiarItensETotalParaAreaDeTransferencia() {
+    // Obtenha todos os itens da lista
+    const listItems = document.querySelectorAll('.listCard li');
+
+    // Construa uma string com o conteúdo dos itens
+    let itensTexto = '';
+    listItems.forEach(listItem => {
+      const descricao = listItem.getAttribute('data-description');
+      const cor = listItem.querySelector('.cor').textContent;
+      const preco = listItem.querySelector('.quanti').textContent;
+      const quantidade = listItem.querySelector('.numeros').textContent;
+
+      // Construa a string para cada item
+      itensTexto += `${descricao}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
+    });
+
+    // Obtenha o valor do elemento HTML que contém o total
+    const total = document.querySelector('.total').textContent;
+
+    // Adicione o total à string de itens
+    itensTexto += `Total: ${total}\n`;
+
+    // Crie um elemento de área de transferência temporário para copiar o texto
+    const tempInput = document.createElement('textarea');
+    tempInput.style = 'position: absolute; left: -1000px; top: -1000px';
+    tempInput.value = itensTexto;
+    document.body.appendChild(tempInput);
+
+    // Seleciona o texto dentro do elemento de área de transferência
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+    // Executa o comando de cópia para copiar o texto selecionado
+    document.execCommand('copy');
+
+    // Remove o elemento de área de transferência temporário
+    document.body.removeChild(tempInput);
+
+    alert('Itens copiados para a área de transferência!\nEm cerca de 5 minutos você receberá um e-mail com o link da proposta.');
+
+  }
+
+  // Obtenha o botão que aciona a cópia para a área de transferência
+  const copiarItensButton = document.getElementById('enviar-button');
+
+  // Adicione um evento de clique ao botão para copiar os itens e o total
+  copiarItensButton.addEventListener('click', copiarItensETotalParaAreaDeTransferencia);
 </script>
 
 <script>// Atualizar dados de dropdow de clientes
