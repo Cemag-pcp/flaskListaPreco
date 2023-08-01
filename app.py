@@ -1056,12 +1056,19 @@ def consulta():
 
     else:
 
+        query_marcadores = """SELECT marcadores FROM users WHERE username = '{}'""".format(representante)
+        cur.execute(query_marcadores)
+    
+        marcadores = cur.fetchall()
+        marcadores = pd.DataFrame(marcadores)
+        marcadores = marcadores['marcadores'][0]
+
         query = """ SELECT DISTINCT(
                         REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
                     FROM tb_clientes_representante
                     WHERE marcadores = %s; """
 
-        placeholders = [representante]
+        placeholders = [marcadores]
 
         cur.execute(query, placeholders)
     
@@ -1254,12 +1261,19 @@ def atualizar_dados_sem_cliente():
 
             regiao = pd.read_sql_query(query_regiao, conn)
         else:
+            query_marcadores = """SELECT marcadores FROM users WHERE username = '{}'""".format(representante)
+            cur.execute(query_marcadores)
+        
+            marcadores = cur.fetchall()
+            marcadores = pd.DataFrame(marcadores)
+            marcadores = marcadores['marcadores'][0]
+            
             query_regiao = """ SELECT DISTINCT(
-                    REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
-                FROM tb_clientes_representante
-                WHERE marcadores = %s; """
+                        REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+                    FROM tb_clientes_representante
+                    WHERE marcadores = %s; """
 
-            placeholders_regiao = [representante]
+            placeholders_regiao = [marcadores]
 
             cur.execute(query_regiao, placeholders_regiao)
         
