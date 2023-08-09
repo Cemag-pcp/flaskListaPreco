@@ -638,14 +638,6 @@
     contatoClienteDropdown.append($('<option>').text('Selecionar').attr('value', ''));
     formaPagamentoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
 
-    $.each(contato_cliente, function(index, value) {
-      var option = $('<option>').text(value[0]).attr('value', value[0]);
-      if (value[0] === contatoClienteSelecionado) {
-        option.attr('selected', 'selected');
-      }
-      contatoClienteDropdown.append(option);
-    });
-
     $.each(formaPagamento, function(index, value) {
       var option = $('<option>').text(value).attr('value', value);
       if (value === formaPagamentoSelecionado) {
@@ -654,6 +646,13 @@
       formaPagamentoDropdown.append(option);
     });
 
+    $.each(contato_cliente, function(index, value) {
+      var option = $('<option>').text(value[0]).attr('value', value[0]);
+      if (value[0] === contatoClienteSelecionado) {
+        option.attr('selected', 'selected');
+      }
+      contatoClienteDropdown.append(option);
+    });
 
     $("#loading-overlay").hide();
 
@@ -818,7 +817,7 @@
         const formaPagamento = document.getElementById('forma-pagamento').value;
 
         // Verifica se algum dos campos está vazio
-        if (filtroNome === '' || filtroContato === '' || formaPagamento === '') {
+        if (filtroNome === '' || formaPagamento === '') {
           $("#loading-overlay").hide();
           return;
         }
