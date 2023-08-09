@@ -989,26 +989,28 @@ def process_data():
     df_items['representante'] = representante
     df_items['id'] = unique_id
 
-    query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    print(formaPagamento)
 
-    # df_geral['quantity'] = df_geral['quantity'].astype(str)
+    # query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
+    #             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-    # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
-    valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
-                    df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
-                    ))
+    # # df_geral['quantity'] = df_geral['quantity'].astype(str)
 
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
+    # # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
+    # valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
+    #                 df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
+    #                 ))
 
-    cur = conn.cursor
+    # conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
 
-    # Abre uma transação explícita
-    with conn:
-        # Cria um cursor dentro do contexto da transação
-        with conn.cursor() as cur:
-            # Executa a inserção das linhas usando executemany
-            cur.executemany(query, valores)
+    # cur = conn.cursor
+
+    # # Abre uma transação explícita
+    # with conn:
+    #     # Cria um cursor dentro do contexto da transação
+    #     with conn.cursor() as cur:
+    #         # Executa a inserção das linhas usando executemany
+    #         cur.executemany(query, valores)
 
     flash("Enviado com sucesso", 'success')
 
