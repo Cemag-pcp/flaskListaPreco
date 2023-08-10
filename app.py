@@ -125,7 +125,7 @@ def lista():
                         COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                     FROM tb_produtos AS t1
                     LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                    WHERE t2.preco IS NOT NULL) subquery 
             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
             ORDER BY t3.favorito ASC;
             """
@@ -148,7 +148,7 @@ def lista():
                             COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                         FROM tb_produtos AS t1
                         LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                        WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                        WHERE t2.preco IS NOT NULL) subquery 
                 LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
                 WHERE subquery.lista_nova = '{}' AND (t3.representante = '{}' OR t3.representante IS NULL)
                 ORDER BY t3.favorito ASC;
@@ -786,7 +786,7 @@ def atualizar_dados():
                     COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                 FROM tb_produtos AS t1
                 LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
+                WHERE t2.preco IS NOT NULL
             """
 
     placeholders = []
@@ -1111,7 +1111,7 @@ def consulta():
                             COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                         FROM tb_produtos AS t1
                         LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                        WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                        WHERE t2.preco IS NOT NULL) subquery 
                 LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
                 ORDER BY t3.favorito ASC;
                 """
@@ -1135,7 +1135,7 @@ def consulta():
                         COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                     FROM tb_produtos AS t1
                     LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+                    WHERE t2.preco IS NOT NULL) subquery 
             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
             WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL)
             ORDER BY t3.favorito ASC;
@@ -1251,7 +1251,7 @@ def atualizar_dados_sem_cliente():
                     COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                 FROM tb_produtos AS t1
                 LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
+                WHERE t2.preco IS NOT NULL
             """
 
     if descricao:
