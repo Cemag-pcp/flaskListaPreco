@@ -134,7 +134,15 @@ def lista():
                 SELECT subquery.*, t3.representante, t3.favorito
                     FROM (
                         SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                            REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(t2.lista, ' de ', ' '),
+                                    '/',
+                                    ' e '
+                                    ),
+                                    'Lista Norte e Nordeste',
+                                    'Lista Preço N e NE'
+                                ) AS lista_nova,
                             COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
                             COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
                             COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
@@ -941,6 +949,7 @@ def atualizar_cliente():
 
     # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
     df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
+    
     print(df_contatos)
 
     # Reorganiza o DataFrame para ter um contato por linha
@@ -949,11 +958,15 @@ def atualizar_cliente():
     # Limpa os espaços em branco antes e depois dos contatos
     df_clientes['contatos'] = df_clientes['contatos'].str.strip()
 
+    df_clientes.fillna('',inplace=True)
+
     nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
     contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
-
+    
+    print(contato_cliente)
+    print(nome_cliente)
     print(condicoes)
-
+    
     return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente,condicoes=condicoes)
 
 @app.route('/enviarBackend', methods=['POST'])
@@ -988,26 +1001,26 @@ def process_data():
 
     print(formaPagamento)
 
-    # query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
-    #             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-    # # df_geral['quantity'] = df_geral['quantity'].astype(str)
+    # df_geral['quantity'] = df_geral['quantity'].astype(str)
 
-    # # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
-    # valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
-    #                 df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
-    #                 ))
+    # Cria uma lista de tuplas contendo os valores das colunas do DataFrame
+    valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
+                    df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
+                    ))
 
-    # conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
 
-    # cur = conn.cursor
+    cur = conn.cursor
 
-    # # Abre uma transação explícita
-    # with conn:
-    #     # Cria um cursor dentro do contexto da transação
-    #     with conn.cursor() as cur:
-    #         # Executa a inserção das linhas usando executemany
-    #         cur.executemany(query, valores)
+    # Abre uma transação explícita
+    with conn:
+        # Cria um cursor dentro do contexto da transação
+        with conn.cursor() as cur:
+            # Executa a inserção das linhas usando executemany
+            cur.executemany(query, valores)
 
     flash("Enviado com sucesso", 'success')
 
@@ -1062,8 +1075,11 @@ def consulta():
         marcadores = pd.DataFrame(marcadores)
         marcadores = marcadores['marcadores'][0]
 
-        query = """ SELECT DISTINCT(
-                        REPLACE(tabela_de_preco, 'Lista Preço MT','Lista Preço MT e RO')) AS lista_nova
+        query = """ SELECT DISTINCT
+                    REPLACE(
+                        REPLACE(tabela_de_preco, 'Lista Preço MT', 'Lista Preço MT e RO'),
+                        'Lista Norte e Nordeste', 'Lista Preço N e NE'
+                    ) AS lista_nova
                     FROM tb_clientes_representante
                     WHERE marcadores = %s; """
 
@@ -1105,7 +1121,15 @@ def consulta():
             SELECT subquery.*, t3.representante, t3.favorito
                 FROM (
                     SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                        REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                          REPLACE(
+                            REPLACE(
+                                REPLACE(t2.lista, ' de ', ' '),
+                                '/',
+                                ' e '
+                                ),
+                                'Lista Norte e Nordeste',
+                                'Lista Preço N e NE'
+                            ) AS lista_nova,
                         COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
                         COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
                         COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
@@ -1213,7 +1237,15 @@ def atualizar_dados_sem_cliente():
             SELECT subquery.*, t3.representante, t3.favorito
             FROM (
                 SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(t2.lista, ' de ', ' '),
+                                '/',
+                                ' e '
+                                ),
+                                'Lista Norte e Nordeste',
+                                'Lista Preço N e NE'
+                            ) AS lista_nova,
                     COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
                     COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
                     COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
@@ -1294,7 +1326,6 @@ def atualizar_dados_sem_cliente():
         else:
             query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(regiao_string, representante)
     
-
     print(query)
 
     cur.execute(query)
