@@ -457,19 +457,59 @@ input{
     position: absolute;
   }
   
+  #alerta_login{
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
+    justify-content: center;
+    background-color: #fc8383;
+    color: #b12121;
+    border-radius: 10px;
+    margin: 0;
+    padding: 10px;
+    z-index: 9999;
+    width: 30%;
+    left: 50%;
+    top: 15%;
+    transform: translate(-50%,100%);
+    animation: fadeOut 5s forwards;
+    opacity: 0;
+    position: absolute;
+  }
+
   @media (max-width:600px){
 
-    #alerta_Os{
-        margin: 0;
-        padding: 10px;
-        z-index: 9999;
-        width: 80%;
-        left: 50%;
-        top: 10%;
-        transform: translate(-50%,0%);
-        animation: fadeOut 10s forwards;
-        opacity: 0;
-        position: absolute;
+  #alerta_Os{
+      margin: 0;
+      padding: 10px;
+      z-index: 9999;
+      width: 80%;
+      left: 50%;
+      top: 10%;
+      transform: translate(-50%,0%);
+      animation: fadeOut 5s forwards;
+      opacity: 0;
+      position: absolute;
+  }
+  #alerta_login{
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    justify-content: center;
+    background-color: #fc8383;
+    color: #b12121;
+    border-radius: 10px;
+    margin: 0;
+    padding: 10px;
+    z-index: 9999;
+    width: 80%;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%,100%);
+    animation: fadeOut 10s forwards;
+    opacity: 0;
+    position: absolute;
   }
 }
 

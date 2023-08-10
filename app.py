@@ -43,18 +43,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        # Verifique se o usuário existe no banco de dados
-        user = cur.execute("SELECT * FROM users WHERE username = {} AND password = {}".format("'"+username+"'", "'"+password+"'"))
+        cur.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
         user = cur.fetchone()
 
-        if len(user) > 0:
-            # Salve o ID do usuário na sessão
+        if user is not None:
             session['user_id'] = user['username']
-            print(session['user_id'])
-            flash('Logged in successfully.')
+            flash('Usuário ou Senha inválida', category='error')
             return redirect(url_for('opcoes'))
-
-        flash('Invalid username or password.')
+        else:
+            flash('Usuário ou Senha inválida', category='error')
 
     return render_template('login.html')
 
