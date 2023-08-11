@@ -25,7 +25,7 @@ tb_clientes_contatos
 
 tb_produtos
     essa tabela vem do innovaro
-    Produtos > carretas agricolas > exportar
+    Projetos > carretas agricolas > exportar
     Exportar todas as colunas
     Sem nome de coluna
     Periodicidade: Mensal
