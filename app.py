@@ -1184,7 +1184,8 @@ def consulta():
                         eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
                         tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
                         pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                        lista_unique=lista_unique,nome_cliente=nome_cliente,contatos_cliente=contatos_cliente)
+                        lista_unique=lista_unique,nome_cliente=nome_cliente,contatos_cliente=contatos_cliente,
+                        representante=representante)
 
 @app.route('/atualizar-dados-sem-cliente', methods=['POST'])
 def atualizar_dados_sem_cliente():
