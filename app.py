@@ -18,6 +18,7 @@ import uuid
 from sqlalchemy import create_engine
 import warnings
 from babel.numbers import format_currency
+import requests
 
 warnings.filterwarnings("ignore")
 
@@ -33,6 +34,48 @@ DB_PASS = "15512332"
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
 
 engine = create_engine(f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{5432}/{DB_NAME}')
+
+def api_precos():
+
+    response = requests.get('http://cemag.innovaro.com.br/api/publica/v1/tabelas/listarPrecos')
+    
+    # Verificar o código de status HTTP
+    if response.status_code == 200:
+        
+        # A consulta foi bem-sucedida
+        dados = response.json()
+        df = pd.json_normalize(dados, 'tabelaPreco')
+        df = df.explode('precos')
+
+        # Criar colunas separadas para "valor" e "produto"
+        df['valor'] = df['precos'].apply(lambda x: x['valor'])
+        df['produto'] = df['precos'].apply(lambda x: x['produto'])
+        df['valor'] = pd.to_numeric(df['valor'].str.replace('.', '').str.replace(',', '.'))
+        
+        df['nome'] = df['nome'].replace('Lista Preço Sudeste/Centro Oeste','Lista de Preço SDE/COE')
+        df['nome'] = df['nome'].replace('Lista Preço MT/RO','Lista de Preço MT/RO')
+        df['nome'] = df['nome'].replace('Lista Preço N e NE','Lista Norte/Nordeste')
+
+        df = df.drop(columns=['precos', 'codigo'])
+
+        df = df.rename(columns={'nome':'lista', 'valor':'preco', 'produto':'codigo'})
+
+        df_final = df[['lista','codigo','preco']].reset_index(drop=True)
+        df_final['lista_nova'] =df_final['lista'].str.replace(' de ', ' ')\
+                                                .str.replace('/',' e ')\
+                                                .str.replace('Lista Norte e Nordeste', 'Lista Preço N e NE')
+        
+    else:
+        conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        df_final = pd.read_sql("select * from tb_lista_precos", conn)
+
+        df_final['lista_nova'] =df_final['lista'].str.replace(' de ', ' ')\
+                                                .str.replace('/',' e ')\
+                                                .str.replace('Lista Norte e Nordeste', 'Lista Preço N e NE')
+
+    return df_final
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -88,13 +131,11 @@ def login_required(view):
 
     return wrapped_view
 
-@app.route('/')
+@app.route('/',  methods=['GET', 'POST'])
 @login_required
 def lista():
 
     nome_cliente = request.args.get('nome_cliente')
-
-    print(nome_cliente)
 
     if nome_cliente == None:
         nome_cliente = 'Agro Imperial-Leopoldina'
@@ -114,51 +155,47 @@ def lista():
     representante = session['user_id']
 
     if representante == 'Sônia':
-        
+        df_precos = api_precos()
+
         query = """ 
             SELECT subquery.*, t3.favorito
-                FROM (
-                    SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                        REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e ') AS lista_nova,
-                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
-                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
-                    FROM tb_produtos AS t1
-                    LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+            FROM (
+                SELECT DISTINCT t1.*,
+                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                    COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                    COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                FROM tb_produtos AS t1
+                WHERE t1.crm = 'T') subquery 
             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
             ORDER BY t3.favorito ASC;
             """
     else:
-        query = """ 
+        df_precos = api_precos()
+
+        query = """
                 SELECT subquery.*, t3.representante, t3.favorito
-                    FROM (
-                        SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                            REPLACE(
-                                REPLACE(
-                                    REPLACE(t2.lista, ' de ', ' '),
-                                    '/',
-                                    ' e '
-                                    ),
-                                    'Lista Norte e Nordeste',
-                                    'Lista Preço N e NE'
-                                ) AS lista_nova,
-                            COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                            COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
-                            COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
-                        FROM tb_produtos AS t1
-                        LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                        WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
-                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
-                WHERE subquery.lista_nova = '{}' AND (t3.representante = '{}' OR t3.representante IS NULL)
-                ORDER BY t3.favorito ASC;
-                """.format(regiao, representante)
-    
+                FROM(
+                    SELECT DISTINCT t1.*,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                    FROM tb_produtos AS t1
+                    WHERE t1.crm = 'T') subquery
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+                WHERE (t3.representante = '{}' OR t3.representante IS NULL)
+                ORDER BY t3.favorito ASC; 
+                """.format(representante)
+        
     df = pd.read_sql_query(query, conn)
+
+    df = df.merge(df_precos, how='left', on='codigo')
+    
+    if regiao:
+        df = df[df['lista_nova'] == regiao]
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
-    df['pneu'] = df['pneu'].fillna('Sem pneu')
+    df['pneu_tratado'] = df['pneu_tratado'].fillna('Sem pneu')
 
     data = df.values.tolist()
 
@@ -204,10 +241,8 @@ def lista():
 
     nome_cliente = df_cliente_contatos[['nome']].values.tolist()
     contatos_cliente = df_cliente_contatos[['contatos']].values.tolist()
-
-    print('funcionou')
-
-    return render_template('lista.html', data=data,
+        
+    return render_template('lista.html', representante=representante, data=data,
                         descricao_unique=descricao_unique,modelo_unique=modelo_unique,
                         eixo_unique=eixo_unique,mola_freio_unique=mola_freio_unique,
                         tamanho_unique=tamanho_unique,rodado_unique=rodado_unique,
@@ -467,10 +502,8 @@ def salvar_dados():
 
     if request.method == 'POST':
 
-
         conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
-
-        cur = conn.cursor
+        cur = conn.cursor()
 
         tabela = request.form.get('tabela')
         tabela = json.loads(tabela)
@@ -481,9 +514,19 @@ def salvar_dados():
         print(status, cliente)
 
         unique_id = str(uuid.uuid4())  # Gerar id unico
-
+        
+        representante = ""+session['user_id']+""
+        
         tb_orcamento = pd.DataFrame(tabela)
-        tb_orcamento['representante'] = ""+session['user_id']+""
+        
+        query = "SELECT nome_completo FROM users WHERE username = %s"
+        
+        cur.execute(query, (representante,))
+        
+        nome_completo = cur.fetchall()
+        nome_completo = nome_completo[0][0]
+        
+        tb_orcamento['representante'] = nome_completo
         tb_orcamento['dataOrcamento'] = datetime.today()
         tb_orcamento['dataOrcamento'] = tb_orcamento['dataOrcamento'].dt.strftime('%Y-%m-%d')
         tb_orcamento['cliente'] = cliente
@@ -775,58 +818,59 @@ def atualizar_dados():
     regiao = regiao['tabela_de_preco'][0]
 
     placeholders = [regiao]
-
-    query = """ 
-            SELECT subquery.*, t3.representante, t3.favorito
-            FROM (
-                SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    REPLACE(REPLACE(REPLACE(t2.lista, ' de ', ' '), '/', ' e '), 'Lista Norte e Nordeste','Lista Preço N e NE') AS lista_nova,
-                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
-                    COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
-                FROM tb_produtos AS t1
-                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
-            """
+    
+    query = """ SELECT subquery.*, t3.representante, t3.favorito
+                FROM (
+                    SELECT DISTINCT t1.*,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                    FROM tb_produtos AS t1
+                    WHERE t1.crm = 'T'
+                ) subquery
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+                WHERE (t3.representante = %s OR t3.representante IS NULL)
+                """
 
     placeholders = []
 
+    placeholders.append(representante)
+
     if descricao:
-        query += " AND t1.descricao_generica = %s"
+        query += " AND subquery.descricao_generica = %s"
         placeholders.append(descricao)
 
     if modelo:
-        query += " AND t1.modelo = %s"
+        query += " AND subquery.modelo = %s"
         placeholders.append(modelo)
 
     if eixo:
-        query += " AND t1.eixo = %s"
+        query += " AND subquery.eixo = %s"
         placeholders.append(eixo)
 
     if mola_freio:
-        query += " AND t1.mola_freio = %s"
+        query += " AND subquery.mola_freio = %s"
         placeholders.append(mola_freio)
 
     if rodado:
-        query += " AND t1.rodado = %s"
+        query += " AND subquery.rodado = %s"
         placeholders.append(rodado)
     
     if tamanho:
-        query += " AND COALESCE(t1.tamanho, 'N/A') = %s"
+        query += " AND COALESCE(subquery.tamanho, 'N/A') = %s"
         placeholders.append(tamanho)
 
     if pneu:
-        query += " AND COALESCE(t1.pneu, 'Sem pneu') = %s"
+        query += " AND COALESCE(subquery.pneu, 'Sem pneu') = %s"
         placeholders.append(pneu)
 
     if descricao_generica:
-        query += " AND COALESCE(t1.outras_caracteristicas, 'N/A') = %s"
+        query += " AND COALESCE(subquery.outras_caracteristicas, 'N/A') = %s"
         placeholders.append(descricao_generica)
     
-    placeholders.append(regiao)
-    placeholders.append(representante)
+    # placeholders.append(regiao)
 
-    query += ') subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova = %s AND (t3.representante = %s OR t3.representante IS NULL) ORDER BY t3.favorito ASC;'
+    query += ' ORDER BY t3.favorito ASC;'
     
     #query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE 1=1 AND (representante = %s OR representante ISNULL) ORDER BY favorito ASC;"
 
@@ -837,6 +881,11 @@ def atualizar_dados():
     data = cur.fetchall()
     df = pd.DataFrame(data)
 
+    df_precos = api_precos()
+
+    df = df.merge(df_precos, how='left', on='codigo')
+    df = df[df['lista_nova'] == regiao]
+
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
     descricao = df[['descricao_generica']].drop_duplicates().values.tolist()
@@ -846,9 +895,9 @@ def atualizar_dados():
     tamanho = df[['tamanho_tratados']].drop_duplicates().values.tolist()
     rodado = df[['rodado']].drop_duplicates().values.tolist()
     pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
-    descricao_generica = df[['outras_caracteristicas_tratada']].drop_duplicates().values.tolist()
+    descricao_generica = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
 
-    print(df)
+    print(query)
 
     data = df.values.tolist()
 
@@ -861,113 +910,22 @@ def atualizar_dados():
 @app.route('/atualizar-cliente', methods=['POST'])
 def atualizar_cliente():
     
+    nameCliente = request.form['nome_cliente']
+
+    print(nameCliente)
+
+    lista_opcoes_cliente = chamadaCondicoes(nameCliente)
+
     opcoes = ['À prazo - 1x','À prazo - 2x','À prazo - 3x','À prazo - 4x',
               'À prazo - 5x','À prazo - 6x','À prazo - 7x','À prazo - 8x',
               'À prazo - 9x','À prazo - 10x','A Vista','Antecipado','Cartão de Crédito',
               'Personalizado']
 
-    def obter_condicoes_pagamento(tabela_clientes,cliente,opcoes):
-        if cliente in tabela_clientes:
-            condicoes_cliente = tabela_clientes[cliente].split(";")
-            condicoes_disponiveis = []
-            for condicao in condicoes_cliente:
-                if condicao in opcoes:
-                    if "A Vista" in condicoes_cliente and len(condicoes_cliente) == 1:
-                        condicoes_disponiveis.append('A Vista')
-                    elif "Antecipado" in condicoes_cliente and len(condicoes_cliente) == 1:
-                        condicoes_disponiveis.append('Antecipado')
-                    elif "À prazo" in condicao:
-                        x = int(condicao[9:11].split()[0])
-                        condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
-                        condicoes_disponiveis.append('A Vista')
-                        condicoes_disponiveis.append('Antecipado')
-                        condicoes_disponiveis = list(set(condicoes_disponiveis))
-                    else:
-                        condicoes_disponiveis.append(condicao)
-                        condicoes_disponiveis.append('A Vista')
-                        condicoes_disponiveis.append('Antecipado')
-                        condicoes_disponiveis = list(set(condicoes_disponiveis))
-            condicoes_disponiveis = list(set(condicoes_disponiveis))
-            condicoes_disponiveis.sort(key=lambda x: opcoes.index(x))
-            return condicoes_disponiveis
-        else:
-            return []
-
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    cur = conn.cursor()
-
-    representante = session['user_id']
-
-    nome_cliente = request.form['nome_cliente']
-    contato_cliente = request.form['contato_cliente']
-
-    print(representante,nome_cliente)
-
-    query = """SELECT nome,condicao FROM tb_clientes_condicao WHERE nome = %s"""
+    condicoes = obter_condicoes_pagamento(lista_opcoes_cliente,opcoes)
     
-    cur.execute(query,[nome_cliente])
-    tabela_clientes = cur.fetchall()
-    tabela_clientes = dict(tabela_clientes)
-
-    condicoes = obter_condicoes_pagamento(tabela_clientes,nome_cliente,opcoes)
-    
-    placeholders = []
-
-    if representante == 'Sônia':
-        
-        query2 = """
-                SELECT t2.*, t1.responsavel
-                FROM tb_clientes_representante as t1
-                RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-                WHERE 1=1
-                """
-        df_clientes = pd.read_sql_query(query2, conn)
-    else:
-        query_nome_completo = """SELECT nome_completo FROM users WHERE username = '{}'""".format(representante)
-        nome_completo = pd.read_sql_query(query_nome_completo, conn)
-        nome_completo = nome_completo['nome_completo'][0]
-
-        query2 = """
-            SELECT t2.*, t1.responsavel
-            FROM tb_clientes_representante as t1
-            RIGHT JOIN tb_clientes_contatos as t2 ON t1.nome = t2.nome
-            WHERE 1=1 AND t1.responsavel = %s
-            """
-
-        placeholders = [nome_completo]
-
-    if nome_cliente:
-        query2 += " AND t2.nome = %s"
-        placeholders.append(nome_cliente)
-        
-    cur.execute(query2,placeholders)
-    data = cur.fetchall()
-
-    nome_colunas = ['id','estado','cidade','nome','contatos','telefones','responsavel']
-
-    df_clientes = pd.DataFrame(data, columns=nome_colunas)
-
-    # Divide a coluna 'contatos' em várias linhas com base no delimitador ';'
-    df_contatos = df_clientes['contatos'].str.split(';', expand=True).stack().reset_index(level=1, drop=True).rename('contatos')
-    
-    print(df_contatos)
-
-    # Reorganiza o DataFrame para ter um contato por linha
-    df_clientes = df_clientes.drop('contatos', axis=1).join(df_contatos)
-
-    # Limpa os espaços em branco antes e depois dos contatos
-    df_clientes['contatos'] = df_clientes['contatos'].str.strip()
-
-    df_clientes.fillna('',inplace=True)
-
-    nome_cliente = df_clientes[['nome']].drop_duplicates().values.tolist()
-    contato_cliente = df_clientes[['contatos']].drop_duplicates().values.tolist()
-    
-    print(contato_cliente)
-    print(nome_cliente)
     print(condicoes)
-    
-    return jsonify(nome_cliente=nome_cliente,contato_cliente=contato_cliente,condicoes=condicoes)
+
+    return jsonify(condicoes=condicoes)
 
 @app.route('/enviarBackend', methods=['POST'])
 def obs():
@@ -979,8 +937,18 @@ def obs():
 @app.route('/receber-dados', methods=['POST'])
 def process_data():
     data = request.get_json()
-
+    
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
+    cur = conn.cursor()  
+    
     representante = session['user_id']
+
+    query = "SELECT nome_completo FROM users WHERE username = %s"
+    
+    cur.execute(query, (representante,))
+    
+    nome_completo = cur.fetchall()
+    nome_completo = nome_completo[0][0]
 
     items = data['items']
     nome = data['nome']
@@ -996,7 +964,7 @@ def process_data():
     df_items['contato'] = contato
     df_items['formaPagamento'] = formaPagamento
     df_items['observacoes'] = observacoes
-    df_items['representante'] = representante
+    df_items['representante'] = nome_completo
     df_items['id'] = unique_id
 
     print(formaPagamento)
@@ -1010,10 +978,6 @@ def process_data():
     valores = list(zip(df_items['id'],df_items['nome'], df_items['contato'], df_items['formaPagamento'], df_items['observacoes'],
                     df_items['numeros'], df_items['quanti'], df_items['description'], df_items['cor'], df_items['representante'],
                     ))
-
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)   
-
-    cur = conn.cursor
 
     # Abre uma transação explícita
     with conn:
@@ -1029,9 +993,9 @@ def process_data():
 @app.route('/filtrar_regiao', methods=['POST'])
 def atualizar_regiao():
 
-    nome_cliente_regiao = request.form['nome_cliente']
+    nome_cliente_regiao = request.form['nome_cliente_regiao']
 
-    print(nome_cliente_regiao)
+    print('apenas_printando:', nome_cliente_regiao)
 
     return redirect(url_for('lista', nome_cliente=nome_cliente_regiao))
 
@@ -1057,7 +1021,7 @@ def consulta():
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     representante = session['user_id']
-    
+
     if representante == 'Sônia':
 
         query = """ SELECT DISTINCT(
@@ -1116,32 +1080,52 @@ def consulta():
                 ORDER BY t3.favorito ASC;
                 """
     else:
-        
-        query = """ 
-            SELECT subquery.*, t3.representante, t3.favorito
-                FROM (
-                    SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                          REPLACE(
-                            REPLACE(
-                                REPLACE(t2.lista, ' de ', ' '),
-                                '/',
-                                ' e '
-                                ),
-                                'Lista Norte e Nordeste',
-                                'Lista Preço N e NE'
-                            ) AS lista_nova,
+        df_precos = api_precos()
+
+        # query = """ 
+        #     SELECT subquery.*, t3.representante, t3.favorito
+        #         FROM (
+        #             SELECT DISTINCT t1.*, t2.preco, t2.lista,
+        #                   REPLACE(
+        #                     REPLACE(
+        #                         REPLACE(t2.lista, ' de ', ' '),
+        #                         '/',
+        #                         ' e '
+        #                         ),
+        #                         'Lista Norte e Nordeste',
+        #                         'Lista Preço N e NE'
+        #                     ) AS lista_nova,
+        #                 COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+        #                 COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+        #                 COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+        #             FROM tb_produtos AS t1
+        #             LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+        #             WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
+        #     LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
+        #     WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL)
+        #     ORDER BY t3.favorito ASC;
+        #     """.format(regiao_string, representante)
+
+        query = """
+                SELECT subquery.*, t3.representante, t3.favorito
+                FROM(
+                    SELECT DISTINCT t1.*,
                         COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
                         COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
                         COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
                     FROM tb_produtos AS t1
-                    LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                    WHERE t1.crm = 'T' AND t2.preco IS NOT NULL) subquery 
-            LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo 
-            WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL)
-            ORDER BY t3.favorito ASC;
-            """.format(regiao_string, representante)
+                    WHERE t1.crm = 'T') subquery
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+                WHERE (t3.representante = '{}' OR t3.representante IS NULL)
+                ORDER BY t3.favorito ASC; 
+                """.format(representante)
     
     df = pd.read_sql_query(query, conn)
+    
+    df = df.merge(df_precos, how='left', on='codigo')
+    
+    if regiao:
+        df = df[df['lista_nova'] == regiao[0][0]]
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
@@ -1233,53 +1217,79 @@ def atualizar_dados_sem_cliente():
     # regiao = pd.DataFrame(regiao)
     # regiao = regiao['regiao'][0]
 
-    query = """ 
-            SELECT subquery.*, t3.representante, t3.favorito
-            FROM (
-                SELECT DISTINCT t1.*, t2.preco, t2.lista,
-                    REPLACE(
-                        REPLACE(
-                            REPLACE(t2.lista, ' de ', ' '),
-                                '/',
-                                ' e '
-                                ),
-                                'Lista Norte e Nordeste',
-                                'Lista Preço N e NE'
-                            ) AS lista_nova,
-                    COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
-                    COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
-                    COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
-                FROM tb_produtos AS t1
-                LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
-                WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
-            """
+    # query = """ 
+    #         SELECT subquery.*, t3.representante, t3.favorito
+    #         FROM (
+    #             SELECT DISTINCT t1.*, t2.preco, t2.lista,
+    #                 REPLACE(
+    #                     REPLACE(
+    #                         REPLACE(t2.lista, ' de ', ' '),
+    #                             '/',
+    #                             ' e '
+    #                             ),
+    #                             'Lista Norte e Nordeste',
+    #                             'Lista Preço N e NE'
+    #                         ) AS lista_nova,
+    #                 COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+    #                 COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratada,
+    #                 COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+    #             FROM tb_produtos AS t1
+    #             LEFT JOIN tb_lista_precos AS t2 ON t1.codigo = t2.codigo
+    #             WHERE t1.crm = 'T' AND t2.preco IS NOT NULL
+    #         """
+
+
+
+    query = """ SELECT subquery.*, t3.representante, t3.favorito
+                FROM (
+                    SELECT DISTINCT t1.*,
+                        COALESCE(t1.pneu, 'Sem pneu') AS pneu_tratado,
+                        COALESCE(t1.outras_caracteristicas, 'N/A') as outras_caracteristicas_tratadas,
+                        COALESCE(t1.tamanho, 'N/A') as tamanho_tratados
+                    FROM tb_produtos AS t1
+                    WHERE t1.crm = 'T'
+                ) subquery
+                LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
+                WHERE 1=1 
+                """
 
     if descricao:
-        query += " AND t1.descricao_generica = '{}'".format(descricao)
+        query += " AND subquery.descricao_generica = '{}'".format(descricao)
 
     if modelo:
-        query += " AND t1.modelo = '{}'".format(modelo)
+        query += " AND subquery.modelo = '{}'".format(modelo)
 
     if eixo:
-        query += " AND t1.eixo = '{}'".format(eixo)
+        query += " AND subquery.eixo = '{}'".format(eixo)
 
     if mola_freio:
-        query += " AND t1.mola_freio = '{}'".format(mola_freio)
+        query += " AND subquery.mola_freio = '{}'".format(mola_freio)
 
     if rodado:
-        query += " AND t1.rodado = '{}'".format(rodado)
+        query += " AND subquery.rodado = '{}'".format(rodado)
     
     if tamanho:
-        query += " AND COALESCE(t1.tamanho, 'N/A') = '{}'".format(tamanho)
+        query += " AND COALESCE(subquery.tamanho, 'N/A') = '{}'".format(tamanho)
 
     if pneu:
-        query += " AND COALESCE(t1.pneu, 'Sem pneu') = '{}'".format(pneu)
+        query += " AND COALESCE(subquery.pneu, 'Sem pneu') = '{}'".format(pneu)
 
     if descricao_generica:
-        query += " AND COALESCE(t1.outras_caracteristicas, 'N/A') = '{}'".format(descricao_generica)
+        query += " AND COALESCE(subquery.outras_caracteristicas, 'N/A') = '{}'".format(descricao_generica)
     
+    # query += ' ORDER BY t3.favorito ASC'
+
     if lista_preco: 
-        query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(lista_preco, representante)
+
+        query += " AND (t3.representante =  '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(representante)
+        
+        df_query = pd.read_sql(query,conn)
+
+        df_api = api_precos() 
+
+        df_final = df_query.merge(df_api[['lista_nova','codigo','preco']],how='left', on='codigo')       
+        
+        df = df_final[df_final['lista_nova'] == lista_preco]
 
     else:
         representante = session['user_id']
@@ -1318,23 +1328,29 @@ def atualizar_dados_sem_cliente():
         regiao_plana = [item for item in regiao_plana if item is not None]
         
         # Transforme a lista em uma string com os itens separados por vírgulas
-        regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
+        # regiao_string = "', '".join(regiao_plana)  # Isso produzirá "Lista Preço MT', 'Lista Preço N e NE"
 
+        query += " AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(representante)    
+        df_query = pd.read_sql(query,conn)
 
-        if representante == 'Sônia':
-            query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') ORDER BY t3.favorito ASC;".format(regiao_string)
-        else:
-            query += ") subquery LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo WHERE subquery.lista_nova IN ('{}') AND (t3.representante = '{}' OR t3.representante IS NULL) ORDER BY t3.favorito ASC;".format(regiao_string, representante)
+        df_api = api_precos() 
+
+        df = df_query.merge(df_api[['lista_nova','codigo','preco']],how='left', on='codigo')       
+        df = df[df['lista_nova'].isin(regiao_plana)]
+
+    # print(query)
+
+    # cur.execute(query)
+    # data = cur.fetchall()
+    # df = pd.DataFrame(data)
     
-    print(query)
+    # df_precos = api_precos()
 
-    cur.execute(query)
-    data = cur.fetchall()
-    df = pd.DataFrame(data)
+    # df = df.merge(df_precos, how='left', on='codigo')
+
+    # df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
     
     print(df)
-
-    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
     descricao = df[['descricao_generica']].drop_duplicates().values.tolist()
     modelo = df[['modelo']].drop_duplicates().values.tolist()
@@ -1343,7 +1359,7 @@ def atualizar_dados_sem_cliente():
     tamanho = df[['tamanho_tratados']].drop_duplicates().values.tolist()
     rodado = df[['rodado']].drop_duplicates().values.tolist()
     pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
-    descricao_generica = df[['outras_caracteristicas_tratada']].drop_duplicates().values.tolist()
+    descricao_generica = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
     lista_preco = df[['lista_nova']].drop_duplicates().values.tolist()
 
     print(df)
@@ -1355,6 +1371,104 @@ def atualizar_dados_sem_cliente():
                     mola_freio=mola_freio, tamanho=tamanho,
                     rodado=rodado, pneu=pneu,
                     descricao_generica=descricao_generica, lista_preco=lista_preco)
+
+def obter_condicoes_pagamento(lista_opcoes_cliente,opcoes):
+        
+    """Função para Criar as opções de pagamento"""
+
+    condicoes_disponiveis = []
+    for condicao in lista_opcoes_cliente:
+        if condicao in opcoes:
+            if "A Vista" in lista_opcoes_cliente and len(lista_opcoes_cliente) == 1:
+                condicoes_disponiveis.append('A Vista')
+            elif "Antecipado" in lista_opcoes_cliente and len(lista_opcoes_cliente) == 1:
+                condicoes_disponiveis.append('Antecipado')
+            elif "À prazo" in condicao:
+                x = int(condicao[9:11].split()[0])
+                condicoes_disponiveis.extend([f'À prazo - {i}x' for i in range(1, x + 1)])
+                condicoes_disponiveis.append('A Vista')
+                condicoes_disponiveis.append('Antecipado')
+                condicoes_disponiveis = list(set(condicoes_disponiveis))
+            else:
+                condicoes_disponiveis.append(condicao)
+                condicoes_disponiveis.append('A Vista')
+                condicoes_disponiveis.append('Antecipado')
+                condicoes_disponiveis = list(set(condicoes_disponiveis))
+    condicoes_disponiveis = list(set(condicoes_disponiveis))
+    condicoes_disponiveis.sort(key=lambda x: opcoes.index(x))
+    return condicoes_disponiveis
+
+def chamadaCondicoes(nameCliente):
+
+    """Função para pegar as opções de pagamento disponível para o cliente x"""
+
+    import requests
+
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Name&$expand=OtherProperties&$filter=Name+eq+'{}'".format(nameCliente)
+
+    # Substitua "SEU_TOKEN_AQUI" com a chave de usuário gerada no passo 1
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    # Fazendo a requisição GET
+    response = requests.get(url, headers=headers)
+
+    # Verificando a resposta
+    if response.status_code == 200:
+        data = response.json()
+
+        contacts = data['value']
+
+        input_id = 189049  # O ID que você deseja filtrar
+
+        lista_opcoes = []
+        for contact in contacts:
+            other_properties = contact['OtherProperties']
+            for property in other_properties:
+                if property['FieldId'] == input_id:
+                    object_value_name = property['ObjectValueName']
+                    lista_opcoes.append(object_value_name)
+
+        return lista_opcoes
+
+    else:
+        print(f"Erro na requisição. Código de status: {response.status_code}")
+
+def chamadaListaPreco(nameCliente):
+
+    """Função para pegar a lista de preço de determinado cliente"""
+
+    import requests
+
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Name&$expand=OtherProperties&$filter=Name+eq+'{}'".format(nameCliente)
+
+    # Substitua "SEU_TOKEN_AQUI" com a chave de usuário gerada no passo 1
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    # Fazendo a requisição GET
+    response = requests.get(url, headers=headers)
+
+    # Verificando a resposta
+    if response.status_code == 200:
+        data = response.json()
+
+        contacts = data['value']
+
+        input_id = 219812  # O FieldKey para filtrar
+
+        for contact in contacts:
+            other_properties = contact['OtherProperties']
+            for property in other_properties:
+                if property['FieldId'] == input_id:
+                    lista_preco = property['ObjectValueName']
+
+        return lista_preco
+
+    else:
+        print(f"Erro na requisição. Código de status: {response.status_code}")
 
 if __name__ == '__main__':
     app.run(port=8000)

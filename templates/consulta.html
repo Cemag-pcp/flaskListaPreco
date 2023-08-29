@@ -127,7 +127,7 @@
               <tbody>
                 {% for row in data %}
                   <tr>
-                    <td data-label="Modelo">{{row[25]}}</td>
+                    <td data-label="Modelo">{{row[28]}}</td>
                     <td data-label="Modelo">{{row[11]}}</td>
                     <td data-label="Código" id ='codigo'>{{row[1]}}</td>
                     <td data-label="Descrição">{{row[2]}}</td>
@@ -140,7 +140,7 @@
                         <option value="Amarela">Amarela</option>
                       </select>
                     </td>
-                    <td data-label="Preço" style="white-space: nowrap;">{{row[23]}}</td>
+                    <td data-label="Preço" style="white-space: nowrap;">{{row[29]}}</td>
                     <td data-label="Preço Final">
                       <input class="row-data preco-input" id="precoInput" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
                     </td>
@@ -148,7 +148,7 @@
                     <td data-label="Favorito">
                       <div class="toggle" id="maquina-parada-toggle">
                         <label class="switch2">
-                          {% if row[30] == 'on' %}:
+                          {% if row[27] == 'on' %}:
                           <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="{{row[1]}}" checked> 
                           <span class="slider round"></span>
                           {% else %}
@@ -355,7 +355,7 @@
 
     dados.forEach(function(row) {
 
-        var variavel1 = `${row[30]}`;
+        var variavel1 = `${row[27]}`;
 
         var favoritoCheckbox = '';
           if (variavel1 === 'on') {
@@ -374,7 +374,7 @@
 
         var html = `
           <tr>
-            <td data-label="Modelo">${row[25]}</td>
+            <td data-label="Modelo">${row[28]}</td>
             <td data-label="Modelo">${row[11]}</td>
             <td data-label="Código" id="codigo">${row[1]}</td>
             <td data-label="Descrição">${row[2]}</td>
@@ -387,7 +387,7 @@
                 <option value="Amarela">Amarela</option>
               </select>
             </td>
-            <td data-label="Preço" style="white-space: nowrap;">${row[23]}</td>
+            <td data-label="Preço" style="white-space: nowrap;">${row[29]}</td>
             <td data-label="Preço Final">
               <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
             </td>
