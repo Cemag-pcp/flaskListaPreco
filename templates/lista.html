@@ -836,6 +836,55 @@
 
 <script>
 
+  function buscarProfileId(representanteNameValue, skip) {   
+    
+    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+    var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'&$skip=${skip}`;
+
+    return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'User-Key': apiKey
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.value && data.value.length > 0) {
+        return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
+      }
+      return null; // Retorna null se nenhum ID for encontrado
+    })
+    .catch(error => {
+      console.error(error);
+      return null;
+    });
+  }
+
+  function buscarContatosProfileId(inputValue,skip) {
+    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+    
+    if (inputValue.length > 0) {
+      filter = ` contains(Name,'${inputValue}')`;
+    }
+    
+    var apiUrl = `https://public-api2.ploomes.com/Contacts?$top=100&$select=Name&$filter=${filter}&$skip=${skip}`;
+
+    console.log(apiUrl)
+
+    return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'User-Key': apiKey
+      }
+    })
+    .then(response => response.json())
+    .then(data => data.value)
+    .catch(error => {
+      console.error(error);
+      return [];
+    });
+  }
+
   function buscarRepresentanteId(representanteNameValue, skip) {   
     
     var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
@@ -928,10 +977,10 @@
       // Obtém o valor atualizado do campo de representante
       var representanteNameValue = representanteNameElement.value;
 
-      buscarRepresentanteId(representanteNameValue, skip)
-        .then(id => {
-          if (id !== null) {
-            buscarContatos(inputValue, id, skip)
+      buscarProfileId(representanteNameValue, skip)
+        .then(profileId => {
+          if (profileId === 1) {
+            buscarContatosProfileId(inputValue, profileId)
               .then(contatos => {
                 resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
                 contatos.forEach(contato => {
@@ -939,9 +988,25 @@
                 });
               });
           } else {
-            console.log('Nenhum ID de representante encontrado.');
+            buscarRepresentanteId(representanteNameValue, skip)
+              .then(id => {
+                if (id !== null) {
+                  buscarContatos(inputValue, id, skip)
+                    .then(contatos => {
+                      resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
+                      contatos.forEach(contato => {
+                        resultadoNomesSelect.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
+                      });
+                    });
+                } else {
+                  console.log('Nenhum ID de representante encontrado.');
+                }
+              });
           }
-        });
+        })
+        .catch(error => {
+          console.error('Erro ao buscar ProfileId:', error);
+      });
     }, 300);
   });
 
