@@ -1441,6 +1441,5 @@ def chamadaListaPreco(nameCliente):
     else:
         print(f"Erro na requisição. Código de status: {response.status_code}")
 
-
 if __name__ == '__main__':
     app.run(port=8000)

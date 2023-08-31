@@ -1,0 +1,32 @@
+/* Estilos para o campo de input */
+#input_field {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilos para as sugestões */
+#suggestions {
+    position: absolute;
+    width: 100%; /* Preencher a largura do campo de input */
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 5px; /* Adicione uma margem entre o input e as sugestões */
+    display: none; /* Inicialmente, as sugestões estão ocultas */
+}
+
+.suggestion {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background-color: #f0f0f0;
+}
