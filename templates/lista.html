@@ -24,11 +24,11 @@
 <div class="container filter-wrapper2">
 
   <div>
-    <label for="filtro-nome-novo">Nome:</label>
-    <input type="text" id="filtro-nome-novo" class="form-control" style="width: 90%;">
-    <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
-        <option value="">Selecione</option>
-    </select>
+    <label>Nome:</label>
+    <input type="text" list="resultado-nomes-novo" id="filtro-nome-novo" class="form-control" style="width: 90%;" onchange="atualizarCliente()">
+    <datalist id="resultado-nomes-novo" style="width: 90%;">
+      <option value="">Selecione</option>
+    </datalist>
   </div>
 
   <div>
@@ -589,9 +589,8 @@
 
 <script>// Atualizar dados de dropdow de clientes
   function atualizarCliente() {
-    $("#loading-overlay").show();
   
-    var nome_cliente = $('#resultado-nomes-novo').val();
+    var nome_cliente = $('#filtro-nome-novo').val();
     // var contato_cliente = $('#filtro-contato').val();
     // var condicoes = $('#forma-pagamento').val();
 
@@ -787,7 +786,7 @@
   function atualizar_regiao() {
     $("#loading-overlay").show();
 
-    var nomeCliente = $('#resultado-nomes-novo').val();
+    var nomeCliente = $('#filtro-nome-novo').val();
     var contatosCliente = $('#resultado-contatos-novo').val();
     var formaPagamento = $('#forma-pagamento').val();
 
@@ -804,7 +803,7 @@
         // atualizar o DataFrame com os dados retornados
         var nomeClienteAtualizado = response.nomeCliente;
 
-        const filtroNome = document.getElementById('resultado-nomes-novo').value;
+        const filtroNome = document.getElementById('filtro-nome-novo').value;
         const filtroContato = document.getElementById('resultado-contatos-novo').value;
         const formaPagamento = document.getElementById('forma-pagamento').value;
 
@@ -1062,7 +1061,7 @@
   }
 
   // Event listener para o campo de filtro de nome
-  var filtroNomeInput = document.getElementById("resultado-nomes-novo");
+  var filtroNomeInput = document.getElementById("filtro-nome-novo");
   var resultadoContatosSelect = document.getElementById("resultado-contatos-novo");
 
   filtroNomeInput.addEventListener("input", function() {
