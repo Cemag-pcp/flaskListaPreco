@@ -553,7 +553,6 @@ def salvar_dados():
                 # Executa a inserção das linhas usando executemany
                 cur.executemany(consulta, valores)
 
-
         return jsonify({'mensagem': 'Dados enviados com sucesso'})
 
 @app.route('/move-carrinho/<string:id>', methods = ['POST','GET'])
@@ -972,6 +971,7 @@ def process_data():
     df_items['id'] = unique_id
 
     print(formaPagamento)
+    print(df_items) 
 
     query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
@@ -1525,9 +1525,10 @@ def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
     else:
         return 'Erro ao criar a ordem'
 
-def criarProposta(nomeCliente, nomeContato, nomeRepresentante):
+def criarProposta(nomeCliente, nomeContato, nomeRepresentante, listaProdutos, formaPagamento):
 
     DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
+
 
 
 
