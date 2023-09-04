@@ -503,8 +503,6 @@ def salvar_dados():
         cliente = request.form.get('numeroCliente')
         status = request.form.get("statusCotacao")
 
-        print(status, cliente)
-
         unique_id = str(uuid.uuid4())  # Gerar id unico
         
         representante = ""+session['user_id']+""
@@ -544,7 +542,6 @@ def salvar_dados():
             with conn.cursor() as cur:
                 # Executa a inserção das linhas usando executemany
                 cur.executemany(consulta, valores)
-
 
         return jsonify({'mensagem': 'Dados enviados com sucesso'})
 
@@ -941,6 +938,8 @@ def process_data():
     
     nome_completo = cur.fetchall()
     nome_completo = nome_completo[0][0]
+
+    print(data)
 
     items = data['items']
     nome = data['nome']
@@ -1427,18 +1426,27 @@ def chamadaListaPreco(nameCliente):
 
         contacts = data['value']
 
-        input_id = 219812  # O FieldKey para filtrar
+        input_id = 219812  # O id do campo
 
         for contact in contacts:
             other_properties = contact['OtherProperties']
             for property in other_properties:
-                if property['FieldId'] == input_id:
-                    lista_preco = property['ObjectValueName']
+                try:
+                    if property['FieldId'] == input_id:
+                        lista_preco = property['ObjectValueName']
+                except:
+                    lista_preco = 'Lista Preço N e NE'
 
         return lista_preco
 
     else:
         print(f"Erro na requisição. Código de status: {response.status_code}")
+
+def chamadaCriarVenda():
+
+
+
+    return 'teste'
 
 if __name__ == '__main__':
     app.run(port=8000)
