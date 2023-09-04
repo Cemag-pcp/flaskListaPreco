@@ -797,8 +797,6 @@ def atualizar_dados():
     pneu = request.form['pneu']
     descricao_generica = request.form['descricao_generica']
     
-    print(modelo)
-
     # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
 
     # executar a lógica para atualizar o DataFrame com base nas opções selecionadas
@@ -881,10 +879,18 @@ def atualizar_dados():
     data = cur.fetchall()
     df = pd.DataFrame(data)
 
+    print(df)
+
     df_precos = api_precos()
+    print(df_precos)
 
     df = df.merge(df_precos, how='left', on='codigo')
-    df = df[df['lista_nova'] == regiao]
+
+    print(regiao)
+    print(df)
+
+    df = df.dropna(subset=['lista_nova'])
+    df = df[df['lista_nova'].str.contains(regiao)]
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
 
@@ -896,8 +902,6 @@ def atualizar_dados():
     rodado = df[['rodado']].drop_duplicates().values.tolist()
     pneu = df[['pneu_tratado']].drop_duplicates().values.tolist()
     descricao_generica = df[['outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
-
-    print(query)
 
     data = df.values.tolist()
 
@@ -1349,7 +1353,7 @@ def atualizar_dados_sem_cliente():
 
     # df = df.merge(df_precos, how='left', on='codigo')
 
-    # df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
+    df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(x).replace(",", "X").replace(".", ",").replace("X", "."))
     
     print(df)
 
@@ -1463,13 +1467,127 @@ def chamadaListaPreco(nameCliente):
         for contact in contacts:
             other_properties = contact['OtherProperties']
             for property in other_properties:
-                if property['FieldId'] == input_id:
-                    lista_preco = property['ObjectValueName']
+                try:
+                    if property['FieldId'] == input_id:
+                        lista_preco = property['ObjectValueName']
+                except:
+                    lista_preco = 'Lista Preço N e NE'
 
         return lista_preco
 
     else:
         print(f"Erro na requisição. Código de status: {response.status_code}")
+
+def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
+
+    """Função para gerar ordem de venda"""
+
+    ContactId = id(nomeCliente)
+    PersonId = idContatoCliente(nomeContato, ContactId)
+    OwnerId = idRepresentante(nomeRepresentante)
+    
+    url = "https://public-api2.ploomes.com/Deals"
+   
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+    data = {
+        "Title": nomeCliente,
+        "ContactId": ContactId,
+        "OwnerId": OwnerId,
+        "PersonId": PersonId
+    }
+
+    # Fazendo a requisição POST com os dados no corpo
+    response = requests.post(url, headers=headers, json=data)
+
+    # Verifica se a requisição foi bem-sucedida (código de status 201 indica criação)
+    if response.status_code == 200:
+        
+        url = "https://public-api2.ploomes.com/Deals?$top=1&$filter=ContactId+eq+{}&$orderby=CreateDate desc".format(ContactId)
+        
+        headers = {
+            "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+        }
+
+        response = requests.get(url, headers=headers)
+
+        ids = response.json()
+        ids = ids['value']
+
+        for IdDeal in ids:
+            IdDeal = IdDeal['Id']
+
+        return IdDeal
+    
+    else:
+        return 'Erro ao criar a ordem'
+
+def criarProposta(nomeCliente, nomeContato, nomeRepresentante):
+
+    DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
+
+
+
+
+
+    return "print"
+
+def id(nomeCliente):
+
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeCliente)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    ids = response.json()
+    ids = ids['value']
+
+    for idCliente in ids:
+        idCliente = idCliente['Id']
+
+    return idCliente
+    
+def idContatoCliente(nomeContato, idCliente):
+        
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=CompanyId+eq+{} and Name+eq+'{}'".format(idCliente, nomeContato)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    ids = response.json()
+    ids = ids['value']
+
+    for idContato in ids:
+        idContato = idContato['Id']
+
+    return idContato
+
+def idRepresentante(nomeRepresentante):
+
+    url = "https://public-api2.ploomes.com/Users?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeRepresentante)
+    
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    ids = response.json()
+    ids = ids['value']
+
+    for idRep in ids:
+        idRep = idRep['Id']
+
+    return idRep
 
 if __name__ == '__main__':
     app.run(port=8000)
