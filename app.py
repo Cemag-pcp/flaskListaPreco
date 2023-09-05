@@ -970,8 +970,8 @@ def process_data():
     df_items['representante'] = nome_completo
     df_items['id'] = unique_id
 
-    print(formaPagamento)
-    print(df_items) 
+    print(df_items)
+    criarProposta(df_items)
 
     query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
@@ -1525,18 +1525,170 @@ def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
     else:
         return 'Erro ao criar a ordem'
 
-def criarProposta(nomeCliente, nomeContato, nomeRepresentante, listaProdutos, formaPagamento):
+def criarProposta(df):
 
-    DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
+    def wrap_in_paragraph(text):
 
+        """Função para transformar o texto em html"""
 
+        return f"<p>{text}</p>\n"
 
+    """Função para criar proposta"""
 
+    nomeCliente = df['nome'][0]
+    nomeContato = df['contato'][0]
+    nomeRepresentante = df['representante'][0]
+    listaProdutos = df['description'].values.tolist()
+    formaPagamento = df['formaPagamento'][0]
+    listaCores = df['cor'].values.tolist()
 
+    df["quanti"] = df["quanti"].str.replace("R", "").str.replace("$", "").str.replace(",", "").astype(float)
+    listaPreco = df['quanti'].values.tolist()
 
-    return "print"
+    df["observacoes"] = df["observacoes"].apply(wrap_in_paragraph)
+
+    listaQuantidade = df['numeros'].values.tolist()
+
+    DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)    
+
+    idFormaPagamento = idFormaPagamentoF(formaPagamento)
+    id_CondicaoPagamento = idCondicaoPagamento(formaPagamento)
+    
+    idRep = idRepresentante(nomeRepresentante)
+    
+    # Suas três listas
+    ProductId = idCarretas(listaProdutos)
+    color = idCores(listaCores)
+    price = listaPreco
+    quantidade = listaQuantidade
+
+    # Inicializar uma lista vazia
+    lista_product = []
+
+    # Criar um dicionário para cada conjunto de valores correspondentes e adicioná-lo à lista
+    for i in range(len(ProductId)):
+        product_info = {
+            "ProductId": ProductId[i],
+            "IdCor": color[i],
+            "Price": price[i],
+            "Quantity": quantidade[i]
+        }
+        
+        lista_product.append(product_info)
+
+    # Inicializar uma variável para o total em valor e total e quantidade de itens 
+    total = 0
+    totalItens = 0
+
+    # Calcular o total somando os preços
+    for product in lista_product:
+        total += product["Price"] * int(product['Quantity'])
+        totalItens += int(product['Quantity'])
+
+    # lista_product = df.to_dict(orient='records')
+    # Estrutura JSON para cada produto
+    products = []
+    for i, product_id in enumerate(lista_product):
+        product_json = {
+            "Quantity": product_id["Quantity"],
+            "UnitPrice": 0,
+            "Total": product_id["Price"]*1000 * int(product_id["Quantity"]),
+            "ProductId": product_id["ProductId"],
+            "Ordination": i,
+            "OtherProperties": [
+                {
+                    "FieldKey": "quote_product_76A1F57A-B40F-4C4E-B412-44361EB118D8", # Cor
+                    "IntegerValue": product_id["IdCor"]
+                },
+                {
+                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455", # valor unit. c/ desconto
+                    "DecimalValue": product_id["Price"]*1000
+                },
+                {
+                    "FieldKey": "quote_product_4D6B83EE-8481-46B2-A147-1836B287E14C", # prazo dias
+                    "StringValue": "45;"
+                }
+            ]
+        }
+        products.append(product_json)
+
+    # Estrutura JSON principal com a lista de produtos
+    json_data = {
+        "DealId": DealId,
+        "OwnerId": idRep,
+        "TemplateId": 196596,
+        "Amount": (total*1000),
+        "Discount": 0,
+        "InstallmentsAmountFieldKey": "quote_amount",
+        "Notes": df['observacoes'][0],
+        "Sections": [
+            {
+                "Code": 0,
+                "Total": (total*1000),
+                "OtherProperties": [
+                    {
+                        "FieldKey": "quote_section_8136D2B9-1496-4C52-AB70-09B23A519286", # Prazo conjunto
+                        "StringValue": "045;"
+                    },
+                    {
+                        "FieldKey": "quote_section_0F38DF78-FE65-471C-A391-9E8759470D4E", # Total
+                        "DecimalValue": (total*1000)
+                    },
+                    {
+                        "FieldKey": "quote_section_64320D57-6350-44AB-B849-6A6110354C79", # Total de itens
+                        "IntegerValue": totalItens
+                    }
+                ],
+                "Products": products
+            }
+        ],
+        "OtherProperties": [
+            {
+                "FieldKey": "quote_0FB9F0CB-2619-44C5-92BD-1A2D2D818BFE",  # Forma de pagamento
+                "IntegerValue": idFormaPagamento
+            },
+            {
+                "FieldKey": "quote_DE50A0F4-1FBE-46AA-9B5D-E182533E4B4A", # Texto simples
+                "StringValue": formaPagamento
+            },
+            {
+                "FieldKey": "quote_E85539A9-D0D3-488E-86C5-66A49EAF5F3A", # Condições de pagamento
+                "IntegerValue": id_CondicaoPagamento
+            },
+            {
+                "FieldKey": "quote_F879E39D-E6B9-4026-8B4E-5AD2540463A3", # Tipo de frete
+                "IntegerValue": 22886508
+            },
+            {
+                "FieldKey": "quote_6D0FC2AB-6CCC-4A65-93DD-44BF06A45ABE", # Validade
+                "IntegerValue": 18826538
+            },
+            {
+                "FieldKey": "quote_520B942C-F3FD-4C6F-B183-C2E8C3EB6A33", # Dias para entrega
+                "IntegerValue": 45
+            }
+        ]
+    }
+
+    # Converte a estrutura JSON em uma string JSON
+    # json_string = json.dumps(json_data, indent=2)
+    # json_string = json.dumps(json_data, separators=(',', ':'))
+
+    url = "https://public-api2.ploomes.com/Quotes"
+   
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=json_data)
+    
+    enviar_email(nomeRepresentante, nomeCliente, DealId)
+
+    return "Proposta criada"
 
 def id(nomeCliente):
+
+    """Função para buscar o id do cliente"""
 
     url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeCliente)
 
@@ -1556,6 +1708,8 @@ def id(nomeCliente):
     
 def idContatoCliente(nomeContato, idCliente):
         
+    """Função para buscar o id do contato"""
+    
     url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=CompanyId+eq+{} and Name+eq+'{}'".format(idCliente, nomeContato)
 
     headers = {
@@ -1574,6 +1728,8 @@ def idContatoCliente(nomeContato, idCliente):
 
 def idRepresentante(nomeRepresentante):
 
+    """Função para buscar o id do representante"""
+
     url = "https://public-api2.ploomes.com/Users?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeRepresentante)
     
     headers = {
@@ -1589,6 +1745,190 @@ def idRepresentante(nomeRepresentante):
         idRep = idRep['Id']
 
     return idRep
+
+def idCarretas(listaProdutos):
+
+    """Função para buscar o id das carretas"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Products?$top=10&$filter=Code+eq+'{}'&$select=Id"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Inicializa uma lista para armazenar os IDs dos produtos encontrados
+    product_ids = []
+
+    # Realiza uma solicitação GET para cada nome de produto
+    for product_name in listaProdutos:
+        # Define a URL completa substituindo '{}' pelo nome do produto atual
+        api_url = url.format(product_name)
+
+        # Realiza a solicitação GET para o produto atual
+        response = requests.get(api_url, headers=headers)
+
+        # Verifica se a solicitação foi bem-sucedida (código de status 200)
+        if response.status_code == 200:
+            data = response.json()
+            # Verifica se a resposta contém dados
+            if "value" in data and data["value"]:
+                # Acessa o ID do primeiro item encontrado
+                product_id = data["value"][0]["Id"]
+                product_ids.append((product_id))
+            else:
+                print(f"Nenhum ID encontrado para o produto '{product_name}'.")
+        else:
+            print(f"Erro na solicitação para o produto '{product_name}': Código de status {response.status_code}")
+
+    return product_ids
+
+def idCores(listaCores):
+
+    """Função para buscar o id das cores"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+36909 and Name+eq+'{}'"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Inicializa uma lista para armazenar os IDs dos produtos encontrados
+    cores_id = []
+
+    # Realiza uma solicitação GET para cada nome de produto
+    for lista_name in listaCores:
+        # Define a URL completa substituindo '{}' pelo nome do produto atual
+        api_url = url.format(lista_name)
+
+        # Realiza a solicitação GET para o produto atual
+        response = requests.get(api_url, headers=headers)
+
+        # Verifica se a solicitação foi bem-sucedida (código de status 200)
+        if response.status_code == 200:
+            data = response.json()
+            # Verifica se a resposta contém dados
+            if "value" in data and data["value"]:
+                # Acessa o ID do primeiro item encontrado
+                product_id = data["value"][0]["Id"]
+                cores_id.append((product_id))
+            else:
+                print(f"Nenhum ID encontrado para o produto '{lista_name}'.")
+        else:
+            print(f"Erro na solicitação para o produto '{lista_name}': Código de status {response.status_code}")
+
+    return cores_id
+
+def idFormaPagamentoF(formaPagamento):
+
+    """Função para buscar o id da forma de pagamento"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+31965 and Name+eq+'{}'".format(formaPagamento)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    forma_pagamento = response.json()
+    forma_pagamento = forma_pagamento['value']
+    idFormaPagamento = forma_pagamento[0]['Id']
+
+    return idFormaPagamento 
+
+def idCondicaoPagamento(formaPagamento):
+    
+    """Função para buscar o id da condição de pagamento"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+32062 and Name+eq+'{}'".format(formaPagamento)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    forma_pagamento = response.json()
+    forma_pagamento = forma_pagamento['value']
+    id_CondicaoPagamento = forma_pagamento[0]['Id']
+
+    return id_CondicaoPagamento 
+
+def obterEmailRepresentante(nomeRepresentante):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("select email from users where username = '{}'".format(nomeRepresentante),conn)
+
+    emailRepresentante = cur.fetchall()
+    emailRepresentante = emailRepresentante[0]['email']
+
+    return emailRepresentante
+
+def obterDocumentoPdf(DealId):
+
+    """Função para buscar o pdf e aceite da proposta"""
+    
+    url = "https://public-api2.ploomes.com/Quotes?$top=10&$filter=DealId+eq+{}&$select=DocumentUrl,Key".format(DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    documentos = response.json()
+    documentos = documentos['value']
+
+    for doc in documentos:
+        pdf = doc['DocumentUrl']
+        key = doc['Key']
+
+    aceite = "https://documents.ploomes.com/?k={}&entity=quote".format(key)
+
+    corpo_email = "Link de aceite: {} \n\n Proposta em pdf:{}".format(aceite,pdf)
+
+    return corpo_email
+
+def enviar_email(nomeRepresentante, nomeCliente, DealId):
+
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    email_representante = obterEmailRepresentante(nomeRepresentante)
+
+    corpo_email = obterDocumentoPdf(DealId)
+
+    # Configurações do servidor SMTP
+    smtp_host = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_user = 'sistema@cemag.com.br'
+    smtp_password = 'cem@1600'
+
+    # Crie uma mensagem de e-mail
+    mensagem = MIMEMultipart()
+    mensagem['From'] = 'sistema@cemag.com.br'
+    mensagem['To'] = email_representante
+    mensagem['Subject'] = 'Proposta Ploomes para o cliente {}'.format(nomeCliente)
+
+    # Adicione o corpo do e-mail
+    
+    mensagem.attach(MIMEText(corpo_email, 'plain'))
+
+    # Conecte-se ao servidor SMTP e envie o e-mail
+    with smtplib.SMTP(smtp_host, smtp_port) as servidor_smtp:
+        servidor_smtp.starttls()
+        servidor_smtp.login(smtp_user, smtp_password)
+        servidor_smtp.send_message(mensagem)
+        print('E-mail enviado com sucesso!')
+
+    return 'Sucess'
 
 if __name__ == '__main__':
     app.run(port=8000)
