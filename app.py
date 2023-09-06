@@ -1889,6 +1889,7 @@ def obterEmailRepresentante(nomeRepresentante):
 
     emailRepresentante = cur.fetchall()
     emailRepresentante = emailRepresentante[0]['email']
+    emailRepresentante = emailRepresentante.split(';')
 
     return emailRepresentante
 
@@ -1933,22 +1934,24 @@ def enviar_email(nomeRepresentante, nomeCliente, DealId):
     smtp_user = 'sistema@cemag.com.br'
     smtp_password = 'cem@1600'
 
-    # Crie uma mensagem de e-mail
-    mensagem = MIMEMultipart()
-    mensagem['From'] = 'sistema@cemag.com.br'
-    mensagem['To'] = email_representante
-    mensagem['Subject'] = 'Proposta Ploomes para o cliente {}'.format(nomeCliente)
+    for email in email_representante:
 
-    # Adicione o corpo do e-mail
-    
-    mensagem.attach(MIMEText(corpo_email, 'plain'))
+        # Crie uma mensagem de e-mail
+        mensagem = MIMEMultipart()
+        mensagem['From'] = 'sistema@cemag.com.br'
+        mensagem['To'] = email
+        mensagem['Subject'] = 'Proposta Ploomes para o cliente {}'.format(nomeCliente)
 
-    # Conecte-se ao servidor SMTP e envie o e-mail
-    with smtplib.SMTP(smtp_host, smtp_port) as servidor_smtp:
-        servidor_smtp.starttls()
-        servidor_smtp.login(smtp_user, smtp_password)
-        servidor_smtp.send_message(mensagem)
-        print('E-mail enviado com sucesso!')
+        # Adicione o corpo do e-mail
+        
+        mensagem.attach(MIMEText(corpo_email, 'plain'))
+
+        # Conecte-se ao servidor SMTP e envie o e-mail
+        with smtplib.SMTP(smtp_host, smtp_port) as servidor_smtp:
+            servidor_smtp.starttls()
+            servidor_smtp.login(smtp_user, smtp_password)
+            servidor_smtp.send_message(mensagem)
+            print('E-mail enviado com sucesso!')
 
     return 'Sucess'
 
