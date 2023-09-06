@@ -194,8 +194,17 @@
     </div>
 </div>
 
+
 <div id="loading-overlay" style="display: none;">
   <div id="loading-spinner"></div>
+</div>
+
+<div id="overlay" style="display: none;">
+  <div id="loading-bar-container">
+      <div id="loading-bar">
+          <div id="loading-progress"></div>
+      </div>
+  </div>
 </div>
 
 <div id="modalEnviar" class="modal">
@@ -295,7 +304,7 @@
     var descricao_generica = $('#filtro-descricao-generica').val();
     var filtro_nome = $('#resultado-nomes-novo').val();
 
-    // obter os valores selecionados em cada dropdown
+    // obter os valores selecionados em cada dkropdown
 
     // enviar a solicitação AJAX para o servidor
     $.ajax({
@@ -712,7 +721,9 @@
       formaPagamento: formaPagamento,
       observacoes: observacoes
     };
-
+    
+    simulateCodigoReal();
+    
     // Faça uma requisição POST para o backend usando fetch
     fetch('/receber-dados', {
       method: 'POST',
@@ -737,7 +748,7 @@
   // Função para lidar com o clique no botão "Enviar"
   function handleEnviarButtonClick() {
     // Exibe o carregamento
-    $("#loading-overlay").show();
+    simulateCodigoReal();
 
     const items = [];
 
@@ -784,12 +795,14 @@
 </script>
 
 <script>// Atualizar dados de dropdow de clientes
+  
   function atualizar_regiao() {
-    $("#loading-overlay").show();
-
+    
     var nomeCliente = $('#resultado-nomes-novo').val();
     var contatosCliente = $('#resultado-contatos-novo').val();
     var formaPagamento = $('#forma-pagamento').val();
+
+    simulateCodigoReal();
 
     // Enviar a solicitação AJAX para o servidor
     $.ajax({
@@ -810,7 +823,7 @@
 
         // Verifica se algum dos campos está vazio
         if (filtroNome === '' || formaPagamento === '') {
-          $("#loading-overlay").hide();
+          hideProgressBar();
           return;
         }
 
@@ -823,14 +836,49 @@
             filtro.classList.remove('hidden');
           });
         }
-
-        $("#loading-overlay").hide();
+        hideProgressBar();
         },
       error: function(error) {
         console.log(error);
-        $("#loading-overlay").hide();
+        hideProgressBar();
       }
     });
+  }
+</script>
+
+<script>
+  // Função para mostrar a barra de progresso
+  function showProgressBar() {
+    $("#overlay").show();
+  }
+
+  // Função para esconder a barra de progresso
+  function hideProgressBar() {
+    $("#overlay").hide();
+  }
+
+  // Função para atualizar a barra de progresso
+  function updateProgressBar(progress) {
+    var loadingProgress = document.getElementById("loading-progress");
+    loadingProgress.style.width = progress + "%";
+  }
+
+  // Função para simular código em execução
+  function simulateCodigoReal() {
+    showProgressBar(); // Mostrar a barra de progresso
+    var totalProgressSteps = 100; // Número total de etapas de progresso
+    var currentProgress = 0; // Progresso atual
+
+    var interval = setInterval(function () {
+      if (currentProgress >= totalProgressSteps) {
+        clearInterval(interval); // Interromper a simulação quando o progresso atingir 100%
+        hideProgressBar(); // Esconder a barra de progresso quando a operação for concluída
+      } else {
+        // Atualizar a barra de progresso a cada iteração
+        currentProgress++;
+        updateProgressBar((currentProgress / totalProgressSteps) * 100);
+      }
+    }, 100); // Tempo de espera entre cada iteração
   }
 </script>
 

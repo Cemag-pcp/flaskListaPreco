@@ -1483,7 +1483,9 @@ def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
     """Função para gerar ordem de venda"""
 
     ContactId = id(nomeCliente)
+    
     PersonId = idContatoCliente(nomeContato, ContactId)
+    
     OwnerId = idRepresentante(nomeRepresentante)
     
     url = "https://public-api2.ploomes.com/Deals"
@@ -1493,12 +1495,23 @@ def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
     }
 
     # Dados que você deseja enviar no corpo da solicitação POST
-    data = {
-        "Title": nomeCliente,
-        "ContactId": ContactId,
-        "OwnerId": OwnerId,
-        "PersonId": PersonId
-    }
+    
+    if PersonId == 'Null':
+        
+        data = {
+            "Title": nomeCliente,
+            "ContactId": ContactId,
+            "OwnerId": OwnerId,
+        }
+
+    else:
+
+        data = {
+            "Title": nomeCliente,
+            "ContactId": ContactId,
+            "OwnerId": OwnerId,
+            "PersonId": PersonId
+        }
 
     # Fazendo a requisição POST com os dados no corpo
     response = requests.post(url, headers=headers, json=data)
@@ -1535,8 +1548,12 @@ def criarProposta(df):
 
     """Função para criar proposta"""
 
-    nomeCliente = df['nome'][0]
+    nomeCliente = df['nome'][0]    
     nomeContato = df['contato'][0]
+
+    if nomeContato == '':
+        nomeContato = 'Null'
+
     nomeRepresentante = df['representante'][0]
     listaProdutos = df['description'].values.tolist()
     formaPagamento = df['formaPagamento'][0]
@@ -1709,7 +1726,7 @@ def id(nomeCliente):
 def idContatoCliente(nomeContato, idCliente):
         
     """Função para buscar o id do contato"""
-    
+
     url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=CompanyId+eq+{} and Name+eq+'{}'".format(idCliente, nomeContato)
 
     headers = {
@@ -1721,8 +1738,13 @@ def idContatoCliente(nomeContato, idCliente):
     ids = response.json()
     ids = ids['value']
 
-    for idContato in ids:
-        idContato = idContato['Id']
+    if len(ids) == 0:
+        idContato = 'Null'
+    
+    else:
+
+        for idContato in ids:
+            idContato = idContato['Id']
 
     return idContato
 
