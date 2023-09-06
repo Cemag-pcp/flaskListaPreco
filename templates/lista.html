@@ -722,9 +722,8 @@
       observacoes: observacoes
     };
     
-    simulateCodigoReal();
-    
     // Faça uma requisição POST para o backend usando fetch
+    
     fetch('/receber-dados', {
       method: 'POST',
       headers: {
@@ -748,7 +747,7 @@
   // Função para lidar com o clique no botão "Enviar"
   function handleEnviarButtonClick() {
     // Exibe o carregamento
-    simulateCodigoReal();
+    $("#loading-overlay").show();
 
     const items = [];
 
