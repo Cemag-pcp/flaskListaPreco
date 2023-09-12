@@ -1262,7 +1262,7 @@ def consulta():
 
     df = df[df['lista_nova'].isin(regiao)]
 
-    df = df.dropna(subset='lista_nova')
+    # df = df.dropna(subset='lista_nova')
     df = df.reset_index(drop=True)
 
     # if regiao:
@@ -1443,7 +1443,7 @@ def atualizar_dados_sem_cliente():
     else:
         df = resultados
 
-    df = df.dropna(subset='lista_nova')
+    # df = df.dropna(subset='lista_nova')
     print(df)
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(
@@ -1718,8 +1718,7 @@ def criarProposta(df):
                     "IntegerValue": product_id["IdCor"]
                 },
                 {
-                    # valor unit. c/ desconto
-                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455",
+                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455", # valor unit. c/ desconto
                     "DecimalValue": product_id["Price"]*1000
                 },
                 {
