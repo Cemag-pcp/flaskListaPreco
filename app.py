@@ -2083,7 +2083,10 @@ def buscarRegiaoCliente(nomeCliente):
 
     data = response.json()
 
-    regiao = data['value'][0]['OtherProperties'][0]['ObjectValueName']
+    try:
+        regiao = data['value'][0]['OtherProperties'][0]['ObjectValueName']
+    except:
+        regiao = 'Lista Preço SDE e COE'
 
     return regiao
 
