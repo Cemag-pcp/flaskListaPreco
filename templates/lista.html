@@ -1,18 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
 
-{% with messages = get_flashed_messages()  %}
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-success alert-dismissible fade show" id="alerta_Os" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">×</span>
-    </button>
-  </div>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" id="alerta_Os" role="alert">
+  {{ message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 <div class="container" id="titulo">
   <h2>Gerar Proposta</h2>
 </div>
@@ -26,38 +26,47 @@
   <div>
     <label for="filtro-nome-novo">Nome:</label>
     <input type="text" id="filtro-nome-novo" class="form-control" style="width: 90%;">
-    <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 90%;" onchange="atualizarCliente()">
-        <option value="">Selecione</option>
+    <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 90%;"
+      onchange="atualizarCliente()">
+      <option value="">Selecione</option>
     </select>
   </div>
 
   <div>
     <label for="filtro-contatos-novo">Contatos:</label>
     <select id="resultado-contatos-novo" class="form-control" data-live-search="true" style="width: 90%;">
-        <option value="">Selecione</option>
+      <option value="">Selecione</option>
     </select>
   </div>
 
   <div>
     <label for="forma-pagamento">Pagamento:</label>
-    <select id="forma-pagamento" class="form-control"  style="width: 90%;">
+    <select id="forma-pagamento" class="form-control" style="width: 90%;">
       <option></option>
     </select>
   </div>
 
-    <div>
-      <button id="filtrar" onclick="atualizar_regiao()">Filtrar Preço</button>
-    </div>
+  <div id="responsaveis">
+    <label for="filtro-responsavel">Responsável:</label>
+    <select id="resultado-responsavel" class="form-control" data-live-search="true" style="width: 90%;">
+      <option value="">Selecione</option>
+    </select>
+  </div>
+
+  <div>
+    <button id="filtrar" onclick="atualizar_regiao()">Filtrar Preço</button>
+  </div>
+
 </div>
 
 <div class="container filter-wrapper" style="margin-top: 20px;">
   <div class="hidden">
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for descricao in descricao_unique %}
-        <option>{{descricao[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for descricao in descricao_unique %}
+      <option>{{descricao[0]}}</option>
+      {% endfor %}
     </select>
   </div>
   <div class="hidden">
@@ -73,7 +82,7 @@
     <label for="filtro-eixo">Eixo:</label>
     <select id="filtro-eixo" onchange="atualizarDados()">
       <option value="">Selecionar</option>
-      {% for eixo in eixo_unique %}  
+      {% for eixo in eixo_unique %}
       <option>{{eixo[0]}}</option>
       {% endfor %}
     </select>
@@ -81,117 +90,122 @@
   <div class="hidden">
     <label for="filtro-molaFreio">Mola/Freio:</label>
     <select id="filtro-molaFreio" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for mola in mola_freio_unique %}
-        <option>{{mola[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for mola in mola_freio_unique %}
+      <option>{{mola[0]}}</option>
+      {% endfor %}
     </select>
   </div>
   <div class="hidden">
     <label for="filtro-tamanho">Tamanho:</label>
     <select id="filtro-tamanho" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for tamanho in tamanho_unique %}
-        <option>{{tamanho[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for tamanho in tamanho_unique %}
+      <option>{{tamanho[0]}}</option>
+      {% endfor %}
     </select>
   </div>
   <div class="hidden">
     <label for="filtro-rodado">Rodado:</label>
     <select id="filtro-rodado" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for rodado in rodado_unique %}
-        <option>{{rodado[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for rodado in rodado_unique %}
+      <option>{{rodado[0]}}</option>
+      {% endfor %}
     </select>
   </div>
   <div class="hidden">
     <label for="filtro-pneu">Pneu:</label>
     <select id="filtro-pneu" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for pneu in pneu_unique %}
-        <option>{{pneu[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for pneu in pneu_unique %}
+      <option>{{pneu[0]}}</option>
+      {% endfor %}
     </select>
   </div>
   <div class="hidden">
     <label for="filtro-descricao-generica">Opcionais:</label>
     <select id="filtro-descricao-generica" onchange="atualizarDados()">
-        <option value="">Selecionar</option>
-        {% for descricao_generica in descricao_generica_unique %}
-        <option>{{descricao_generica[0]}}</option>
-        {% endfor %}
+      <option value="">Selecionar</option>
+      {% for descricao_generica in descricao_generica_unique %}
+      <option>{{descricao_generica[0]}}</option>
+      {% endfor %}
     </select>
   </div>
-   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
+  <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
      -->
   <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
   <!-- <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button> -->
 </div>
 
 <div class="container pt-4 hidden" style="transition: 0.5s;">
-    <div class="row">
-        <div style="position: relative;">
-            <a href="/export/pdf-all">
-                <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
-            </a>
-            <table id="table1" class="table table-striped responsive-table">
-              <thead>
-                  <tr>
-                      <th></th>
-                      <th>Família</th>
-                      <th>Código</th>
-                      <th>Descrição</th>
-                      <th>Cor</th>
-                      <th>Preço</th>
-                      <th>Preço c/ desconto</th>
-                      <th>Favorito</th>
-                  </tr>
-              </thead>
-              <tbody>
-                {% for row in data %}
-                  <tr>
-                    <td></td>
-                    <td data-label="Modelo">{{row[11]}}</td>
-                    <td data-label="Código" id ='codigo'>{{row[1]}}</td>
-                    <td data-label="Descrição">{{row[2]}}</td>
-                    <td data-label="Cor">
-                      <select id="cor" class="cor-dropdown" style="width:160px;">
-                        <option value="Laranja" selected>Laranja</option>
-                        <option value="Verde">Verde</option>
-                        <option value="Vermelha">Vermelha</option>
-                        <option value="Azul">Azul</option>
-                        <option value="Amarela">Amarela</option>
-                      </select>
-                    </td>
-                    <td data-label="Preço" style="white-space: nowrap;">{{row[29]}}</td>
-                    <td data-label="Preço Final">
-                      <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
-                    </td>
-                    
-                    <td data-label="Favorito">
-                      <div class="toggle" id="maquina-parada-toggle">
-                        <label class="switch2">
-                          {% if row[27] == 'on' %}:
-                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="{{row[1]}}" checked> 
-                          <span class="slider round"></span>
-                          {% else %}
-                          <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="{{row[1]}}" > 
-                          <span class="slider round"></span>
-                          {% endif %}
-                        </label>
-                      </div>
-                    </td>
+  <div class="row">
+    <div style="position: relative;">
+      <a href="/export/pdf-all">
+        <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
+      </a>
+      <button id="atualizar-cache">Atualizar produtos</button>
+      <table id="table1" class="table table-striped responsive-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Família</th>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Cor</th>
+            <th>Preço</th>
+            <th>Preço c/ desconto</th>
+            <th>Favorito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td></td>
+            <td data-label="Modelo">{{row[11]}}</td>
+            <td data-label="Código" id='codigo'>{{row[0]}}</td>
+            <td data-label="Descrição">{{row[13]}}</td>
+            <td data-label="Cor">
+              <select id="cor" class="cor-dropdown" style="width:160px;">
+                <option value="Laranja" selected>Laranja</option>
+                <option value="Verde">Verde</option>
+                <option value="Vermelha">Vermelha</option>
+                <option value="Azul">Azul</option>
+                <option value="Amarela">Amarela</option>
+              </select>
+            </td>
+            <td data-label="Preço" style="white-space: nowrap;">{{row[20]}}</td>
+            <td data-label="Preço Final">
+              <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;"
+                oninput="formatPriceInput(event);">
+            </td>
 
-                    <td data-label="Selecionar">
-                      <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);" id ='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i>   Enviar</button>
-                    </td>                
-                  </tr>
-                  {% endfor %}
-                </tbody>
-            </table>  
-        </div>
+            <td data-label="Favorito">
+              <div class="toggle" id="maquina-parada-toggle">
+                <label class="switch2">
+                  {% if row[27] == 'on' %}:
+                  <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito"
+                    data-row-id="{{row[1]}}" checked>
+                  <span class="slider round"></span>
+                  {% else %}
+                  <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito"
+                    data-row-id="{{row[1]}}">
+                  <span class="slider round"></span>
+                  {% endif %}
+                </label>
+              </div>
+            </td>
+
+            <td data-label="Selecionar">
+              <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);"
+                id='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i> Enviar</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>
 
 <div id="loading-overlay" style="display: none;">
@@ -200,16 +214,16 @@
 
 <div id="overlay" style="display: none;">
   <div id="loading-bar-container">
-      <div id="loading-bar">
-          <div id="loading-progress"></div>
-      </div>
+    <div id="loading-bar">
+      <div id="loading-progress"></div>
+    </div>
   </div>
 </div>
 
 <div id="modalEnviar" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span> <!-- Botão de fechar -->
-    
+
     <div>
       <label for="observacao">Observações:</label>
       <textarea id="observacao" rows="4" cols="45"></textarea>
@@ -221,7 +235,7 @@
 
 <script>
   // Manipulador de evento de clique para botões favoritos
-  $('#table1').on('click', '.favorito-btn', function(event) {
+  $('#table1').on('click', '.favorito-btn', function (event) {
     // Obter o estado do favorito e o ID da linha
     var favoriteState = this.checked ? 'on' : 'off';
     var rowId = this.getAttribute('data-row-id');
@@ -237,19 +251,19 @@
         rowId: rowId
       })
     })
-    .then(function(response) {
-      // Lidar com a resposta do servidor, se necessário
-    })
-    .catch(function(error) {
-      // Lidar com erros de solicitação, se necessário
-    });
+      .then(function (response) {
+        // Lidar com a resposta do servidor, se necessário
+      })
+      .catch(function (error) {
+        // Lidar com erros de solicitação, se necessário
+      });
   });
 </script>
 
 <script>
   // Inicialize o Select2 no elemento 'mySelect'
-  $(document).ready(function() {
-    $('#filtro-nome').select2();
+  $(document).ready(function () {
+    $('#resultado-responsavel').select2();
   });
 </script>
 
@@ -267,26 +281,26 @@
 
   // Configurar evento de clique para fechar o modal quando o botão de fechar for clicado
   closeButton.addEventListener("click", fecharModal);
-  
+
 </script>
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Ao clicar no botão "Enviar"
-    $('#btnEnviar').click(function() {
+    $('#btnEnviar').click(function () {
       // Exibir o modal
       $('#modalEnviar').show();
     });
 
     // Ao clicar no botão "Fechar" do modal
-    $('#modalEnviar').on('click', '.fecharModal', function() {
+    $('#modalEnviar').on('click', '.fecharModal', function () {
       // Esconder o modal
       $('#modalEnviar').hide();
     });
 
-      // Esconder o modal após o envio
-      $('#modalEnviar').hide();
-    });
+    // Esconder o modal após o envio
+    $('#modalEnviar').hide();
+  });
 
 </script>
 
@@ -318,10 +332,10 @@
         rodado: rodado,
         pneu: pneu,
         descricao_generica: descricao_generica,
-        filtro_nome:filtro_nome,
+        filtro_nome: filtro_nome,
         // inclua outros dropdowns aqui
       },
-      success: function(response) {
+      success: function (response) {
         // atualizar o DataFrame com os dados retornados
         var dadosAtualizados = response.dados;
         var descricaoAtualizada = response.descricao;
@@ -338,49 +352,48 @@
 
         // atualizar a tabela com os dados retornados
         atualizarTabela(dadosAtualizados);
-        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado);
+        atualizarDropdowns(descricaoAtualizada, modeloAtualizado, eixoAtualizado, molaFreioAtualizado, tamanhoAtualizado, rodadoAtualizado, pneuAtualizado, descricaoGenericaAtualizado);
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
-      error: function(error) {
+      error: function (error) {
         console.log(error);
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
       }
     });
-  
+
   }
 
-  
   function atualizarTabela(dados) {
     $("#loading-overlay").show();
     var tabela = $('#table1 tbody');
     tabela.empty(); // limpar a tabela antes de adicionar os novos dados
 
-    dados.forEach(function(row) {
+    dados.forEach(function (row) {
 
-        var variavel1 = `${row[27]}`;
+      var variavel1 = `${row[27]}`;
 
-        var favoritoCheckbox = '';
-          if (variavel1 === 'on') {
-            favoritoCheckbox = `
+      var favoritoCheckbox = '';
+      if (variavel1 === 'on') {
+        favoritoCheckbox = `
               <input class=s"btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}" checked> 
               <span class="slider round"></span>
             `;
-          } else {
-            favoritoCheckbox = ` 
+      } else {
+        favoritoCheckbox = ` 
               <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}"> 
               <span class="slider round"></span>
             `;
-          }
-          
-        console.log(variavel1);
+      }
 
-        var html = `
+      console.log(variavel1);
+
+      var html = `
           <tr>
             <td></td>
             <td data-label="Modelo">${row[11]}</td>
-            <td data-label="Código" id="codigo">${row[1]}</td>
-            <td data-label="Descrição">${row[2]}</td>
+            <td data-label="Código" id="codigo">${row[0]}</td>
+            <td data-label="Descrição">${row[13]}</td>
             <td data-label="Cor">
               <select id="cor" class="cor-dropdown">
                 <option value="Laranja" selected>Laranja</option>
@@ -390,7 +403,7 @@
                 <option value="Amarela">Amarela</option>
               </select>
             </td>
-            <td data-label="Preço" style="white-space: nowrap;">${row[29]}</td>
+            <td data-label="Preço" style="white-space: nowrap;">${row[20]}</td>
             <td data-label="Preço Final">
               <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
             </td>
@@ -406,12 +419,12 @@
             </td>
           </tr>`;
 
-        tabela.append(html);
-      
-      });
+      tabela.append(html);
 
-      $("#loading-overlay").hide();
-    }
+    });
+
+    $("#loading-overlay").hide();
+  }
 
 
   function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica) {
@@ -435,7 +448,7 @@
     var rodadoSelecionado = rodadoDropdown.val();
     var pneuSelecionado = pneuDropdown.val();
     var descricaoGenericaSelecionado = descricaoGenericaDropdown.val();
-    
+
     descricaoDropdown.empty();
     modeloDropdown.empty();
     eixoDropdown.empty();
@@ -449,14 +462,14 @@
     descricaoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
     modeloDropdown.append($('<option>').text('Selecionar').attr('value', ''));
     eixoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
-    molaFreioDropdown.append($('<option>').text('Selecionar').attr('value',''));
-    tamanhoDropdown.append($('<option>').text('Selecionar').attr('value',''));
-    rodadoDropdown.append($('<option>').text('Selecionar').attr('value',''));
-    pneuDropdown.append($('<option>').text('Selecionar').attr('value',''));
-    descricaoGenericaDropdown.append($('<option>').text('Selecionar').attr('value',''));
+    molaFreioDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    tamanhoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    rodadoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    pneuDropdown.append($('<option>').text('Selecionar').attr('value', ''));
+    descricaoGenericaDropdown.append($('<option>').text('Selecionar').attr('value', ''));
 
     // Preencher os valores dos dropdowns e selecionar o valor atual, se existir
-    $.each(descricao, function(index, value) {
+    $.each(descricao, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === descricaoSelecionada) {
         option.attr('selected', 'selected');
@@ -464,7 +477,7 @@
       descricaoDropdown.append(option);
     });
 
-    $.each(modelo, function(index, value) {
+    $.each(modelo, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === modeloSelecionado) {
         option.attr('selected', 'selected');
@@ -472,7 +485,7 @@
       modeloDropdown.append(option);
     });
 
-    $.each(eixo, function(index, value) {
+    $.each(eixo, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === eixoSelecionado) {
         option.attr('selected', 'selected');
@@ -480,7 +493,7 @@
       eixoDropdown.append(option);
     });
 
-    $.each(mola_freio, function(index, value) {
+    $.each(mola_freio, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === molaFreioSelecionado) {
         option.attr('selected', 'selected');
@@ -488,7 +501,7 @@
       molaFreioDropdown.append(option);
     });
 
-    $.each(tamanho, function(index, value) {
+    $.each(tamanho, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === tamanhoSelecionado) {
         option.attr('selected', 'selected');
@@ -496,7 +509,7 @@
       tamanhoDropdown.append(option);
     });
 
-    $.each(rodado, function(index, value) {
+    $.each(rodado, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === rodadoSelecionado) {
         option.attr('selected', 'selected');
@@ -504,7 +517,7 @@
       rodadoDropdown.append(option);
     });
 
-    $.each(pneu, function(index, value) {
+    $.each(pneu, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === pneuSelecionado) {
         option.attr('selected', 'selected');
@@ -512,7 +525,7 @@
       pneuDropdown.append(option);
     });
 
-    $.each(descricao_generica, function(index, value) {
+    $.each(descricao_generica, function (index, value) {
       var option = $('<option>').text(value[0]).attr('value', value[0]);
       if (value[0] === descricaoGenericaSelecionado) {
         option.attr('selected', 'selected');
@@ -527,7 +540,7 @@
 </script>
 
 <script>// Botão para limpar os filtros
-  
+
   function limparFiltros() {
     var descricaoGenericaSelect = $('#filtro-descricao');
     var modeloSelect = $('#filtro-modelo');
@@ -573,7 +586,7 @@
         adicionais: adicionaisSelect.val()
         // inclua outros dropdowns aqui
       },
-      success: function(response) {
+      success: function (response) {
         // atualizar o DataFrame com os dados retornados
         var dadosAtualizados = response.dados;
         var descricaoAtualizada = response.descricao;
@@ -589,7 +602,7 @@
 
         // atualizar a tabela com os dados retornados
         atualizarTabela(dadosAtualizados);
-        atualizarDropdowns(descricaoAtualizada,modeloAtualizado,eixoAtualizado,molaFreioAtualizado,tamanhoAtualizado,rodadoAtualizado,pneuAtualizado,descricaoGenericaAtualizado);
+        atualizarDropdowns(descricaoAtualizada, modeloAtualizado, eixoAtualizado, molaFreioAtualizado, tamanhoAtualizado, rodadoAtualizado, pneuAtualizado, descricaoGenericaAtualizado);
       },
     });
   }
@@ -598,7 +611,7 @@
 <script>// Atualizar dados de dropdow de clientes
   function atualizarCliente() {
     $("#loading-overlay").show();
-  
+
     var nome_cliente = $('#resultado-nomes-novo').val();
     // var contato_cliente = $('#filtro-contato').val();
     // var condicoes = $('#forma-pagamento').val();
@@ -615,7 +628,7 @@
         // condicoes: condicoes
         // inclua outros dropdowns aqui
       },
-      success: function(response) {
+      success: function (response) {
         // atualizar o DataFrame com os dados retornados
         // var nomeClienteAtualizado = response.nome_cliente;
         // var contatoClienteAtualizado = response.contato_cliente;
@@ -629,7 +642,7 @@
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
 
       },
-      error: function(error) {
+      error: function (error) {
         console.log(error);
         $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
       }
@@ -647,7 +660,7 @@
 
     formaPagamentoDropdown.append($('<option>').text('Selecionar').attr('value', ''));
 
-    $.each(formaPagamento, function(index, value) {
+    $.each(formaPagamento, function (index, value) {
       var option = $('<option>').text(value).attr('value', value);
       if (value === formaPagamentoSelecionado) {
         option.attr('selected', 'selected');
@@ -681,48 +694,49 @@
     }
   }
 
-    // Function to format a number as Brazilian Real
-    function formatAsReal(value) {
-      // Convert the value to a number
-      const number = Number(value);
-    
-      // Check if the number is valid
-      if (isNaN(number)) {
-        return '';
-      }
-    
-      // Split the number into integer and decimal parts
-      const integerPart = Math.floor(number / 100);
-      const decimalPart = number % 100;
-    
-      // Format the integer part with thousands separator
-      const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
-    
-      // Format the decimal part with two decimal places
-      const formattedDecimalPart = decimalPart.toString().padStart(2, '0');
-    
-      // Construct the formatted value as Brazilian Real
-      const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
-    
-      return formattedValue;
+  // Function to format a number as Brazilian Real
+  function formatAsReal(value) {
+    // Convert the value to a number
+    const number = Number(value);
+
+    // Check if the number is valid
+    if (isNaN(number)) {
+      return '';
     }
-    
+
+    // Split the number into integer and decimal parts
+    const integerPart = Math.floor(number / 100);
+    const decimalPart = number % 100;
+
+    // Format the integer part with thousands separator
+    const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
+
+    // Format the decimal part with two decimal places
+    const formattedDecimalPart = decimalPart.toString().padStart(2, '0');
+
+    // Construct the formatted value as Brazilian Real
+    const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
+
+    return formattedValue;
+  }
+
 </script>
 
 <script>
   // Função para enviar os dados para o backend usando fetch
-  function sendData(items, nome, contato, formaPagamento, observacoes) {
+  function sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel) {
     // Crie um objeto com os dados do formulário
     var formData = {
       items: items,
       nome: nome,
       contato: contato,
       formaPagamento: formaPagamento,
-      observacoes: observacoes
+      observacoes: observacoes,
+      nomeResponsavel: nomeResponsavel
     };
-    
+
     // Faça uma requisição POST para o backend usando fetch
-    
+
     fetch('/receber-dados', {
       method: 'POST',
       headers: {
@@ -780,9 +794,10 @@
     var contato = document.getElementById('resultado-contatos-novo').value;
     var formaPagamento = document.getElementById('forma-pagamento').value;
     var observacoes = document.getElementById('observacao').value;
+    var nomeResponsavel = document.getElementById('resultado-responsavel').value;
 
     // Chame a função para enviar os dados para o backend usando fetch
-    sendData(items, nome, contato, formaPagamento, observacoes);
+    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel);
   }
 
   // Obtenha o botão "Enviar"
@@ -793,9 +808,9 @@
 </script>
 
 <script>// Atualizar dados de dropdow de clientes
-  
+
   function atualizar_regiao() {
-    
+
     var nomeCliente = $('#resultado-nomes-novo').val();
     var contatosCliente = $('#resultado-contatos-novo').val();
     var formaPagamento = $('#forma-pagamento').val();
@@ -811,7 +826,7 @@
         contatos_cliente_regiao: contatosCliente,
         forma_pagamento_regiao: formaPagamento
       },
-      success: function(response) {
+      success: function (response) {
         // atualizar o DataFrame com os dados retornados
         var nomeClienteAtualizado = response.nomeCliente;
 
@@ -835,8 +850,8 @@
           });
         }
         hideProgressBar();
-        },
-      error: function(error) {
+      },
+      error: function (error) {
         console.log(error);
         hideProgressBar();
       }
@@ -882,8 +897,8 @@
 
 <script>
 
-  function buscarRepresentanteId(representanteNameValue, skip) {   
-    
+  function buscarRepresentanteId(representanteNameValue, skip) {
+
     var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
     var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=Id&$filter=Name eq '${representanteNameValue}'&$skip=${skip}`;
 
@@ -893,23 +908,23 @@
         'User-Key': apiKey
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.value && data.value.length > 0) {
-        return data.value[0].Id; // Pega o primeiro ID da lista (se houver)
-      }
-      return null; // Retorna null se nenhum ID for encontrado
-    })
-    .catch(error => {
-      console.error(error);
-      return null;
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.value && data.value.length > 0) {
+          return data.value[0].Id; // Pega o primeiro ID da lista (se houver)
+        }
+        return null; // Retorna null se nenhum ID for encontrado
+      })
+      .catch(error => {
+        console.error(error);
+        return null;
+      });
   }
 
   function buscarContatos(inputValue, ownerId, skip) {
     var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
     var filter = `TypeId eq 1 and OwnerId eq ${ownerId}`;
-    
+
     if (inputValue.length > 0) {
       filter += ` and contains(Name,'${inputValue}')`;
     }
@@ -924,12 +939,78 @@
         'User-Key': apiKey
       }
     })
-    .then(response => response.json())
-    .then(data => data.value)
-    .catch(error => {
-      console.error(error);
-      return [];
-    });
+      .then(response => response.json())
+      .then(data => data.value)
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
+  }
+
+  function buscarProfileId(representanteNameValue, skip) {
+
+    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+    var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'&$skip=${skip}`;
+
+    return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'User-Key': apiKey
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.value && data.value.length > 0) {
+          return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
+        }
+        return null; // Retorna null se nenhum ID for encontrado
+      })
+      .catch(error => {
+        console.error(error);
+        return null;
+      });
+  }
+
+  function buscarContatosGeral(inputValue, ownerId, skip) {
+    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+    var apiUrl = `https://public-api2.ploomes.com/Contacts?$top=100&$select=Name&$filter=contains(Name,'${inputValue}')&$skip=${skip}`;
+
+    console.log(apiUrl)
+
+    return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'User-Key': apiKey
+      }
+    })
+      .then(response => response.json())
+      .then(data => data.value)
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
+  }
+
+  function buscarReponsaveis(skip) {
+
+    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+    var apiUrl = `https://public-api2.ploomes.com/Users?$select=Name&$filter=Suspended+eq+false`;
+
+    console.log(apiUrl)
+
+    return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'User-Key': apiKey
+      }
+    })
+      .then(response => response.json())
+      .then(data => data.value)
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
+
   }
 
   var filtroNomeInput = document.getElementById("filtro-nome-novo");
@@ -940,28 +1021,9 @@
   var representanteNameElement = document.getElementById("representante-name");
   var representanteNameValue = representanteNameElement.value;
 
-  function atualizarResultados(inputValue) {
-    if (inputValue.length === 0) {
-      buscarContatos(" ", skip)
-        .then(contatos => {
-          resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
-          contatos.forEach(contato => {
-            resultadoNomesSelect.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
-          });
-        });
-    } else {
-      buscarContatos(inputValue, skip)
-        .then(contatos => {
-          resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
-          contatos.forEach(contato => {
-            resultadoNomesSelect.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
-          });
-        });
-    }
-  }
-
-  filtroNomeInput.addEventListener("input", function() {
+  filtroNomeInput.addEventListener("input", function () {
     var inputValue = this.value;
+    var divElement = document.getElementById("filtro-responsavel-div");
 
     // Limpar o dropdown de resultados
     resultadoNomesSelect.innerHTML = "<option value='' selected>Carregando...</option>";
@@ -970,22 +1032,39 @@
     clearTimeout(timer);
 
     // Aguardar 300ms antes de atualizar os resultados
-    timer = setTimeout(function() {
+    timer = setTimeout(function () {
       // Obtém o valor atualizado do campo de representante
       var representanteNameValue = representanteNameElement.value;
 
-      buscarRepresentanteId(representanteNameValue, skip)
-        .then(id => {
-          if (id !== null) {
-            buscarContatos(inputValue, id, skip)
+      buscarProfileId(representanteNameValue, skip)
+        .then(profileId => {
+          if (profileId === 1) {
+
+            buscarContatosGeral(inputValue, profileId, skip)
               .then(contatos => {
                 resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
                 contatos.forEach(contato => {
                   resultadoNomesSelect.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
                 });
               });
+
           } else {
-            console.log('Nenhum ID de representante encontrado.');
+
+            // Caso contrário, use buscarRepresentanteId e buscarContatos
+            buscarRepresentanteId(representanteNameValue, skip)
+              .then(id => {
+                if (id !== null) {
+                  buscarContatos(inputValue, id, skip)
+                    .then(contatos => {
+                      resultadoNomesSelect.innerHTML = "<option value='' selected>Selecione</option>";
+                      contatos.forEach(contato => {
+                        resultadoNomesSelect.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
+                      });
+                    });
+                } else {
+                  console.log('Nenhum ID de representante encontrado.');
+                }
+              });
           }
         });
     }, 300);
@@ -1007,19 +1086,19 @@
         'User-Key': apiKey
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data && data.value && data.value.length > 0) {
-        console.log(data)
-        return data.value[0].Id; // Pega o Id da companhia
-      
-      }
-      return null; // Retorna null se nenhum Id for encontrado
-    })
-    .catch(error => {
-      console.error(error);
-      return null;
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.value && data.value.length > 0) {
+          console.log(data)
+          return data.value[0].Id; // Pega o Id da companhia
+
+        }
+        return null; // Retorna null se nenhum Id for encontrado
+      })
+      .catch(error => {
+        console.error(error);
+        return null;
+      });
   }
 
   // Função para buscar os nomes de contatos da companhia com base no Id
@@ -1033,24 +1112,24 @@
         'User-Key': apiKey
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data); // Imprime o objeto de dados no console
-      return data.value; // Retorna o array de contatos
-    })
-    .catch(error => {
-      console.error(error);
-      return [];
-    });
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Imprime o objeto de dados no console
+        return data.value; // Retorna o array de contatos
+      })
+      .catch(error => {
+        console.error(error);
+        return [];
+      });
   }
 
   // Event listener para o campo de filtro de nome
   var filtroNomeInput = document.getElementById("resultado-nomes-novo");
   var resultadoContatosSelect = document.getElementById("resultado-contatos-novo");
 
-  filtroNomeInput.addEventListener("input", function() {
+  filtroNomeInput.addEventListener("input", function () {
     var clienteNome = this.value;
-    
+
     console.log(clienteNome)
 
     // Limpar o dropdown de resultados de contatos
@@ -1073,6 +1152,96 @@
           console.log('Cliente não encontrado.');
           resultadoContatosSelect.innerHTML = "<option value='' selected>Nenhum contato encontrado</option>";
         }
+      });
+  });
+</script>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var representanteNameElement = document.getElementById("representante-name");
+    var representanteNameValue = representanteNameElement.value;
+    var skip = 0;
+
+    var responsaveisLista = document.getElementById("resultado-responsavel");
+
+    function buscarProfileId(representanteNameValue, skip) {
+
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+      var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'&$skip=${skip}`;
+
+      return fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'User-Key': apiKey
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.value && data.value.length > 0) {
+            return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
+          }
+          return null; // Retorna null se nenhum ID for encontrado
+        })
+        .catch(error => {
+          console.error(error);
+          return null;
+        });
+    }
+
+    function buscarResponsaveis() {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+      var apiUrl = `https://public-api2.ploomes.com/Users?$select=Name&$filter=Suspended+eq+false`;
+
+      console.log(apiUrl)
+
+      return fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'User-Key': apiKey
+        }
+      })
+        .then(response => response.json())
+        .then(data => data.value)
+        .catch(error => {
+          console.error(error);
+          return [];
+        });
+    }
+
+    buscarProfileId(representanteNameValue, skip)
+      .then(profileId => {
+        var responsavelElement = document.getElementById("responsaveis");
+        // var selectResponsavelElement = document.getElementById("resultado-responsavel");
+
+        if (profileId === 1) {
+          // Mostrar o elemento de responsável
+          responsavelElement.style.display = "block";
+
+          buscarResponsaveis()
+            .then(contatos => {
+              responsaveisLista.innerHTML = "<option value='' selected>Selecione</option>";
+              contatos.forEach(contato => {
+                responsaveisLista.innerHTML += `<option value="${contato.Name}">${contato.Name}</option>`;
+              });
+
+            });
+        } else {
+          // Ocultar o elemento de responsável
+          responsavelElement.style.display = "none";
+        }
+      });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+      // Manipulador de clique para o botão de atualização de cache
+      $("#atualizar-cache").click(function() {
+          $.post("/atualizar-cache", function(data) {
+              // Exibe a mensagem de sucesso na div de mensagem
+              $("#mensagem").text(data.message);
+          });
       });
   });
 </script>
