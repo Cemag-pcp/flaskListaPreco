@@ -876,6 +876,8 @@ def atualizar_dados():
 
     df = df[df['lista_nova'] == regiao]
 
+    df = df.dropna(subset='lista_nova')
+    
     print(df)
 
     # query = """ SELECT subquery.*, t3.representante, t3.favorito
@@ -956,7 +958,7 @@ def atualizar_dados():
     else:
         df = resultados
 
-    df = df.dropna(subset='lista_nova')
+    # df = df.dropna(subset='lista_nova')
     print(df)
 
 
