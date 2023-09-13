@@ -1490,9 +1490,20 @@ def perda():
     dealId = request.form.get('dealId')
     selectedOption = request.form.get('selectedOption')
 
-    print(selectedOption,dealId)
+    perderNegocio(selectedOption, dealId)
 
-    # perderNegocio(selectedOption, dealId)
+    return render_template('opcoes.html')
+
+
+@app.route('/ganhar', methods=['POST'])
+@login_required
+def ganhar():
+
+    dealId = request.form.get('dealId')
+    
+    print(dealId)
+
+    ganharNegocio(dealId)
 
     return render_template('opcoes.html')
 
@@ -2135,11 +2146,11 @@ def formatar_data(data_str):
 
 
 def listarOrcamentos(nomeRepresentante):
-    """Função para listar orçamentos de cada representante"""
+    """Função para listar negócios de cada representante"""
 
     idRep = idRepresentante(nomeRepresentante)
 
-    url = "https://public-api2.ploomes.com/Quotes?$top=100&$select=Amount,DealId,ContactName,Date,ExternallyAccepted&$filter=OwnerId+eq+{}&$orderby=Date desc".format(
+    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{}&$orderby=Date desc&$select=DealId,ExternallyAccepted".format(
         idRep)
 
     headers = {
@@ -2149,17 +2160,50 @@ def listarOrcamentos(nomeRepresentante):
     response = requests.get(url, headers=headers)
 
     data = response.json()
-    data = data['value']
+    data1 = data['value']
 
-    for item in data:
+
+
+    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1 &$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
+        idRep)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    data = response.json()
+    data2 = data['value']
+
+
+    # Crie um dicionário para mapear DealId para os itens no segundo JSON
+    deal_id_mapping = {item2['Id']: item2 for item2 in data2}
+
+    # Combine os JSONs com base em DealId
+    combined_json = []
+    for item1 in data1:
+        deal_id = item1['DealId']
+        if deal_id in deal_id_mapping:
+            item2 = deal_id_mapping[deal_id]
+            combined_item = {**item1, **item2}
+            combined_json.append(combined_item)
+
+    for item in combined_json:
         if item['ExternallyAccepted'] is None:
             item['ExternallyAccepted'] = "Não"
         elif item['ExternallyAccepted'] is True:
             item['ExternallyAccepted'] = "Sim"
 
-    for item in data:
-        if item['Date']:
-            item['Date'] = formatar_data(item['Date'])
+    for item in combined_json:
+        if item['LastUpdateDate']:
+            item['LastUpdateDate'] = formatar_data(item['LastUpdateDate'])
+
+
+
+
+
+    data = combined_json
 
     return data
 
@@ -2185,7 +2229,7 @@ def perderNegocio(IdMotivo, DealId):
     """Função que faz perder o negócio"""
 
     json_data = {
-        "LossReasonId": IdMotivo
+        "LossReasonId": int(IdMotivo)
     }
 
     url = "https://public-api2.ploomes.com/Deals({})/Lose".format(DealId)
@@ -2199,8 +2243,60 @@ def perderNegocio(IdMotivo, DealId):
     return "Negócio perdido"
 
 
-def ganharNegocio():
+def buscarProdutosQuotes(dealId):
+    """Função para buscar lista de produtos naquele pedido"""
+
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+12420861&$expand=Products"
+
+    header = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url,headers=header)
+
+    data = response.json()
+    json_produtos = data['value'][0]['Products']
+
+    discount = 0
+    amount = data['value'][0]['Amount']
+    
+    json_win = {
+        "Order":{
+            "Discount":discount,
+            "Amount":amount,
+            "Products": []
+        }
+    }
+
+    # Loop através dos itens no primeiro JSON
+    for product_item in json_produtos:
+        # Crie um novo dicionário com os campos necessários
+        new_product = {
+            "ProductId": product_item['ProductId'],
+            "Quantity": product_item['Quantity'],
+            "CurrencyId": product_item['CurrencyId'],
+            "UnitPrice": product_item['UnitPrice'],
+            "Discount": product_item['Discount'],
+            "Total": product_item['Total']
+        }
+        # Adicione o novo dicionário à lista de Products no segundo JSON
+        json_win['Order']["Products"].append(new_product)
+
+    return json_produtos
+
+
+def ganharNegocio(DealId):
     """Função para ganhar negócio"""
+
+    json_data = buscarProdutosQuotes(DealId)
+
+    url = "https://public-api2.ploomes.com/Deals({})/Win".format(DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=json_data)
 
     return "Negócio ganho"
 

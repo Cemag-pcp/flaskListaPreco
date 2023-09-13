@@ -39,50 +39,83 @@
                   <span style="color: red;">{{ dado.ExternallyAccepted }}</span>
                   {% endif %}
                </p>
-               <p class="card-text">Data: {{ dado.Date}}</p>
+               <p class="card-text">Status: 
+                  {% if dado.StatusId == 1 %}
+                      <span style="color: blue;">Em Aberto</span>
+                  {% elif dado.StatusId == 2 %}
+                      <span style="color: green;">Ganha</span>
+                  {% elif dado.StatusId == 3 %}
+                      <span style="color: red;">Perdida</span>
+                  {% endif %}
+              </p>
+               <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               <a href="#" class="btn btn-success">Ganhar</a>
-               <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
+               {% if dado.StatusId == 2 or dado.StatusId == 3 %}
+                  <a></a>
+                  <a></a>
+               {% else %}
+                  <a class="btn btn-success" style="color: #fff;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
+                  <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
+               {% endif %}
             </div>
          </div>
-         <div class="modal fade" id="funcionarioModal" tabindex="-1" role="dialog" aria-labelledby="funcionarioModalLabel" aria-hidden="false">
+         <div class="modal fade" id="funcionarioModal" tabindex="-1" role="dialog"
+            aria-labelledby="funcionarioModalLabel" aria-hidden="false">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="funcionarioModalLabel"></h5>
-                        <button type="button" class="close" aria-label="Fechar" style="padding: 42px;">
-                           <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group2">  
-                          <div class="form-modal">
-                            <div class="form-group">  
-                              <label for="editar_ativo">Escolha o motivo</label>              
-                              <select class="form-control form-control" id="editar_ativo" name="editar_ativo" id="editar_ativo" required>
-                                {% for motivo in lista_motivos %}
-                                <option value="" selected disabled hidden></option>  
-                                <option value="{{ motivo.Id }}">{{ motivo.Name}}</option>
-                                {% endfor %}
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="funcionarioModalLabel"></h5>
+                     <button type="button" class="close" aria-label="Fechar" style="padding: 42px;">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                     <div class="form-group2">
+                        <div class="form-modal">
+                           <div class="form-group">
+                              <label for="editar_ativo">Escolha o motivo</label>
+                              <select class="form-control form-control" id="editar_ativo" name="editar_ativo"
+                                 id="editar_ativo" required>
+                                 {% for motivo in lista_motivos %}
+                                 <option value="{{ motivo.Id }}">{{ motivo.Name}}</option>
+                                 {% endfor %}
                               </select>
-                            </div>
-                            <div>
+                           </div>
+                           <div>
                               <button id="filtrar">Perder</button>
-                            </div>
+                           </div>
                         </div>
-                      </div>
-                    </div>
-                </div>
+                     </div>
+                  </div>
+               </div>
             </div>
-          </div>
+         </div>
+         <div class="modal fade" id="modalGanhar" tabindex="-1" role="dialog"
+            aria-labelledby="funcionarioModalLabel" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="funcionarioModalLabel"></h5>
+                     <button type="button" class="close" aria-label="Fechar" style="padding: 42px;">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                     <div>
+                        <button id="ganhar">Confirmar</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
       {% endfor %}
    </div>
 </div>
 
- <div id="loading-overlay" style="display: none;">
+<div id="loading-overlay" style="display: none;">
    <div id="loading-spinner"></div>
- </div>
+</div>
 
 <script>
    // Script para procurar na lista de cards
@@ -103,53 +136,102 @@
 
 <script>
    function showModal(dealId) {
-   $("#loading-overlay").show();
-   $.ajax({
-      success: function() {
-         $('.modal-title').text('Confirmar - ' + dealId);
+      $("#loading-overlay").show();
+      $.ajax({
+         success: function () {
+            $('.modal-title').text('Confirmar - ' + dealId);
 
-         $('#funcionarioModal').modal('show');
+            $('#funcionarioModal').modal('show');
 
-         // Ocultar a tela de carregamento após um pequeno atraso (500 milissegundos)
-         setTimeout(function() {
-            $("#loading-overlay").hide(); // Esconde o indicador de carregamento
-         }, 10);
+            // Ocultar a tela de carregamento após um pequeno atraso (500 milissegundos)
+            setTimeout(function () {
+               $("#loading-overlay").hide(); // Esconde o indicador de carregamento
+            }, 10);
 
-         // Fechar o modal ao clicar no botão de fechar
-         $('#funcionarioModal').on('click', '.close', function() {
-            $('#funcionarioModal').modal('hide');
-         });
-
-         // When the 'Perder' button is clicked
-         $('#filtrar').on('click', function() {
-            var selectedOption = $('#editar_ativo').val(); // Get the selected option
-            $("#loading-overlay").show();
-            // Send a POST request to the backend
-            $.ajax({
-               url: '/perda',
-               type: 'POST',
-               data: {
-                  dealId: dealId,
-                  selectedOption: selectedOption
-               },
-               success: function(response) {
-                  var dealId = response.dealId;
-                  var selectedOption = response.selectedOption;
-                  window.location.reload();
-                  $("#loading-overlay").hide();
-               },
-               error: function(error) {
-                  console.log(error);
-               }
+            // Fechar o modal ao clicar no botão de fechar
+            $('#funcionarioModal').on('click', '.close', function () {
+               $('#funcionarioModal').modal('hide');
             });
-         });
-      },
-      error: function(error) {
-         alert('Essa Ordem de Serviço não contém imagem ou vídeo');
-         console.log(error);
-      }
-   });
-}
+
+            // When the 'Perder' button is clicked
+            $('#filtrar').on('click', function () {
+               var selectedOption = $('#editar_ativo').val(); // Get the selected option
+               $("#loading-overlay").show();
+               // Send a POST request to the backend
+               $.ajax({
+                  url: '/perda',
+                  type: 'POST',
+                  data: {
+                     dealId: dealId,
+                     selectedOption: selectedOption
+                  },
+                  success: function (response) {
+                     var dealId = response.dealId;
+                     var selectedOption = response.selectedOption;
+                     window.location.reload();
+                     $("#loading-overlay").hide();
+                  },
+                  error: function (error) {
+                     console.log(error);
+                  }
+               });
+            });
+         },
+         error: function (error) {
+            alert('Essa Ordem de Serviço não contém imagem ou vídeo');
+            console.log(error);
+         }
+      });
+   }
 </script>
+
+<script>
+   function showModalGanhar(dealId) {
+      $("#loading-overlay").show();
+      $.ajax({
+         success: function () {
+            $('.modal-title').text('Confirmar - ' + dealId);
+
+            $('#modalGanhar').modal('show');
+
+            // Ocultar a tela de carregamento após um pequeno atraso (500 milissegundos)
+            setTimeout(function () {
+               $("#loading-overlay").hide(); // Esconde o indicador de carregamento
+            }, 10);
+
+            // Fechar o modal ao clicar no botão de fechar
+            $('#modalGanhar').on('click', '.close', function () {
+               $('#modalGanhar').modal('hide');
+            });
+
+            // When the 'Perder' button is clicked
+            $('#ganhar').on('click', function () {
+               $("#loading-overlay").show();
+               // Send a POST request to the backend
+               $.ajax({
+                  url: '/ganhar',
+                  type: 'POST',
+                  data: {
+                     dealId: dealId,
+                  },
+                  success: function (response) {
+                     var dealId = response.dealId;
+                     window.location.reload();
+                     $("#loading-overlay").hide();
+                  },
+                  error: function (error) {
+                     console.log(error);
+                  }
+               });
+            });
+         },
+         error: function (error) {
+            alert('Essa Ordem de Serviço não contém imagem ou vídeo');
+            console.log(error);
+         }
+      });
+   }
+</script>
+
 
 {% endblock %}
