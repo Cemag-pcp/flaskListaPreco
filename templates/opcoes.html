@@ -50,7 +50,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="funcionarioModalLabel"></h5>
-                        <button type="button" class="close" aria-label="Fechar">
+                        <button type="button" class="close" aria-label="Fechar" style="padding: 42px;">
                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -60,18 +60,10 @@
                             <div class="form-group">  
                               <label for="editar_ativo">Escolha o motivo</label>              
                               <select class="form-control form-control" id="editar_ativo" name="editar_ativo" id="editar_ativo" required>
+                                {% for motivo in lista_motivos %}
                                 <option value="" selected disabled hidden></option>  
-                                <option value="Prazo de Entrega extenso">Prazo de Entrega extenso</option>
-                                <option value="Insatisfeito com a qualidade">Insatisfeito com a qualidade</option>
-                                <option value="Valor alto">Valor alto</option>
-                                <option value="Já possui estoque">Já possui estoque</option>
-                                <option value="Restrição Cadastral">Restrição Cadastral</option>
-                                <option value="Concorrente - Palini">Concorrente - Palini</option>
-                                <option value="Concorrente - Triton">Concorrente - Triton</option>
-                                <option value="Atualização de Preço">Atualização de Preço</option>
-                                <option value="Cotação Vendedor da Loja">Cotação Vendedor da Loja</option>
-                                <option value="Comparando ao preço do concorrente">Comparando ao preço do concorrente</option>
-                                <option value="Apenas Orçamento">Apenas Orçamento</option>
+                                <option value="{{ motivo.Id }}">{{ motivo.Name}}</option>
+                                {% endfor %}
                               </select>
                             </div>
                             <div>
