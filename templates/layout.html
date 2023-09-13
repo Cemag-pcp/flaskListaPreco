@@ -1,38 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Lista de preço</title>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  
-  
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-<!-- Include the default stylesheet -->
-<!-- Include plugin -->
-<script src="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="https://kit.fontawesome.com/d1807a784c.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lista.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/load.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bar-progress.css') }}">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de preço</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <!-- Select2 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+
+  <!-- Multiple Select CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.css">
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+
+  <!-- Bootstrap JS (Popper.js included) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+  <!-- Multiple Select JS -->
+  <script src="https://cdn.rawgit.com/wenzhixin/multiple-select/e14b36de/multiple-select.js"></script>
+
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+
+  <!-- Bootstrap Bundle JS (Popper.js included) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plotly JS -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  <!-- Font Awesome Kit -->
+  <script src="https://kit.fontawesome.com/d1807a784c.js" crossorigin="anonymous"></script>
+
+  <!-- Your Custom CSS Files -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lista.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/load.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/modal.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bar-progress.css') }}">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body>
-    
 
   <div class="container principal">
     <header>
@@ -49,94 +70,95 @@
         </a>
       </div>
       <div class="shopping">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span class="quantity">0</span>
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="quantity">0</span>
       </div>
     </header>
     <div class="list"></div>
   </div>
-  
+
   <div class="card" id="card">
     <h1>Orçamento</h1><i class="close fa-sharp fa-solid fa-xmark"></i>
     <ul class="listCard"></ul>
     <div class="checkOut">
       <div class="total"></div>
-      <div class="closeShopping" id="btnEnviar">Continuar</div> 
+      <div class="closeShopping" id="btnEnviar">Continuar</div>
     </div>
   </div>
-  
+
   <script src="static\js\favorito.js"></script>
   <script src="static/js/app.js"></script>
   <script src="static/js/back.js"></script>
   <script src="static/js/nomecontato.js"></script>
-    
+
   {% block body %}
   {% endblock %}
 
-<script>
+  <script>
 
-  $(document).ready(function() {
-      $('#table2').DataTable({     
+    $(document).ready(function () {
+      $('#table2').DataTable({
         "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
-          "iDisplayLength": 10
-        } 
+        "iDisplayLength": 10
+      }
       );
-  } );
+    });
 
-  /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
-  function openNav() {
-    document.getElementById("mySidebar").style.width = "150px";
-  }
+    /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "150px";
+    }
 
-  /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
-  function closeNav() {
-    document.getElementById("mySidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-  }
+    /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+      document.getElementById("main").style.marginLeft = "0";
+    }
 
-</script>
+  </script>
 
-<script>
-$(document).ready(function () {
-  // Setup - add a text input to each footer cell
-  $('#table1 tfoot th:eq(0), #table1 tfoot th:eq(1), #table1 tfoot th:eq(2), #table1 tfoot th:eq(3)').each(function () {
-      var title = $(this).text();
-      $(this).html('<div class="form-group"> <input class="form-control" type="text" placeholder= "' + title + '" /> </div>');
-  });
+  <script>
+    $(document).ready(function () {
+      // Setup - add a text input to each footer cell
+      $('#table1 tfoot th:eq(0), #table1 tfoot th:eq(1), #table1 tfoot th:eq(2), #table1 tfoot th:eq(3)').each(function () {
+        var title = $(this).text();
+        $(this).html('<div class="form-group"> <input class="form-control" type="text" placeholder= "' + title + '" /> </div>');
+      });
 
-  // DataTable
-  var table = $('#table12').DataTable({
-      initComplete: function () {
+      // DataTable
+      var table = $('#table12').DataTable({
+        initComplete: function () {
           // Apply the search
           this.api()
-              .columns()
-              .every(function () {
-                  var that = this;
+            .columns()
+            .every(function () {
+              var that = this;
 
-                  $('input', this.footer()).on('keyup change clear', function () {
-                      if (that.search() !== this.value) {
-                          that.search(this.value).draw();
-                      }
-                  });
+              $('input', this.footer()).on('keyup change clear', function () {
+                if (that.search() !== this.value) {
+                  that.search(this.value).draw();
+                }
               });
-      },
-  });
-});
-</script>
+            });
+        },
+      });
+    });
+  </script>
 
-<script>
-  function chamarFuncao() {
+  <script>
+    function chamarFuncao() {
       // Chamar a rota '/chamar-funcao' no Flask usando AJAX
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '/logout', true);
       xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-              alert(xhr.responseText);  // Exibir a resposta da função em Python
-          }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          alert(xhr.responseText);  // Exibir a resposta da função em Python
+        }
       };
       xhr.send();
-  }
-</script>
+    }
+  </script>
 
 </body>
+
 </html>

@@ -1149,6 +1149,9 @@ def atualizar_regiao():
 @app.route('/opcoes', methods=['GET', 'POST'])
 @login_required
 def opcoes():
+    
+    nomeRepresentante = session['user_id']
+
     if request.method == 'POST':
 
         selected_option = request.form['option']
@@ -1158,7 +1161,9 @@ def opcoes():
         elif selected_option == 'consulta':
             return redirect(url_for('consulta'))
 
-    return render_template('opcoes.html')
+    data = listarOrcamentos(nomeRepresentante)
+
+    return render_template('opcoes.html', data=data)
 
 
 @app.route('/consulta')
@@ -2091,23 +2096,40 @@ def buscarRegiaoCliente(nomeCliente):
     return regiao
 
 
-def obterListasRepresentantes(nomeRepresentante):
+def formatar_data(data_str):
+    partes = data_str.split('T')  # Divide a string em data/hora e deslocamento de tempo
+    data_obj = datetime.fromisoformat(partes[0])  # Converter a parte da data/hora em objeto datetime
+    data_formatada = data_obj.strftime('%d/%m/%Y')  # Formatar a data
+    return data_formatada
+
+def listarOrcamentos(nomeRepresentante):
+    """Função para listar orçamentos de cada representante"""
 
     idRep = idRepresentante(nomeRepresentante)
 
-    url = "https://public-api2.ploomes.com/Contacts?$top=10&$filter=contains(Name,'{}')&$expand=OtherProperties($filter=FieldKey+eq+'contact_70883643-FFE7-4C84-8163-89242423A4EF')".format(
-        nomeRepresentante)
-
-    url = "https://public-api2.ploomes.com/Contacts?$top=10&$filter=contains(Name,'{}')&$expand=OtherProperties($filter=FieldKey+eq+'contact_70883643-FFE7-4C84-8163-89242423A4EF')".format(
-        nomeRepresentante)
+    url = "https://public-api2.ploomes.com/Quotes?$top=100&$select=Amount,DealId,ContactName,Date,ExternallyAccepted&$filter=OwnerId+eq+{}&$orderby=Date desc".format(
+        idRep)
 
     headers = {
         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
     }
 
-    listas = ''
+    response = requests.get(url, headers=headers)
 
-    return listas
+    data = response.json()
+    data = data['value']
+
+    for item in data:
+        if item['ExternallyAccepted'] is None:
+            item['ExternallyAccepted'] = "Não"
+        elif item['ExternallyAccepted'] is True:
+            item['ExternallyAccepted'] = "Sim"
+
+    for item in data:
+        if item['Date']:
+            item['Date'] = formatar_data(item['Date'])
+
+    return data
 
 
 if __name__ == '__main__':
