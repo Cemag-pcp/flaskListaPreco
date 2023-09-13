@@ -32,7 +32,7 @@
          <div class="custom-card">
             <div class="card-body">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
-               <h6 class="card-text">Cliente: {{ dado.ContactName }}</h6>
+               <h6 class="card-text">Cliente: {{ dado.ContactName }} - {{ dado.DealId }}</h6>
                <p class="card-text">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
                   <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
                   {% else %}
@@ -42,13 +42,55 @@
                <p class="card-text">Data: {{ dado.Date}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
                <a href="#" class="btn btn-success">Ganhar</a>
-               <a class="btn btn-danger" data-toggle="modal" data-target="#modalPerder">Perder</a>
+               <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
             </div>
          </div>
+         <div class="modal fade" id="funcionarioModal" tabindex="-1" role="dialog" aria-labelledby="funcionarioModalLabel" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="funcionarioModalLabel"></h5>
+                        <button type="button" class="close" aria-label="Fechar">
+                           <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group2">  
+                          <div class="form-modal">
+                            <div class="form-group">  
+                              <label for="editar_ativo">Escolha o motivo</label>              
+                              <select class="form-control form-control" id="editar_ativo" name="editar_ativo" id="editar_ativo" required>
+                                <option value="" selected disabled hidden></option>  
+                                <option value="Prazo de Entrega extenso">Prazo de Entrega extenso</option>
+                                <option value="Insatisfeito com a qualidade">Insatisfeito com a qualidade</option>
+                                <option value="Valor alto">Valor alto</option>
+                                <option value="Já possui estoque">Já possui estoque</option>
+                                <option value="Restrição Cadastral">Restrição Cadastral</option>
+                                <option value="Concorrente - Palini">Concorrente - Palini</option>
+                                <option value="Concorrente - Triton">Concorrente - Triton</option>
+                                <option value="Atualização de Preço">Atualização de Preço</option>
+                                <option value="Cotação Vendedor da Loja">Cotação Vendedor da Loja</option>
+                                <option value="Comparando ao preço do concorrente">Comparando ao preço do concorrente</option>
+                                <option value="Apenas Orçamento">Apenas Orçamento</option>
+                              </select>
+                            </div>
+                            <div>
+                              <button id="filtrar">Perder</button>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+          </div>
       </div>
       {% endfor %}
    </div>
 </div>
+
+ <div id="loading-overlay" style="display: none;">
+   <div id="loading-spinner"></div>
+ </div>
 
 <script>
    // Script para procurar na lista de cards
@@ -65,6 +107,57 @@
          }
       });
    });
+</script>
+
+<script>
+   function showModal(dealId) {
+   $("#loading-overlay").show();
+   $.ajax({
+      success: function() {
+         $('.modal-title').text('Confirmar - ' + dealId);
+
+         $('#funcionarioModal').modal('show');
+
+         // Ocultar a tela de carregamento após um pequeno atraso (500 milissegundos)
+         setTimeout(function() {
+            $("#loading-overlay").hide(); // Esconde o indicador de carregamento
+         }, 10);
+
+         // Fechar o modal ao clicar no botão de fechar
+         $('#funcionarioModal').on('click', '.close', function() {
+            $('#funcionarioModal').modal('hide');
+         });
+
+         // When the 'Perder' button is clicked
+         $('#filtrar').on('click', function() {
+            var selectedOption = $('#editar_ativo').val(); // Get the selected option
+            $("#loading-overlay").show();
+            // Send a POST request to the backend
+            $.ajax({
+               url: '/perda',
+               type: 'POST',
+               data: {
+                  dealId: dealId,
+                  selectedOption: selectedOption
+               },
+               success: function(response) {
+                  var dealId = response.dealId;
+                  var selectedOption = response.selectedOption;
+                  window.location.reload();
+                  $("#loading-overlay").hide();
+               },
+               error: function(error) {
+                  console.log(error);
+               }
+            });
+         });
+      },
+      error: function(error) {
+         alert('Essa Ordem de Serviço não contém imagem ou vídeo');
+         console.log(error);
+      }
+   });
+}
 </script>
 
 {% endblock %}

@@ -1482,6 +1482,17 @@ def atualizar_dados_sem_cliente():
                    descricao_generica=descricao_generica, lista_preco=lista_preco)
 
 
+@app.route('/perda', methods = ['POST'])
+@login_required
+def perda():
+    
+    dealId = request.form.get('dealId')
+    selectedOption = request.form.get('selectedOption')
+
+    print(dealId,selectedOption)
+
+    return render_template('opcoes.html') 
+
 def obter_condicoes_pagamento(lista_opcoes_cliente, opcoes):
     """Função para Criar as opções de pagamento"""
 
