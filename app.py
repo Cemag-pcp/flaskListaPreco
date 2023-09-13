@@ -1164,9 +1164,10 @@ def opcoes():
         elif selected_option == 'consulta':
             return redirect(url_for('consulta'))
 
+    lista_motivos = listarMotivos()
     data = listarOrcamentos(nomeRepresentante)
 
-    return render_template('opcoes.html', data=data)
+    return render_template('opcoes.html', data=data, lista_motivos=lista_motivos)
 
 
 @app.route('/consulta')
@@ -1489,7 +1490,9 @@ def perda():
     dealId = request.form.get('dealId')
     selectedOption = request.form.get('selectedOption')
 
-    print(dealId, selectedOption)
+    print(selectedOption,dealId)
+
+    # perderNegocio(selectedOption, dealId)
 
     return render_template('opcoes.html')
 
