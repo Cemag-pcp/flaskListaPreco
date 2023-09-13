@@ -38,8 +38,10 @@ conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
 engine = create_engine(
     f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{5432}/{DB_NAME}')
 
-cache_precos = cachetools.LRUCache(maxsize=128)  # Você pode ajustar o tamanho máximo do cache conforme necessário
-cache_produtos = cachetools.LRUCache(maxsize=128)  # Você pode ajustar o tamanho máximo do cache conforme necessário
+# Você pode ajustar o tamanho máximo do cache conforme necessário
+cache_precos = cachetools.LRUCache(maxsize=128)
+# Você pode ajustar o tamanho máximo do cache conforme necessário
+cache_produtos = cachetools.LRUCache(maxsize=128)
 
 
 def resetar_cache():
@@ -115,11 +117,10 @@ def api_lista_produtos():
     df = pd.json_normalize(dados, 'produtos')
 
     df_final = df[df['CRM'] == True].reset_index(drop=True)
-    df_final['pneu_tratado'] = df_final['pneu'].replace('','Sem pneu')
-    df_final['outras_caracteristicas_tratadas'] = df_final['funcionalidade'].replace('','N/A')
-    df_final['tamanho_tratados'] = df_final['tamanho'].replace('','N/A')
-
-
+    df_final['pneu_tratado'] = df_final['pneu'].replace('', 'Sem pneu')
+    df_final['outras_caracteristicas_tratadas'] = df_final['funcionalidade'].replace(
+        '', 'N/A')
+    df_final['tamanho_tratados'] = df_final['tamanho'].replace('', 'N/A')
 
     return df_final
 
@@ -184,18 +185,20 @@ def login_required(view):
 
     return wrapped_view
 
+
 @app.route('/atualizar-cache',  methods=['GET', 'POST'])
 @login_required
 def atualizar_caches():
-    
+
     if request.method == 'POST':
-        
+
         cache_precos.clear()
         cache_produtos.clear()
         print("atualizado")
         return jsonify({'message': 'Cache atualizado com sucesso!'})
-    
+
     return render_template('lista.html')
+
 
 @app.route('/',  methods=['GET', 'POST'])
 @login_required
@@ -877,7 +880,7 @@ def atualizar_dados():
     df = df[df['lista_nova'] == regiao]
 
     # df = df.dropna(subset='lista_nova')
-    
+
     print(df)
 
     # query = """ SELECT subquery.*, t3.representante, t3.favorito
@@ -897,7 +900,7 @@ def atualizar_dados():
 
     # placeholders.append(representante)
     # Inicialize todas as máscaras como True
-    
+
     # Inicialize um DataFrame vazio para conter os resultados
     resultados = pd.DataFrame()
 
@@ -946,9 +949,11 @@ def atualizar_dados():
 
     if descricao_generica != '':
         if not resultados.empty:
-            resultados = resultados.loc[resultados['outras_caracteristicas_tratadas'] == descricao_generica]
+            resultados = resultados.loc[resultados['outras_caracteristicas_tratadas']
+                                        == descricao_generica]
         else:
-            resultados = df.loc[df['outras_caracteristicas_tratadas'] == descricao_generica]
+            resultados = df.loc[df['outras_caracteristicas_tratadas']
+                                == descricao_generica]
 
     # O DataFrame 'resultados' agora contém as linhas que atendem a todas as condições de pesquisa
 
@@ -960,7 +965,6 @@ def atualizar_dados():
 
     # df = df.dropna(subset='lista_nova')
     print(df)
-
 
     # if descricao:
     #     query += " AND subquery.descricao_generica = %s"
@@ -1011,7 +1015,6 @@ def atualizar_dados():
 
     # df_precos = api_precos()
     # print(df_precos)
-
 
     # # print(regiao)
     # print(df)
@@ -1149,7 +1152,7 @@ def atualizar_regiao():
 @app.route('/opcoes', methods=['GET', 'POST'])
 @login_required
 def opcoes():
-    
+
     nomeRepresentante = session['user_id']
 
     if request.method == 'POST':
@@ -1220,7 +1223,7 @@ def consulta():
     # if representante == 'Sônia':
 
     #     df_precos = api_precos()
-    #     query = """ 
+    #     query = """
     #             SELECT subquery.*, t3.representante, t3.favorito
     #             FROM(
     #                 SELECT DISTINCT t1.*,
@@ -1230,7 +1233,7 @@ def consulta():
     #                 FROM tb_produtos AS t1
     #                 WHERE t1.crm = 'T') subquery
     #             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
-    #             ORDER BY t3.favorito ASC; 
+    #             ORDER BY t3.favorito ASC;
     #         """
 
     # else:
@@ -1247,7 +1250,7 @@ def consulta():
     #                 WHERE t1.crm = 'T') subquery
     #             LEFT JOIN tb_favoritos as t3 ON subquery.codigo = t3.codigo
     #             WHERE (t3.representante = '{}' OR t3.representante IS NULL)
-    #             ORDER BY t3.favorito ASC; 
+    #             ORDER BY t3.favorito ASC;
     #             """.format(representante)
 
     # df = pd.read_sql_query(query, conn)
@@ -1258,7 +1261,8 @@ def consulta():
 
     df = df_produtos.merge(df_precos, how='left', on='codigo')
 
-    cur.execute("""select regiao from users where username = '{}'""".format(representante))
+    cur.execute(
+        """select regiao from users where username = '{}'""".format(representante))
 
     regiao = cur.fetchall()
     regiao = regiao[0]['regiao']
@@ -1373,7 +1377,8 @@ def atualizar_dados_sem_cliente():
                             password=DB_PASS, host=DB_HOST)
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    cur.execute("""select regiao from users where username = '{}'""".format(representante))
+    cur.execute(
+        """select regiao from users where username = '{}'""".format(representante))
 
     regiao = cur.fetchall()
     regiao = regiao[0]['regiao']
@@ -1430,13 +1435,16 @@ def atualizar_dados_sem_cliente():
 
     if descricao_generica != '':
         if not resultados.empty:
-            resultados = resultados.loc[resultados['outras_caracteristicas_tratadas'] == descricao_generica]
+            resultados = resultados.loc[resultados['outras_caracteristicas_tratadas']
+                                        == descricao_generica]
         else:
-            resultados = df.loc[df['outras_caracteristicas_tratadas'] == descricao_generica]
+            resultados = df.loc[df['outras_caracteristicas_tratadas']
+                                == descricao_generica]
 
     if lista_preco != '':
         if not resultados.empty:
-            resultados = resultados.loc[resultados['lista_nova'] == lista_preco]
+            resultados = resultados.loc[resultados['lista_nova']
+                                        == lista_preco]
         else:
             resultados = df.loc[df['lista_nova'] == lista_preco]
 
@@ -1723,7 +1731,8 @@ def criarProposta(df):
                     "IntegerValue": product_id["IdCor"]
                 },
                 {
-                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455", # valor unit. c/ desconto
+                    # valor unit. c/ desconto
+                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455",
                     "DecimalValue": product_id["Price"]*1000
                 },
                 {
@@ -1994,6 +2003,7 @@ def idCondicaoPagamento(formaPagamento):
 
 
 def obterEmailRepresentante(nomeRepresentante):
+    """Função para obter o email do representante dentro do postgres"""
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
                             password=DB_PASS, host=DB_HOST)
@@ -2037,6 +2047,7 @@ def obterDocumentoPdf(DealId):
 
 
 def enviar_email(nomeRepresentante, nomeCliente, DealId):
+    """Função para enviar email para os representantes"""
 
     import smtplib
     from email.mime.text import MIMEText
@@ -2076,6 +2087,7 @@ def enviar_email(nomeRepresentante, nomeCliente, DealId):
 
 
 def buscarRegiaoCliente(nomeCliente):
+    """Função para buscar a região por cliente"""
 
     url = "https://public-api2.ploomes.com/Contacts?$top=10&$filter=contains(Name,'{}')&$expand=OtherProperties($filter=FieldKey+eq+'contact_70883643-FFE7-4C84-8163-89242423A4EF')".format(
         nomeCliente)
@@ -2097,10 +2109,15 @@ def buscarRegiaoCliente(nomeCliente):
 
 
 def formatar_data(data_str):
-    partes = data_str.split('T')  # Divide a string em data/hora e deslocamento de tempo
-    data_obj = datetime.fromisoformat(partes[0])  # Converter a parte da data/hora em objeto datetime
+    """Função para formatar data e hora"""
+
+    # Divide a string em data/hora e deslocamento de tempo
+    partes = data_str.split('T')
+    # Converter a parte da data/hora em objeto datetime
+    data_obj = datetime.fromisoformat(partes[0])
     data_formatada = data_obj.strftime('%d/%m/%Y')  # Formatar a data
     return data_formatada
+
 
 def listarOrcamentos(nomeRepresentante):
     """Função para listar orçamentos de cada representante"""
@@ -2130,6 +2147,50 @@ def listarOrcamentos(nomeRepresentante):
             item['Date'] = formatar_data(item['Date'])
 
     return data
+
+
+def listarMotivos():
+    """Função para listar motivos de perda e seus respectivos ID"""
+
+    url = "https://public-api2.ploomes.com/Deals@LossReasons?$filter=PipelineId+eq+37808&$select=Id,Name"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    data = response.json()
+    listaMotivos = data['value']
+
+    return listaMotivos
+
+
+def perderNegocio(IdMotivo, DealId):
+    """Função que faz perder o negócio"""
+
+    json_data = {
+        "LossReasonId": IdMotivo
+    }
+
+    url = "https://public-api2.ploomes.com/Deals({})/Lose".format(DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=json_data)
+
+    return "Negócio perdido"
+
+   
+def ganharNegocio():
+
+    """Função para ganhar negócio"""
+
+    
+
+    return "Negócio ganho"
 
 
 if __name__ == '__main__':
