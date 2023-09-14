@@ -50,13 +50,13 @@
               </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               {% if dado.StatusId == 2 or dado.StatusId == 3 %}
+               <!-- {% if dado.StatusId == 2 or dado.StatusId == 3 %}
                   <a></a>
                   <a></a>
                {% else %}
                   <a class="btn btn-success" style="color: #fff;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
                   <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
-               {% endif %}
+               {% endif %} -->
             </div>
          </div>
          <div class="modal fade" id="funcionarioModal" tabindex="-1" role="dialog"
