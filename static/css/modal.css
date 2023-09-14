@@ -104,6 +104,32 @@
     outline: none;
   }
   
+  #ganhar {
+    background: rgb(255, 161, 113);
+    border: 2px solid rgb(255, 142, 85);
+    border-radius: 4px;
+    outline: none;
+    padding: 0.5em 0.8em;
+    width: 160px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  #ganhar:hover {
+    background: rgb(255, 142, 85);;
+    outline: none;
+  }
+  
+  #ganhar:active {
+    background: rgb(255, 142, 85);;
+    outline: none;
+  }
+
   @media (max-width:1000px){
     #filtrar {
       background: rgb(255, 161, 113);
@@ -111,7 +137,22 @@
       border-radius: 4px;
       outline: none;
       padding: 0.5em 0.8em;
-      width: 90%;
+      width: 100%;
+      margin-right: 15px;
+      color: #ffffff;
+      font-size: 1em;
+      font-family: 'Poppins', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+    }
+    #ganhar {
+      background: rgb(255, 161, 113);
+      border: 2px solid rgb(255, 142, 85);
+      border-radius: 4px;
+      outline: none;
+      padding: 0.5em 0.8em;
+      width: 100%;
       margin-right: 15px;
       color: #ffffff;
       font-size: 1em;

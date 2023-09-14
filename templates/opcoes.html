@@ -9,54 +9,39 @@
 
 </form>
 
-<style>
-   .custom-card {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      background-color: #f5f5f5;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      /* Outros estilos personalizados aqui */
-   }
-</style>
-
 <div class="container pt-4" style="transition: 0.5s;">
    <div class="row">
-      <div class="col-md-6 mb-3">
-         <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar">
+      <div class="col-md-6 mb-3" style="display: flex;">
+         <input type="text" id="searchInput" placeholder="Pesquisar"><i class="fa-solid fa-magnifying-glass" style="font-size: 25px;margin-top: 5px;margin-left: 5px; color: #b3b3b3;"></i>
       </div>
    </div>
    <div class="row">
       {% for dado in data %}
-      <div class="col-md-4 mb-3">
          <div class="custom-card">
-            <div class="card-body">
+            <div class="card-body" style="padding-right: 0;">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
-               <h6 class="card-text">Cliente: {{ dado.ContactName }} - {{ dado.DealId }}</h6>
+               <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
                <p class="card-text">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
                   <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
                   {% else %}
                   <span style="color: red;">{{ dado.ExternallyAccepted }}</span>
                   {% endif %}
                </p>
+               <div class="botoes">
                <p class="card-text">Status: 
                   {% if dado.StatusId == 1 %}
                       <span style="color: blue;">Em Aberto</span>
+                      <a class="btn btn-success" id="bt_ganha" onclick="showModalGanhar('{{ dado.DealId }}','{{ dado.ContactName }}')">Ganhar</a>
+                      <a class="btn btn-danger" style="color: #fff;  width: 75px;" onclick="showModal('{{ dado.DealId }}','{{ dado.ContactName }}')">Perder</a>
                   {% elif dado.StatusId == 2 %}
                       <span style="color: green;">Ganha</span>
                   {% elif dado.StatusId == 3 %}
                       <span style="color: red;">Perdida</span>
                   {% endif %}
+               </div>
               </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               <!-- {% if dado.StatusId == 2 or dado.StatusId == 3 %}
-                  <a></a>
-                  <a></a>
-               {% else %}
-                  <a class="btn btn-success" style="color: #fff;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
-                  <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
-               {% endif %} -->
             </div>
          </div>
          <div class="modal fade" id="funcionarioModal" tabindex="-1" role="dialog"
@@ -108,7 +93,6 @@
                </div>
             </div>
          </div>
-      </div>
       {% endfor %}
    </div>
 </div>
@@ -135,11 +119,11 @@
 </script>
 
 <script>
-   function showModal(dealId) {
+   function showModal(dealId,contactName) {
       $("#loading-overlay").show();
       $.ajax({
          success: function () {
-            $('.modal-title').text('Confirmar - ' + dealId);
+            $('.modal-title').text( contactName + ' - ' + dealId);
 
             $('#funcionarioModal').modal('show');
 
@@ -186,11 +170,11 @@
 </script>
 
 <script>
-   function showModalGanhar(dealId) {
+   function showModalGanhar(dealId,contactName) {
       $("#loading-overlay").show();
       $.ajax({
          success: function () {
-            $('.modal-title').text('Confirmar - ' + dealId);
+            $('.modal-title').text( contactName + ' - ' + dealId);
 
             $('#modalGanhar').modal('show');
 
