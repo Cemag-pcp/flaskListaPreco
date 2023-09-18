@@ -167,9 +167,6 @@ function toggleCardItem(button) {
 
   alert('Item adicionado');
 
-  const descricaoCarretaElement = columns[3]; // Obtém o elemento da coluna que contém a descricaoCarreta
-  descricaoCarretaElement.classList.add('hidden'); // Adiciona a classe 'hidden' ao elemento
-
   const item = document.createElement('li');
   item.dataset.description = description;
   const itemName = document.createElement('div');
