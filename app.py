@@ -1500,7 +1500,7 @@ def perda():
 def ganhar():
 
     dealId = request.form.get('dealId')
-    
+
     print(dealId)
 
     ganharNegocio(dealId)
@@ -1706,6 +1706,8 @@ def criarProposta(df):
     listaQuantidade = df['numeros'].values.tolist()
 
     DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
+
+    atualizarEtapaProposta(DealId)
 
     idFormaPagamento = idFormaPagamentoF(formaPagamento)
     id_CondicaoPagamento = idCondicaoPagamento(formaPagamento)
@@ -2162,8 +2164,6 @@ def listarOrcamentos(nomeRepresentante):
     data = response.json()
     data1 = data['value']
 
-
-
     url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1 &$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
         idRep)
 
@@ -2175,7 +2175,6 @@ def listarOrcamentos(nomeRepresentante):
 
     data = response.json()
     data2 = data['value']
-
 
     # Crie um dicionário para mapear DealId para os itens no segundo JSON
     deal_id_mapping = {item2['Id']: item2 for item2 in data2}
@@ -2198,10 +2197,6 @@ def listarOrcamentos(nomeRepresentante):
     for item in combined_json:
         if item['LastUpdateDate']:
             item['LastUpdateDate'] = formatar_data(item['LastUpdateDate'])
-
-
-
-
 
     data = combined_json
 
@@ -2246,24 +2241,25 @@ def perderNegocio(IdMotivo, DealId):
 def buscarProdutosQuotes(dealId):
     """Função para buscar lista de produtos naquele pedido"""
 
-    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+12420861&$expand=Products"
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$expand=Products".format(
+        dealId)
 
     header = {
         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
     }
 
-    response = requests.get(url,headers=header)
+    response = requests.get(url, headers=header)
 
     data = response.json()
     json_produtos = data['value'][0]['Products']
 
     discount = 0
     amount = data['value'][0]['Amount']
-    
+
     json_win = {
-        "Order":{
-            "Discount":discount,
-            "Amount":amount,
+        "Order": {
+            "Discount": discount,
+            "Amount": amount,
             "Products": []
         }
     }
@@ -2288,6 +2284,8 @@ def buscarProdutosQuotes(dealId):
 def ganharNegocio(DealId):
     """Função para ganhar negócio"""
 
+    atualizarEtapaFechamento(DealId)
+
     json_data = buscarProdutosQuotes(DealId)
 
     url = "https://public-api2.ploomes.com/Deals({})/Win".format(DealId)
@@ -2299,6 +2297,154 @@ def ganharNegocio(DealId):
     requests.post(url, headers=headers, json=json_data)
 
     return "Negócio ganho"
+
+
+def atualizarEtapaProposta(DealId):
+
+    url = "https://public-api2.ploomes.com/Deals({})".format(DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    json_data = {
+        "StageId": 166905
+    }
+
+    requests.patch(url, headers=headers, json=json_data)
+
+    return 'Deal atualizado'
+
+
+def atualizarEtapaFechamento(DealId):
+
+    url = "https://public-api2.ploomes.com/Deals({})".format(DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    json_data = {
+        "StageId": 230240
+    }
+
+    requests.patch(url, headers=headers, json=json_data)
+
+    return 'Deal atualizado'
+
+
+def criarVenda(dealId):
+
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$expand=Products".format(
+        dealId)
+
+    header = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=header)
+
+    data = response.json()
+
+    ownerId = data['value'][0]['OwnerId']
+    personId = data['value'][0]['PersonId']
+    json_produtos = data['value'][0]['Products']
+    contactId = data['value'][0]['ContactId']
+    amount = data['value'][0]['Amount']
+    notes = data['value'][0]['Notes']
+    data['value'][0]['OrderId']
+
+    json1 = {
+        "ContactId": contactId,
+        "DealId": dealId,
+        "PersonId": personId,
+        "OwnerId": ownerId,
+        "Products": [],
+        "CurrencyId": 1,
+        "Amount": amount,
+        "OtherProperties": otherProperties
+    }
+
+    # Loop através dos itens no primeiro JSON
+    for product_item in json_produtos:
+        # Crie um novo dicionário com os campos necessários
+        new_product = {
+            "OwnerId": ownerId,
+            "ProductId": product_item['ProductId'],
+            "Quantity": product_item['Quantity'],
+            "CurrencyId": product_item['CurrencyId'],
+            "UnitPrice": product_item['UnitPrice'],
+            "Discount": product_item['Discount'],
+            "Total": product_item['Total']
+        }
+
+        # Adicione o novo dicionário à lista de Products no segundo JSON
+        json1["Products"].append(new_product)
+
+    otherProperties = [
+        {
+            "Id": 103422158,
+            "FieldId": 255111,
+            "FieldKey": "order_89A54AA2-753A-411D-A87A-1DBDF29370D0",
+            "StringValue": "0",
+        },
+        {
+            "Id": 103422159,
+            "FieldId": 249718,
+            "FieldKey": "order_2A8B87D1-3E73-4C5A-94F5-29A53347FFC1",
+        },
+        {
+            "Id": 103422160,
+            "FieldId": 201898,
+            "FieldKey": "order_7BB4AC64-8B0F-40AF-A854-CBE860A4B179",
+            "BigStringValue": notes
+        },
+        {
+            "Id": 103422161,
+            "FieldId": 217058,
+            "FieldKey": "order_7932F9F0-B3E8-40D3-9815-53C8613D33F1",
+            "DecimalValue": 43508.0,
+        },
+        {
+            "Id": 103422162,
+            "FieldId": 249716,
+            "FieldKey": "order_377A29A2-69F9-4E34-9307-0764EE3D9A89",
+            "IntegerValue": 45,
+        },
+        {
+            "Id": 103422163,
+            "FieldId": 249717,
+            "FieldKey": "order_62D206E8-1881-4234-A341-F9E82C08885C",
+            "DateTimeValue": "2023-10-29T00:00:00-03:00",
+        },
+        {
+            "Id": 103422170,
+            "FieldId": 236923,
+            "FieldKey": "order_B3C1AABD-00AB-4306-8163-2D2BF76051A3",
+            "IntegerValue": 85731442,
+        }
+    ]
+
+    url = "https://public-api2.ploomes.com/Orders"
+
+    requests.post(url, headers=header, json=json1)
+
+
+@app.route('/reenviarEmail', methods=['POST'])
+@login_required
+def reenviarEmail():
+    """Função para reenviar e-mail"""
+
+    data = request.get_json()
+
+    # Extraia as variáveis do JSON
+    deal_id = data.get('dealId')
+    nomeCliente = data.get('nomeCliente')
+    nome_representante = session['user_id']
+
+    enviar_email(nome_representante, nomeCliente, deal_id)
+
+    return 'E-mail reenviado'
 
 
 if __name__ == '__main__':

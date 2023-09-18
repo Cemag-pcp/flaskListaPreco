@@ -11,10 +11,10 @@ let quantity = document.querySelector('.quantity');
 var btnCloseShopping = document.getElementById("btnEnviar");
 
 // Adicione um evento de clique ao botão
-btnCloseShopping.addEventListener("click", function() {
+btnCloseShopping.addEventListener("click", function () {
   // Obtenha uma referência para o ícone de fechar
   var iconClose = document.querySelector(".close");
-  
+
   // Dispare um evento de clique no ícone de fechar
   var event = new MouseEvent("click", {
     view: window,
@@ -144,26 +144,19 @@ function toggleCardItem(button) {
   const row = button.parentNode.parentNode;
   const columns = row.getElementsByTagName('td');
 
-  const description = columns[2].textContent; // Assuming the description is in the 2nd column
-  const preco = columns[5].textContent; // Assuming the preco is in the 5th column
+  const description = columns[2].textContent;
+  const preco = columns[5].textContent; 
+  // const descricaoCarreta = columns[3].textContent; 
   const corSelect = row.querySelector('.cor-dropdown');
   const cor = corSelect.value;
   const precoFinalInput = row.querySelector('.preco-input');
   const precoFinal = precoFinalInput.value.trim();
-  
+
   // Convertendo os preços para valores numéricos antes da comparação
   const precoFloat = (parseFloat(preco.replace('R$', '')) * 1000).toFixed(2);
   const precoFinalFloat = (parseFloat(precoFinal.replace('R$', '')) * 1000).toFixed(2);
 
-  console.log(precoFinalFloat);
-  console.log(precoFloat);
-
-
   const valorMaximo = precoFloat * 0.81;
-
-  // console.log(valorMaximo)
-  // console.log(precoFinalFloat)
-  // console.log(precoFloat)
 
   console.log(valorMaximo);
 
@@ -173,6 +166,9 @@ function toggleCardItem(button) {
   }
 
   alert('Item adicionado');
+
+  const descricaoCarretaElement = columns[3]; // Obtém o elemento da coluna que contém a descricaoCarreta
+  descricaoCarretaElement.classList.add('hidden'); // Adiciona a classe 'hidden' ao elemento
 
   const item = document.createElement('li');
   item.dataset.description = description;
@@ -241,6 +237,7 @@ function toggleCardItem(button) {
     quantitySpan.innerText = quantity.toString();
   }
 }
+
 function toggleRowColor(checkbox) {
   var row = checkbox.parentNode.parentNode;
   var quantitySpan = document.querySelector(".quantity");
@@ -272,7 +269,7 @@ function updateTotal() {
 
     totalValue += quantity * price;
   });
-  
+
   total.textContent = 'R$ ' + totalValue.toFixed(2);
 }
 
@@ -285,7 +282,7 @@ function formatNumber(number) {
   return formattedNumber.replace(',', '.'); // Replace the decimal separator with a comma
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
   window.scrollTo(0, 0);
 });
 
