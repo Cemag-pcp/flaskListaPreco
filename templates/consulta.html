@@ -116,10 +116,10 @@
 <div class="container pt-4" style="transition: 0.5s;">
   <div class="row">
     <div style="position: relative;">
-      <a href="/export/pdf-all">
+      <!-- <a href="/export/pdf-all">
         <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
-      </a>
-      <button id="atualizar-cache">Atualizar produtos</button>
+      </a> -->
+      <button onclick="limparFiltros()" class="btn btn-primary btn-sm" >Limpar Filtros</button>
       <table id="table1" class="table table-striped responsive-table">
         <thead>
           <tr>
@@ -1384,6 +1384,22 @@
         }
       });
   });
+</script>
+
+<!-- Limpar filtros -->
+<script>
+  function limparFiltros() {
+    // Obtenha todos os elementos de select dentro do container de filtro
+    const selects = document.querySelectorAll('.filter-wrapper select');
+
+    // Itere sobre os selects e defina o valor padrão (vazio) para cada um
+    selects.forEach(select => {
+      select.value = '';
+    });
+
+    // Chame a função para atualizar os dados (você já tem isso definido em onchange)
+    atualizarDados();
+  }
 </script>
 
 {% endblock %}

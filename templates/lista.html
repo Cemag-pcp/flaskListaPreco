@@ -21,6 +21,8 @@
   <input type="hidden" id="representante-name" value="{{ representante }}">
 </div>
 
+<!-- INFORMAÇÕES DO CLIENTE -->
+
 <div class="container filter-wrapper2">
 
   <div>
@@ -58,6 +60,8 @@
   </div>
 
 </div>
+
+<!-- FILTROS -->
 
 <div class="container filter-wrapper" style="margin-top: 20px;">
   <div class="hidden">
@@ -138,13 +142,15 @@
   <!-- <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button> -->
 </div>
 
+<!-- TABELA -->
+
 <div class="container pt-4 hidden" style="transition: 0.5s;">
   <div class="row">
     <div style="position: relative;">
-      <a href="/export/pdf-all">
+      <!-- <a href="/export/pdf-all">
         <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
-      </a>
-      <button id="atualizar-cache">Atualizar produtos</button>
+      </a> -->
+      <button onclick="limparFiltros()" class="btn btn-primary btn-sm" >Limpar Filtros</button>
       <table id="table1" class="table table-striped responsive-table">
         <thead>
           <tr>
@@ -178,10 +184,12 @@
 
             <td data-label="Preço" style="white-space: nowrap;">{{row[20]}}</td>
             <td data-label="% de Desconto">
-              <input class="row-data desconto-input" id="desconto" name="desconto" placeholder="%" style="width: 115px;" oninput="updatePrice(event);">
+              <input class="row-data desconto-input" id="desconto" name="desconto" placeholder="%" style="width: 115px;"
+                oninput="updatePrice(event);">
             </td>
             <td data-label="Preço Final">
-              <input class="row-data preco-input" id="preco" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
+              <input class="row-data preco-input" id="preco" name="preco" placeholder="Preço c/ desc."
+                style="width: 115px;" oninput="formatPriceInput(event);">
             </td>
 
             <td data-label="Favorito">
@@ -212,9 +220,13 @@
   </div>
 </div>
 
+<!-- LOADING SPINNER -->
+
 <div id="loading-overlay" style="display: none;">
   <div id="loading-spinner"></div>
 </div>
+
+<!-- LOADING BAR -->
 
 <div id="overlay" style="display: none;">
   <div id="loading-bar-container">
@@ -432,7 +444,6 @@
 
     $("#loading-overlay").hide();
   }
-
 
   function atualizarDropdowns(descricao, modelo, eixo, mola_freio, tamanho, rodado, pneu, descricao_generica) {
     $("#loading-overlay").show();
@@ -1297,5 +1308,22 @@
     }
   }
 </script>
+
+<!-- Limpar filtros -->
+<script>
+  function limparFiltros() {
+    // Obtenha todos os elementos de select dentro do container de filtro
+    const selects = document.querySelectorAll('.filter-wrapper select');
+
+    // Itere sobre os selects e defina o valor padrão (vazio) para cada um
+    selects.forEach(select => {
+      select.value = '';
+    });
+
+    // Chame a função para atualizar os dados (você já tem isso definido em onchange)
+    atualizarDados();
+  }
+</script>
+
 
 {% endblock %}
