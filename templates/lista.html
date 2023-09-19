@@ -171,7 +171,7 @@
             <td></td>
             <td data-label="Modelo">{{row[11]}}</td>
             <td data-label="Código" id='codigo'>{{row[0]}}</td>
-            <td data-label="Descrição">{{row[13]}}</td>
+            <td data-label="Descrição" class="descricao-dropdown">{{row[13]}}</td>
             <td data-label="Cor">
               <select id="cor" class="cor-dropdown" style="width:160px;">
                 <option value="Laranja" selected>Laranja</option>
@@ -185,7 +185,7 @@
             <td data-label="Preço" style="white-space: nowrap;">{{row[20]}}</td>
             <td data-label="% de Desconto">
               <input class="row-data desconto-input" id="desconto" name="desconto" placeholder="%" style="width: 115px;"
-                oninput="updatePrice(event);">
+                oninput="updatePrice(event);" type="number">
             </td>
             <td data-label="Preço Final">
               <input class="row-data preco-input" id="preco" name="preco" placeholder="Preço c/ desc."
@@ -409,7 +409,7 @@
             <td></td>
             <td data-label="Modelo">${row[11]}</td>
             <td data-label="Código" id="codigo">${row[0]}</td>
-            <td data-label="Descrição">${row[13]}</td>
+            <td data-label="Descrição" class="descricao-dropdown">${row[13]}</td>
             <td data-label="Cor">
               <select id="cor" class="cor-dropdown">
                 <option value="Laranja" selected>Laranja</option>
@@ -787,9 +787,10 @@
       const cor = listItem.querySelector('.cor').textContent;
       const preco = listItem.querySelector('.quanti').textContent;
       const quantidade = listItem.querySelector('.numeros').textContent;
+      const descricaoCarreta = listItem.querySelector('.descCarreta').textContent;
 
       // Construa a string para cada item
-      itensTexto += `${descricao}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
+      itensTexto += `${descricaoCarreta}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
     });
 
     // Obtenha o valor do elemento HTML que contém o total
@@ -817,7 +818,7 @@
     alert('Itens copiados para a área de transferência!\n');
 
   }
-
+  
   // Função para lidar com o clique no botão "Enviar"
   function handleEnviarButtonClick() {
     // Exibe o carregamento
@@ -1309,6 +1310,8 @@
   });
 </script>
 
+<!-- FUNÇÃO PARA GERAR VALOR COM DESCONTO -->
+
 <script>
   // Encontre o elemento da coluna de preço original
   const precoOriginalElement = document.querySelector('[data-label="Preço"]');
@@ -1329,35 +1332,36 @@
 
     // Função para atualizar o preço com desconto
     function updatePrice(event) {
-    const descontoInput = event.target;
-    const row = descontoInput.closest('tr'); // Encontre a linha atual
-    const precoOriginalElement = row.querySelector('[data-label="Preço"]');
-    const precoInput = row.querySelector('.preco-input');
+      const descontoInput = event.target;
+      const row = descontoInput.closest('tr'); // Encontre a linha atual
+      const precoOriginalElement = row.querySelector('[data-label="Preço"]');
+      const precoInput = row.querySelector('.preco-input');
 
-    const precoOriginalTexto = precoOriginalElement.textContent;
-    const precoOriginalNumerico = parseFloat(precoOriginalTexto.replace(/[^\d,]/g, '').replace(',', '.'));
-    
-    const desconto = parseFloat(descontoInput.value);
-    
-    if (!isNaN(desconto)) {
-      const precoComDesconto = precoOriginalNumerico * (1 - desconto / 100);
+      const precoOriginalTexto = precoOriginalElement.textContent;
+      const precoOriginalNumerico = parseFloat(precoOriginalTexto.replace(/[^\d,]/g, '').replace(',', '.'));
       
-      const precoComDescontoFormatado = precoComDesconto.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      const desconto = parseFloat(descontoInput.value);
       
-      precoInput.value = precoComDescontoFormatado;
-      precoInput.disabled = true;
-    } else {
-      precoInput.disabled = false;
+      if (!isNaN(desconto)) {
+        const precoComDesconto = precoOriginalNumerico * (1 - desconto / 100);
+        
+        const precoComDescontoFormatado = precoComDesconto.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        
+        precoInput.value = precoComDescontoFormatado;
+        precoInput.disabled = true;
+      } else {
+        precoInput.disabled = false;
+      }
     }
-  }
 </script>
 
-<!-- Limpar filtros -->
+<!-- LIMPAR FILTROS -->
+
 <script>
   function limparFiltros() {
     // Obtenha todos os elementos de select dentro do container de filtro

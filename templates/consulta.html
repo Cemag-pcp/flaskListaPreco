@@ -140,7 +140,7 @@
             <td data-label="Lista de preço">{{row[21]}}</td>
             <td data-label="Modelo">{{row[11]}}</td>
             <td data-label="Código" id='codigo'>{{row[0]}}</td>
-            <td data-label="Descrição">{{row[13]}}</td>
+            <td data-label="Descrição" class="descricao-dropdown">{{row[13]}}</td>
             <td data-label="Cor">
               <select id="cor" class="cor-dropdown" style="width:160px;">
                 <option value="Laranja" selected>Laranja</option>
@@ -449,7 +449,7 @@
             <td data-label="Lista de preço">${row[21]}</td>
             <td data-label="Modelo">${row[11]}</td>
             <td data-label="Código" id="codigo">${row[0]}</td>
-            <td data-label="Descrição">${row[13]}</td>
+            <td data-label="Descrição" class="descricao-dropdown">${row[13]}</td>
             <td data-label="Cor">
               <select id="cor" class="cor-dropdown">
                 <option value="Laranja" selected>Laranja</option>
@@ -841,9 +841,10 @@
       const cor = listItem.querySelector('.cor').textContent;
       const preco = listItem.querySelector('.quanti').textContent;
       const quantidade = listItem.querySelector('.numeros').textContent;
+      const descricaoCarreta = listItem.querySelector('.descCarreta').textContent;
 
       // Construa a string para cada item
-      itensTexto += `${descricao}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
+      itensTexto += `${descricaoCarreta}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
     });
 
     // Obtenha o valor do elemento HTML que contém o total
