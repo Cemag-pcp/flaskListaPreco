@@ -337,7 +337,6 @@
   }
 </script>
 
-
 <script>
   $(document).ready(function () {
     // Ao clicar no botão "Enviar"
@@ -842,7 +841,6 @@
       const cor = listItem.querySelector('.cor').textContent;
       const preco = listItem.querySelector('.quanti').textContent;
       const quantidade = listItem.querySelector('.numeros').textContent;
-      const descricaoCarreta = listItem.querySelector('.descricaoCarreta').textContent; // Substitua '.descricaoCarreta' pelo seletor correto
 
       // Construa a string para cada item
       itensTexto += `${descricao}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
@@ -870,7 +868,7 @@
     // Remove o elemento de área de transferência temporário
     document.body.removeChild(tempInput);
 
-    alert('Itens copiados para a área de transferência!\nEm cerca de 5 minutos você receberá um e-mail com o link da proposta.');
+    alert('Itens copiados para a área de transferência!\n');
 
   }
 
