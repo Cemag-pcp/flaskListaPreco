@@ -175,6 +175,7 @@
                 <option value="Amarela">Amarela</option>
               </select>
             </td>
+
             <td data-label="Preço" style="white-space: nowrap;">{{row[20]}}</td>
             <td data-label="% de Desconto">
               <input class="row-data desconto-input" id="desconto" name="desconto" placeholder="%" style="width: 115px;" oninput="updatePrice(event);">
@@ -407,8 +408,11 @@
               </select>
             </td>
             <td data-label="Preço" style="white-space: nowrap;">${row[20]}</td>
+            <td data-label="% de Desconto">
+              <input class="row-data desconto-input" id="desconto" name="desconto" placeholder="%" style="width: 115px;" oninput="updatePrice(event);">
+            </td>
             <td data-label="Preço Final">
-              <input class="row-data preco-input" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
+              <input class="row-data preco-input" id="preco" name="preco" placeholder="Preço c/ desc." style="width: 115px;" oninput="formatPriceInput(event);">
             </td>
             <td data-label="Favorito">
               <div class="toggle" id="maquina-parada-toggle">
