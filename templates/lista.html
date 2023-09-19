@@ -1282,29 +1282,32 @@
     maximumFractionDigits: 2,
   });
 
-  function updatePrice(event) {
+    // Função para atualizar o preço com desconto
+    function updatePrice(event) {
     const descontoInput = event.target;
-    const precoInput = document.getElementById('preco');
+    const row = descontoInput.closest('tr'); // Encontre a linha atual
+    const precoOriginalElement = row.querySelector('[data-label="Preço"]');
+    const precoInput = row.querySelector('.preco-input');
 
+    const precoOriginalTexto = precoOriginalElement.textContent;
+    const precoOriginalNumerico = parseFloat(precoOriginalTexto.replace(/[^\d,]/g, '').replace(',', '.'));
+    
     const desconto = parseFloat(descontoInput.value);
+    
     if (!isNaN(desconto)) {
-      // Se um valor numérico válido de desconto foi inserido
-      const precoComDesconto = precoOriginalNumerico * (1 - desconto / 100); // Calcula o preço com desconto
-
-      // Formate o preço com desconto para exibição
+      const precoComDesconto = precoOriginalNumerico * (1 - desconto / 100);
+      
       const precoComDescontoFormatado = precoComDesconto.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
-
-      precoInput.value = precoComDescontoFormatado; // Define o valor no campo de preço final
-      precoInput.disabled = true; // Desativa o campo de preço final
+      
+      precoInput.value = precoComDescontoFormatado;
+      precoInput.disabled = true;
     } else {
-      // Se o desconto não é um número válido, ativa o campo de preço final
-      precoInput.value = precoOriginalFormatado; // Restaure o formato original
-      precoInput.disabled = false; // Ativa o campo de preço final
+      precoInput.disabled = false;
     }
   }
 </script>
