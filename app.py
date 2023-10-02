@@ -1328,8 +1328,8 @@ def ganhar():
 
     print(dealId, idUltimaProposta)
 
-    ganharNegocio(dealId)
-    criarVenda(dealId, idUltimaProposta)
+    # ganharNegocio(dealId)
+    # criarVenda(dealId, idUltimaProposta)
 
     return render_template('opcoes.html')
 

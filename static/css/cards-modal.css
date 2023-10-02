@@ -4,17 +4,27 @@
   margin-bottom: 10px;
   padding: 10px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  text-align: center;
+  height: 200px;
   align-items: center;
-  text-align: center; /* Centralize o texto horizontalmente */
-  height: 200px; /* Ajuste a altura do card conforme necessário */
+  justify-content: center;
 }
 
 .card1 .card-title1 {
-  font-size: 18px;
+  font-size: 25px;
   margin-bottom: 5px;
   flex-grow: 1; /* Isso permite que o título cresça verticalmente e empurre o link e o botão para baixo */
+}
+
+.card-body1{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-body1 label{
+  white-space: nowrap;
 }
 
 .card1 .card-link {

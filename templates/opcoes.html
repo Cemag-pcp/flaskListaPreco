@@ -291,7 +291,8 @@
                      
                      // Adicione o conteúdo do card
                      cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
-                     cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link</a>');
+
+                     cardBody.append('<label>PDF da Proposta: <a href="' + item.DocumentUrl + '" class="card-link" target="_blank"><i class="fa-solid fa-download" style="margin-left:5px"></i></a></label>');
                      
                      // Adicione um botão de confirmar ao card
                      var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
@@ -317,7 +318,7 @@
                               // Esconder o alerta após alguns segundos (por exemplo, 5 segundos)
                               setTimeout(function () {
                                  $('#success-alert').fadeOut();
-                              }, 5000); // 5000 milissegundos (5 segundos)
+                              }, 2000); // 5000 milissegundos (5 segundos)
                               $("#loading-overlay").hide();
                            },
                            error: function (error) {
