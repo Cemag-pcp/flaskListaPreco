@@ -1159,6 +1159,15 @@ def consulta():
                            lista_unique=lista_unique, representante=representante)
 
 
+@app.route('/motivosPerda', methods=['GET'])
+@login_required
+def listarMotivosPerda():
+
+    listaMotivos = listarMotivos()
+    
+    return jsonify(listaMotivos) 
+
+
 @app.route('/atualizar-dados-sem-cliente', methods=['POST'])
 def atualizar_dados_sem_cliente():
 
@@ -1306,9 +1315,13 @@ def atualizar_dados_sem_cliente():
 @app.route('/perda', methods=['POST'])
 @login_required
 def perda():
+    
+    data = request.get_json()  # Obtém os dados JSON do corpo da solicitação
 
-    dealId = request.form.get('dealId')
-    selectedOption = request.form.get('selectedOption')
+    dealId = data.get('dealId')
+    selectedOption = data.get('selectedMotivoId')
+
+    print(dealId, selectedOption)
 
     perderNegocio(selectedOption, dealId)
 
@@ -1530,6 +1543,9 @@ def criarProposta(df, descontoMaximo):
 
     listaQuantidade = df['numeros'].values.tolist()
     listaPrecoUnitario = df['valorReal'].values.tolist()
+    listaPercentDesconto = df['percentDesconto'].values.tolist()
+
+    print(df)
 
     DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
 
@@ -1546,7 +1562,8 @@ def criarProposta(df, descontoMaximo):
     price = listaPreco
     quantidade = listaQuantidade
     precoUnitario = listaPrecoUnitario
-
+    percentDesconto = listaPercentDesconto
+    
     # Inicializar uma lista vazia
     lista_product = []
 
@@ -1557,7 +1574,8 @@ def criarProposta(df, descontoMaximo):
             "IdCor": color[i],
             "Price": price[i],
             "Quantity": quantidade[i],
-            "UnitPrice": precoUnitario[i]
+            "UnitPrice": precoUnitario[i],
+            "percentDesconto": percentDesconto[i]
         }
 
         lista_product.append(product_info)
@@ -1594,7 +1612,12 @@ def criarProposta(df, descontoMaximo):
                 {
                     "FieldKey": "quote_product_4D6B83EE-8481-46B2-A147-1836B287E14C",  # prazo dias
                     "StringValue": "45;"
+                },
+                {
+                    "FieldKey": "quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75",
+                    "DecimalValue" : product_id["percentDesconto"]
                 }
+
             ]
         }
         products.append(product_json)
@@ -2214,7 +2237,7 @@ def escolherProposta():
 
     print(dealId)
 
-    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$select=QuoteNumber,Id,Amount,DocumentUrl,".format(
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$select=QuoteNumber,Id,Amount,DocumentUrl,Date".format(
         dealId)
 
     header = {
@@ -2321,7 +2344,7 @@ def criarVenda(dealId, idUltimaProposta):
 
     url = "https://public-api2.ploomes.com/Orders"
 
-    # requests.post(url, headers=header, json=json1)
+    requests.post(url, headers=header, json=json1)
 
 
 @app.route('/reenviarEmail', methods=['POST'])
