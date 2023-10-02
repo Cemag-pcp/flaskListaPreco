@@ -892,13 +892,16 @@
       const quanti = quantiElement.textContent;
       const numerosElement = listItem.querySelector('.numeros');
       const numeros = numerosElement.textContent;
+      const valorRealElement = listItem.querySelector('.valorReal');
+      const valorReal = valorRealElement.textContent;
 
       // Crie um objeto com os dados do item
       const item = {
         description: description,
         cor: cor,
         quanti: quanti,
-        numeros: numeros
+        numeros: numeros,
+        valorReal: valorReal,
       };
 
       // Adicione o item à lista de itens

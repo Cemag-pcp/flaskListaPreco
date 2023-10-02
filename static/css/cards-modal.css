@@ -1,0 +1,29 @@
+.card1 {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Centralize o texto horizontalmente */
+  height: 200px; /* Ajuste a altura do card conforme necessário */
+}
+
+.card1 .card-title1 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  flex-grow: 1; /* Isso permite que o título cresça verticalmente e empurre o link e o botão para baixo */
+}
+
+.card1 .card-link {
+  font-size: 14px;
+  color: blue;
+  text-decoration: none;
+  margin: 10px 0; /* Adicione margem vertical e horizontal ao link */
+}
+
+.card1 .card-link:hover {
+  text-decoration: underline;
+}

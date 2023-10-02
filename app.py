@@ -20,6 +20,7 @@ import warnings
 from babel.numbers import format_currency
 import requests
 import cachetools
+from datetime import timedelta
 
 warnings.filterwarnings("ignore")
 
@@ -1035,8 +1036,14 @@ def process_data():
     else:
         df_items['nomeResponsavel'] = nomeResponsavel
 
-    print(df_items)
-    criarProposta(df_items)
+    df_items['quanti'] = df_items['quanti'].apply(lambda x: float(x.replace("R$","").replace(".","").replace(",",".")))
+    df_items['valorReal'] = df_items['valorReal'].apply(lambda x: float(x.replace("R$","").replace(".","").replace(",",".")))
+
+    df_items['percentDesconto'] = 1 - (df_items['quanti'] / df_items['valorReal'])
+
+    descontoMaximo = (df_items['percentDesconto'] >= 0.192).any()
+
+    criarProposta(df_items, descontoMaximo)
 
     query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
@@ -1085,6 +1092,8 @@ def opcoes():
 
     lista_motivos = listarMotivos()
     data = listarOrcamentos(nomeRepresentante)
+
+
 
     return render_template('opcoes.html', data=data, lista_motivos=lista_motivos)
 
@@ -1310,11 +1319,17 @@ def perda():
 @login_required
 def ganhar():
 
-    dealId = request.form.get('dealId')
+    data = request.json
 
-    print(dealId)
+    print(data)
+
+    dealId = data['dealId']
+    idUltimaProposta = data['id']
+
+    print(dealId, idUltimaProposta)
 
     ganharNegocio(dealId)
+    criarVenda(dealId, idUltimaProposta)
 
     return render_template('opcoes.html')
 
@@ -1484,12 +1499,13 @@ def criarOrdem(nomeCliente, nomeContato, nomeRepresentante):
         return 'Erro ao criar a ordem'
 
 
-def criarProposta(df):
+def wrap_in_paragraph(text):
+    """Função para transformar o texto em html"""
 
-    def wrap_in_paragraph(text):
-        """Função para transformar o texto em html"""
+    return f"<p>{text}</p>\n"
 
-        return f"<p>{text}</p>\n"
+
+def criarProposta(df, descontoMaximo):
 
     """Função para criar proposta"""
 
@@ -1508,13 +1524,12 @@ def criarProposta(df):
     formaPagamento = df['formaPagamento'][0]
     listaCores = df['cor'].values.tolist()
 
-    df["quanti"] = df["quanti"].str.replace("R", "").str.replace(
-        "$", "").str.replace(",", "").astype(float)
     listaPreco = df['quanti'].values.tolist()
 
     df["observacoes"] = df["observacoes"].apply(wrap_in_paragraph)
 
     listaQuantidade = df['numeros'].values.tolist()
+    listaPrecoUnitario = df['valorReal'].values.tolist()
 
     DealId = criarOrdem(nomeCliente, nomeContato, nomeRepresentante)
 
@@ -1530,6 +1545,7 @@ def criarProposta(df):
     color = idCores(listaCores)
     price = listaPreco
     quantidade = listaQuantidade
+    precoUnitario = listaPrecoUnitario
 
     # Inicializar uma lista vazia
     lista_product = []
@@ -1540,7 +1556,8 @@ def criarProposta(df):
             "ProductId": ProductId[i],
             "IdCor": color[i],
             "Price": price[i],
-            "Quantity": quantidade[i]
+            "Quantity": quantidade[i],
+            "UnitPrice": precoUnitario[i]
         }
 
         lista_product.append(product_info)
@@ -1560,8 +1577,8 @@ def criarProposta(df):
     for i, product_id in enumerate(lista_product):
         product_json = {
             "Quantity": product_id["Quantity"],
-            "UnitPrice": 0,
-            "Total": product_id["Price"]*1000 * int(product_id["Quantity"]),
+            "UnitPrice": product_id["UnitPrice"],
+            "Total": product_id["Price"] * int(product_id["Quantity"]),
             "ProductId": product_id["ProductId"],
             "Ordination": i,
             "OtherProperties": [
@@ -1572,7 +1589,7 @@ def criarProposta(df):
                 {
                     # valor unit. c/ desconto
                     "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455",
-                    "DecimalValue": product_id["Price"]*1000
+                    "DecimalValue": product_id["Price"]
                 },
                 {
                     "FieldKey": "quote_product_4D6B83EE-8481-46B2-A147-1836B287E14C",  # prazo dias
@@ -1587,14 +1604,14 @@ def criarProposta(df):
         "DealId": DealId,
         "OwnerId": idRep,
         "TemplateId": 196596,
-        "Amount": (total*1000),
+        "Amount": total,
         "Discount": 0,
         "InstallmentsAmountFieldKey": "quote_amount",
         "Notes": df['observacoes'][0],
         "Sections": [
             {
                 "Code": 0,
-                "Total": (total*1000),
+                "Total": total,
                 "OtherProperties": [
                     {
                         "FieldKey": "quote_section_8136D2B9-1496-4C52-AB70-09B23A519286",  # Prazo conjunto
@@ -1602,7 +1619,7 @@ def criarProposta(df):
                     },
                     {
                         "FieldKey": "quote_section_0F38DF78-FE65-471C-A391-9E8759470D4E",  # Total
-                        "DecimalValue": (total*1000)
+                        "DecimalValue": total
                     },
                     {
                         "FieldKey": "quote_section_64320D57-6350-44AB-B849-6A6110354C79",  # Total de itens
@@ -1639,6 +1656,12 @@ def criarProposta(df):
             }
         ]
     }
+    
+    # if descontoMaximo:
+    #     json_data["ApprovalStatusId"] = 1
+    #     json_data["ApprovalLevelId"] = 6216
+
+    print(json_data)
 
     # Converte a estrutura JSON em uma string JSON
     # json_string = json.dumps(json_data, indent=2)
@@ -2009,7 +2032,47 @@ def listarOrcamentos(nomeRepresentante):
         if item['LastUpdateDate']:
             item['LastUpdateDate'] = formatar_data(item['LastUpdateDate'])
 
-    data = combined_json
+    unique_set = set()
+    unique_data = []
+
+    for item in combined_json:
+        if item['DealId'] not in unique_set:
+            unique_set.add(item['DealId'])
+            unique_data.append(item)
+
+    data = unique_data
+
+    # url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=Quotes&$expand=Quotes($select=Id,ContactName,DealId,QuoteNumber,Amount,ExternallyAccepted,CreateDate,DocumentUrl)".format(
+    #     idRep)
+
+    # headers = {
+    #     "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    # }
+    
+    # response = requests.get(url, headers=headers)
+    
+    # data = response.json()
+    # data2 = data['value']
+
+    # # Percorra a lista e faça a modificação
+    # for item in data2:
+    #     for quote in item.get('Quotes', []):
+    #         if quote['ExternallyAccepted'] is None:
+    #             quote['ExternallyAccepted'] = "Não"
+    #         elif quote['ExternallyAccepted'] is True:
+    #             quote['ExternallyAccepted'] = "Sim"
+
+    # # Crie uma nova lista para armazenar os objetos internos
+    # new_data = []
+
+    # # Itere sobre os objetos originais e adicione apenas os objetos internos à nova lista
+    # for item in data2:
+    #     if 'Quotes' in item:
+    #         new_data.append(item['Quotes'])
+
+    # data = new_data
+
+    
 
     return data
 
@@ -2144,7 +2207,35 @@ def atualizarEtapaFechamento(DealId):
     return 'Deal atualizado'
 
 
-def criarVenda(dealId):
+@app.route('/escolherProposta', methods=['GET'])
+def escolherProposta():
+
+    dealId = request.args.get('dealId')
+
+    print(dealId)
+
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$select=QuoteNumber,Id,Amount,DocumentUrl,".format(
+        dealId)
+
+    header = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=header)
+    data = response.json()
+
+    listaPropostas = data['value']
+
+    print(listaPropostas)
+
+    return jsonify(listaPropostas)
+
+
+def criarVenda(dealId, idUltimaProposta):
+    
+    """
+    Função para criar venda após ganhar a proposta.
+    """
 
     url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$expand=Products".format(
         dealId)
@@ -2163,82 +2254,74 @@ def criarVenda(dealId):
     contactId = data['value'][0]['ContactId']
     amount = data['value'][0]['Amount']
     notes = data['value'][0]['Notes']
-    data['value'][0]['OrderId']
 
     json1 = {
         "ContactId": contactId,
         "DealId": dealId,
         "PersonId": personId,
         "OwnerId": ownerId,
-        "Products": [],
         "CurrencyId": 1,
         "Amount": amount,
-        "OtherProperties": otherProperties
+        "OriginQuoteId": idUltimaProposta,
+        "OtherProperties": [
+            {
+                "FieldKey": "order_7BB4AC64-8B0F-40AF-A854-CBE860A4B179", # Observação
+                "BigStringValue": notes
+            },
+            {
+                "FieldKey": "order_2A8B87D1-3E73-4C5A-94F5-29A53347FFC1", # Atualizar dados
+                "BoolValue": True
+            },
+            {
+                "FieldKey": "order_62D206E8-1881-4234-A341-F9E82C08885C", # Programação de entrega
+                "DateTimeValue": prazoDias()
+            },
+            {
+                "FieldKey": "order_7932F9F0-B3E8-40D3-9815-53C8613D33F1", # Valor Total
+                "DecimalValue": amount
+            },
+            {
+                "FieldKey": "order_377A29A2-69F9-4E34-9307-0764EE3D9A89", # Prazo Dias
+                "IntegerValue": 45
+            }
+        ],
+        "Date": dataHojeFormato(), # Hoje
+        "Sections": [{"Products":[],"Total": amount}],
     }
+
+    total = {"Total": amount}
 
     # Loop através dos itens no primeiro JSON
     for product_item in json_produtos:
         # Crie um novo dicionário com os campos necessários
         new_product = {
-            "OwnerId": ownerId,
-            "ProductId": product_item['ProductId'],
-            "Quantity": product_item['Quantity'],
-            "CurrencyId": product_item['CurrencyId'],
-            "UnitPrice": product_item['UnitPrice'],
-            "Discount": product_item['Discount'],
-            "Total": product_item['Total']
-        }
+                "OtherProperties": [
+                    {
+                        "FieldKey": "order_table_product_69BAEC44-676C-4458-823A-C0F29E605B0F", # Valor unitário com desconto
+                        "DecimalValue": product_item['Total'] / product_item['Quantity']
+                    },
+                    {
+                        "FieldKey": "order_table_product_56BC6561-A0C8-4EA7-BF03-40ADC8D03899", # Previsão de Entrega
+                        "DateTimeValue": prazoDias() # Hoje + 45 dias corridos
+                    }
+                ],
+                                
+                "Quantity": product_item['Quantity'],
+                "UnitPrice": product_item['Total'] / product_item['Quantity'],
+                "Total": product_item['Total'],
+                "ProductId": product_item['ProductId'],
+                
+            },
 
-        # Adicione o novo dicionário à lista de Products no segundo JSON
-        json1["Products"].append(new_product)
+        # Crie uma nova seção para cada produto
+        json1["Sections"][0]['Products'].append(new_product[0])
 
-    otherProperties = [
-        {
-            "Id": 103422158,
-            "FieldId": 255111,
-            "FieldKey": "order_89A54AA2-753A-411D-A87A-1DBDF29370D0",
-            "StringValue": "0",
-        },
-        {
-            "Id": 103422159,
-            "FieldId": 249718,
-            "FieldKey": "order_2A8B87D1-3E73-4C5A-94F5-29A53347FFC1",
-        },
-        {
-            "Id": 103422160,
-            "FieldId": 201898,
-            "FieldKey": "order_7BB4AC64-8B0F-40AF-A854-CBE860A4B179",
-            "BigStringValue": notes
-        },
-        {
-            "Id": 103422161,
-            "FieldId": 217058,
-            "FieldKey": "order_7932F9F0-B3E8-40D3-9815-53C8613D33F1",
-            "DecimalValue": 43508.0,
-        },
-        {
-            "Id": 103422162,
-            "FieldId": 249716,
-            "FieldKey": "order_377A29A2-69F9-4E34-9307-0764EE3D9A89",
-            "IntegerValue": 45,
-        },
-        {
-            "Id": 103422163,
-            "FieldId": 249717,
-            "FieldKey": "order_62D206E8-1881-4234-A341-F9E82C08885C",
-            "DateTimeValue": "2023-10-29T00:00:00-03:00",
-        },
-        {
-            "Id": 103422170,
-            "FieldId": 236923,
-            "FieldKey": "order_B3C1AABD-00AB-4306-8163-2D2BF76051A3",
-            "IntegerValue": 85731442,
-        }
-    ]
+
+    print(json1)
 
     url = "https://public-api2.ploomes.com/Orders"
 
-    requests.post(url, headers=header, json=json1)
+    # requests.post(url, headers=header, json=json1)
 
 
 @app.route('/reenviarEmail', methods=['POST'])
@@ -2256,6 +2339,35 @@ def reenviarEmail():
     enviar_email(nome_representante, nomeCliente, deal_id)
 
     return 'E-mail reenviado'
+
+
+def prazoDias():
+
+    from datetime import datetime, timedelta
+
+    # Obtenha a data atual
+    hoje = datetime.now()
+
+    # Adicione 45 dias à data atual
+    data_futura = hoje + timedelta(days=45)
+
+    # Formate a data no formato desejado
+    data_formatada = data_futura.strftime("%Y-%m-%dT00:00:00-03:00")
+
+    return data_formatada
+
+
+def dataHojeFormato():
+
+    from datetime import datetime, timedelta
+
+    # Obtenha a data atual
+    hoje = datetime.now()
+
+    # Formate a data no formato desejado
+    data_formatada = hoje.strftime("%Y-%m-%dT00:00:00-03:00")
+
+    return data_formatada
 
 
 if __name__ == '__main__':

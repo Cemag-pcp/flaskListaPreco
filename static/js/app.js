@@ -58,6 +58,8 @@ function toggleCardItem(button) {
   const description = columns[2].textContent;
   const preco = columns[5].textContent; 
   const descricaoCarreta = columns[3].textContent; 
+  const valorReal = columns[5].textContent;
+
 
   const corSelect = row.querySelector('.cor-dropdown');
   const cor = corSelect.value;
@@ -90,6 +92,12 @@ function toggleCardItem(button) {
   descricaoCarretaElement.textContent = descricaoCarreta;
   descricaoCarretaElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
   item.appendChild(descricaoCarretaElement);
+
+  const valorRealElement = document.createElement('span');
+  valorRealElement.classList.add('valorReal');
+  valorRealElement.textContent = valorReal;
+  valorRealElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
+  item.appendChild(valorRealElement);
 
   const corElement = document.createElement('span');
   corElement.classList.add('cor');

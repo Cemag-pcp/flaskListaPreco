@@ -23,9 +23,16 @@
 <div class="container pt-4" style="transition: 0.5s;">
    <div class="row">
       <div class="col-md-6 mb-3">
-         <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar">
+        <div class="input-group" style="width: 65%;">
+          <input type="text" id="searchInput" class="form-control" placeholder="Filtrar qualquer valor">
+          <div class="input-group-append">
+            <span class="input-group-text">
+              <i class="fa fa-search"></i>
+            </span>
+          </div>
+        </div>
       </div>
-   </div>
+    </div>
    <div class="row">
       {% for dado in data %}
       <div class="col-md-4 mb-3">
@@ -50,15 +57,14 @@
                </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               <!-- {% if dado.StatusId == 2 or dado.StatusId == 3 %}
+               {% if dado.StatusId == 2 or dado.StatusId == 3 %}
                <a></a>
                <a></a>
                {% else %}
-               <a class="btn btn-success" style="color: #fff;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
-               <a class="btn btn-danger" style="color: #fff;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
-
-               {% endif %} -->
-               <a class="btn btn-danger" style="color: #fff;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
+               <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModal('{{ dado.DealId }}')">Perder</a>
+               {% endif %}
+               <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
 
             </div>
          </div>
@@ -104,9 +110,8 @@
                      </button>
                   </div>
                   <div class="modal-body">
-                     <div>
-                        <button id="ganhar">Confirmar</button>
-                     </div>
+                     
+                           
                   </div>
                </div>
             </div>
@@ -114,6 +119,10 @@
       </div>
       {% endfor %}
    </div>
+</div>
+
+<div class="alert alert-success" id="success-alert" style="display: none;">
+   <strong>Sucesso!</strong> A ação foi confirmada com êxito.
 </div>
 
 <div id="loading-overlay" style="display: none;">
@@ -236,7 +245,6 @@
 
 </script>
 
-
 <script>
    function showModalGanhar(dealId) {
       $("#loading-overlay").show();
@@ -245,6 +253,8 @@
             $('.modal-title').text('Confirmar - ' + dealId);
 
             $('#modalGanhar').modal('show');
+
+            // tabela
 
             // Ocultar a tela de carregamento após um pequeno atraso (500 milissegundos)
             setTimeout(function () {
@@ -256,34 +266,87 @@
                $('#modalGanhar').modal('hide');
             });
 
-            // When the 'Perder' button is clicked
-            $('#ganhar').on('click', function () {
-               $("#loading-overlay").show();
-               // Send a POST request to the backend
-               $.ajax({
-                  url: '/ganhar',
-                  type: 'POST',
-                  data: {
-                     dealId: dealId,
-                  },
-                  success: function (response) {
-                     var dealId = response.dealId;
-                     window.location.reload();
-                     $("#loading-overlay").hide();
-                  },
-                  error: function (error) {
-                     console.log(error);
-                  }
-               });
+            // Send a GET request to the backend
+            $.ajax({
+               url: '/escolherProposta',
+               type: 'GET',
+               data: {
+                  dealId: dealId,
+               },
+               success: function (response) {
+                  // Preencher a modal com os dados recebidos
+                  var modalBody = $('.modal-body'); // Selecione o elemento com a classe modal-body
+                  modalBody.empty(); // Limpe o conteúdo existente
+
+                  $.each(response, function (index, item) {
+
+                     var formattedAmount = 'R$ ' + parseFloat(item.Amount).toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                     });
+
+                     // Crie um card para cada item
+                     var card = $('<div class="card1">');
+                     var cardBody = $('<div class="card-body1">');
+                     
+                     // Adicione o conteúdo do card
+                     cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
+                     cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link</a>');
+                     
+                     // Adicione um botão de confirmar ao card
+                     var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
+                     
+                     // Adicione um evento de clique para os botões de confirmar
+                     confirmButton.on('click', function () {
+                        $("#loading-overlay").show();
+
+                        var id = item.Id; // Obtenha o ID do item
+                        // Envie as informações da linha para o backend por meio de uma solicitação AJAX
+                        $.ajax({
+                           url: '/ganhar',
+                           type: 'POST',
+                           contentType: 'application/json',
+                           data: JSON.stringify({
+                              dealId: dealId,
+                              id: id,
+                           }),
+                           success: function (response) {
+                              window.location.reload();
+                              // Lide com a resposta do backend, se necessário
+                              $('#success-alert').fadeIn();
+                              // Esconder o alerta após alguns segundos (por exemplo, 5 segundos)
+                              setTimeout(function () {
+                                 $('#success-alert').fadeOut();
+                              }, 5000); // 5000 milissegundos (5 segundos)
+                              $("#loading-overlay").hide();
+                           },
+                           error: function (error) {
+                              console.log(error);
+                           }
+                        });
+                     });
+
+                     cardBody.append(confirmButton);
+                     card.append(cardBody);
+                     
+                     // Adicione o card à modal
+                     modalBody.append(card);
+                  });
+
+                  $("#loading-overlay").hide();
+               },
+               error: function (error) {
+                  console.log(error);
+               }
             });
+
          },
          error: function (error) {
-            alert('Essa Ordem de Serviço não contém imagem ou vídeo');
+            alert('Esse negócio não possui proposta');
             console.log(error);
          }
       });
    }
 </script>
-
 
 {% endblock %}
