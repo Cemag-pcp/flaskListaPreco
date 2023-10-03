@@ -13,9 +13,10 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
-<div class="container" id="titulo">
-  <h2>Gerar Proposta</h2>
-</div>
+
+<section class="container table__header">
+  <h2>Gerar proposta</h2>
+</section>
 
 <div style="display: none;">
   <input type="hidden" id="representante-name" value="{{ representante }}">
@@ -24,11 +25,11 @@
 <!-- INFORMAÇÕES DO CLIENTE -->
 
 <div class="container filter-wrapper2">
-
+  <div class="filtrar_preco">
   <div>
     <label for="filtro-nome-novo">Nome:</label>
-    <input type="text" id="filtro-nome-novo" class="form-control" style="width: 90%;">
-    <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 90%;"
+    <input type="text" id="filtro-nome-novo" class="form-control" style="width: 150px;">
+    <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 150px;"
       onchange="atualizarCliente()">
       <option value="">Selecione</option>
     </select>
@@ -36,21 +37,21 @@
 
   <div>
     <label for="filtro-contatos-novo">Contatos:</label>
-    <select id="resultado-contatos-novo" class="form-control" data-live-search="true" style="width: 90%;">
+    <select id="resultado-contatos-novo" class="form-control" data-live-search="true" style="width: 150px;">
       <option value="">Selecione</option>
     </select>
   </div>
 
   <div>
     <label for="forma-pagamento">Pagamento:</label>
-    <select id="forma-pagamento" class="form-control" style="width: 90%;">
+    <select id="forma-pagamento" class="form-control" style="width: 150px;">
       <option></option>
     </select>
   </div>
 
   <div id="responsaveis">
     <label for="filtro-responsavel">Responsável:</label>
-    <select id="resultado-responsavel" class="form-control" data-live-search="true" style="width: 90%;">
+    <select id="resultado-responsavel" class="form-control" data-live-search="true" style="width: 200px;">
       <option value="">Selecione</option>
     </select>
   </div>
@@ -60,10 +61,10 @@
   </div>
 
 </div>
-
+</div>
 <!-- FILTROS -->
 
-<div class="container filter-wrapper" style="margin-top: 20px;">
+<div class="container filter-wrapper hidden">
   <div class="hidden">
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
@@ -136,21 +137,19 @@
       {% endfor %}
     </select>
   </div>
-  <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button>
-     -->
-  <!-- <button onclick="enviarDados()">Enviar Dados Selecionados</button> -->
-  <!-- <button class="hidden" id="limpar" onclick="limparFiltros()">Limpar Filtros</button> -->
+  <div>
+    <button onclick="limparFiltros()" class="limpar_filtros" >Limpar Filtros</button>
+  </div>
 </div>
 
 <!-- TABELA -->
 
-<div class="container pt-4 hidden" style="transition: 0.5s;">
-  <div class="row">
-    <div style="position: relative;">
+<div class="container tabela_consulta hidden">
+  <div class="row" style="transition: 0.5s;">
+    <div class="table-container">
       <!-- <a href="/export/pdf-all">
         <i class="fas fa-file-pdf" style="font-size:20px;color:red"></i>
       </a> -->
-      <button onclick="limparFiltros()" class="btn btn-primary btn-sm" >Limpar Filtros</button>
       <table id="table1" class="table table-striped responsive-table">
         <thead>
           <tr>

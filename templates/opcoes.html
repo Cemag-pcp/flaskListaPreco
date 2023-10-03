@@ -2,24 +2,14 @@
 {% block body %}
 
 <form class="botoes_gerar_consultar" method="post">
-
+   <div class="custom-card2">
    <h1 style="font-size: 30px;">Selecione uma opção:</h1>
-   <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
-   <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
-
+   <div class="opcoes_botoes"> 
+      <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
+      <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
+   </div>
+   </div>
 </form>
-
-<style>
-   .custom-card {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      background-color: #f5f5f5;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      /* Outros estilos personalizados aqui */
-   }
-</style>
-
 <div class="container pt-4" style="transition: 0.5s;">
    <div class="row">
       <div class="col-md-6 mb-3">

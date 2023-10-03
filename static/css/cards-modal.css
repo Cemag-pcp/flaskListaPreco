@@ -37,3 +37,19 @@
 .card1 .card-link:hover {
   text-decoration: underline;
 }
+
+.custom-card {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Outros estilos personalizados aqui */
+}
+.custom-card2 {
+border: 1px solid #ccc;
+border-radius: 5px;
+padding: 35px;
+background-color: #f5f5f5;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
