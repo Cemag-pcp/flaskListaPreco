@@ -1906,7 +1906,7 @@ def obterEmailRepresentante(nomeRepresentante):
 def obterDocumentoPdf(DealId):
     """Função para buscar o pdf e aceite da proposta"""
 
-    url = "https://public-api2.ploomes.com/Quotes?$top=10&$filter=DealId+eq+{}&$select=DocumentUrl,Key".format(
+    url = "https://public-api2.ploomes.com/Quotes?$top=10&$filter=DealId+eq+{}&$select=DocumentUrl,Key,ApprovalStatusId".format(
         DealId)
 
     headers = {
@@ -1921,11 +1921,19 @@ def obterDocumentoPdf(DealId):
     for doc in documentos:
         pdf = doc['DocumentUrl']
         key = doc['Key']
+        approver = doc['ApprovalStatusId']
 
-    aceite = "https://documents.ploomes.com/?k={}&entity=quote".format(key)
+    if approver == 1:
+        
+        corpo_email = "Aguardando aprovação do pedido. \n\n Proposta em pdf:{}".format(
+            pdf)
 
-    corpo_email = "Link de aceite: {} \n\n Proposta em pdf:{}".format(
-        aceite, pdf)
+    else:
+
+        aceite = "https://documents.ploomes.com/?k={}&entity=quote".format(key)
+
+        corpo_email = "Link de aceite: {} \n\n Proposta em pdf:{}".format(
+            aceite, pdf)
 
     return corpo_email
 
@@ -2008,7 +2016,7 @@ def listarOrcamentos(nomeRepresentante):
 
     idRep = idRepresentante(nomeRepresentante)
 
-    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{}&$orderby=Date desc&$select=DealId,ExternallyAccepted".format(
+    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{}&$orderby=Date desc&$select=DealId,ExternallyAccepted,ApprovalStatusId".format(
         idRep)
 
     headers = {

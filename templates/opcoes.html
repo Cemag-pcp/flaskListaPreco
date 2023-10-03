@@ -39,13 +39,20 @@
          <div class="custom-card">
             <div class="card-body">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
-               <h6 class="card-text">Cliente: {{ dado.ContactName }} - {{ dado.DealId }}</h6>
+               <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
                <p class="card-text">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
                   <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
                   {% else %}
                   <span style="color: red;">{{ dado.ExternallyAccepted }}</span>
                   {% endif %}
                </p>
+               {% if dado.ApprovalStatusId == 1 %}
+                  <p class="card-text" >
+                     <i class="fas fa-exclamation-triangle button-icon" style="color: orange;"></i> Aguardando aprovação
+                  </p>
+               {% else %}
+                  <p></p>
+               {% endif %}
                <p class="card-text">Status:
                   {% if dado.StatusId == 1 %}
                   <span style="color: blue;">Em Aberto</span>
@@ -57,14 +64,14 @@
                </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               {% if dado.StatusId == 2 or dado.StatusId == 3 %}
+               {% if dado.StatusId == 2 or dado.StatusId == 3 or dado.ApprovalStatusId == 1 %}
                <a></a>
                <a></a>
                {% else %}
                <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
                <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
-               {% endif %}
                <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+               {% endif %}
             </div>
          </div>
 
