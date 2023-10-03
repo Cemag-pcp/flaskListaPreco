@@ -1605,8 +1605,7 @@ def criarProposta(df, descontoMaximo):
                     "IntegerValue": product_id["IdCor"]
                 },
                 {
-                    # valor unit. c/ desconto
-                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455",
+                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455", # valor unit. c/ desconto
                     "DecimalValue": product_id["Price"]
                 },
                 {
@@ -1614,8 +1613,8 @@ def criarProposta(df, descontoMaximo):
                     "StringValue": "45;"
                 },
                 {
-                    "FieldKey": "quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75",
-                    "DecimalValue" : product_id["percentDesconto"]
+                    "FieldKey": "quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75", # % de desconto no produto
+                    "DecimalValue" : product_id["percentDesconto"] * 100
                 }
 
             ]
@@ -2346,6 +2345,12 @@ def criarVenda(dealId, idUltimaProposta):
 
     requests.post(url, headers=header, json=json1)
 
+
+def atualizarPedido():
+
+    
+
+    return 'Sucesso'
 
 @app.route('/reenviarEmail', methods=['POST'])
 @login_required
