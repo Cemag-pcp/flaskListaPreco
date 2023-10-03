@@ -13,7 +13,7 @@
   
   .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 20% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 110%;
@@ -64,9 +64,9 @@
     .modal-content {
       position: relative;
       z-index: 2;
-      width: 90%; /* Ajuste a largura do conteúdo do modal para se encaixar melhor em telas menores */
-      margin: 10% auto; /* Ajuste a margem para posicionar o modal centralizado verticalmente */
-      padding: 10px; /* Reduza o preenchimento interno do conteúdo do modal */
+      width: 90%;
+      margin: 30% auto;
+      padding: 10px;
     }
   
     .close {

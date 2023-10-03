@@ -2,24 +2,14 @@
 {% block body %}
 
 <form class="botoes_gerar_consultar" method="post">
-
+   <div class="custom-card2">
    <h1 style="font-size: 30px;">Selecione uma opção:</h1>
-   <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
-   <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
-
+   <div class="opcoes_botoes"> 
+      <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
+      <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
+   </div>
+   </div>
 </form>
-
-<style>
-   .custom-card {
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      background-color: #f5f5f5;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      /* Outros estilos personalizados aqui */
-   }
-</style>
-
 <div class="container pt-4" style="transition: 0.5s;">
    <div class="row">
       <div class="col-md-6 mb-3">
@@ -301,7 +291,8 @@
                      
                      // Adicione o conteúdo do card
                      cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
-                     cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link</a>');
+
+                     cardBody.append('<label>PDF da Proposta: <a href="' + item.DocumentUrl + '" class="card-link" target="_blank"><i class="fa-solid fa-download" style="margin-left:5px"></i></a></label>');
                      
                      // Adicione um botão de confirmar ao card
                      var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
@@ -327,7 +318,7 @@
                               // Esconder o alerta após alguns segundos (por exemplo, 5 segundos)
                               setTimeout(function () {
                                  $('#success-alert').fadeOut();
-                              }, 5000); // 5000 milissegundos (5 segundos)
+                              }, 2000); // 5000 milissegundos (5 segundos)
                               $("#loading-overlay").hide();
                            },
                            error: function (error) {
