@@ -142,7 +142,6 @@ def login():
 
         if user is not None:
             session['user_id'] = user['username']
-            flash('Usuário ou Senha inválida', category='error')
             return redirect(url_for('opcoes'))
         else:
             flash('Usuário ou Senha inválida', category='error')
