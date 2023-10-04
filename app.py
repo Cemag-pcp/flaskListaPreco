@@ -2266,7 +2266,7 @@ def criarVenda(dealId, idUltimaProposta):
     Função para criar venda após ganhar a proposta.
     """
 
-    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$expand=Products".format(
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$expand=Products($expand=OtherProperties)".format(
         dealId)
 
     header = {
@@ -2283,6 +2283,8 @@ def criarVenda(dealId, idUltimaProposta):
     contactId = data['value'][0]['ContactId']
     amount = data['value'][0]['Amount']
     notes = data['value'][0]['Notes']
+
+    print(data)
 
     json1 = {
         "ContactId": contactId,
@@ -2322,6 +2324,14 @@ def criarVenda(dealId, idUltimaProposta):
 
     # Loop através dos itens no primeiro JSON
     for product_item in json_produtos:
+
+        # Obter o valor do campo 'quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75'
+        discount_value = None  # Valor padrão se não for encontrado
+        for other_prop in product_item.get('OtherProperties', []):
+            if other_prop.get('FieldKey') == 'quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75':
+                discount_value = other_prop.get('DecimalValue')
+                break  # Parar a busca após encontrar o valor desejado
+            
         # Crie um novo dicionário com os campos necessários
         new_product = {
                 "OtherProperties": [
@@ -2339,7 +2349,7 @@ def criarVenda(dealId, idUltimaProposta):
                 "UnitPrice": product_item['Total'] / product_item['Quantity'],
                 "Total": product_item['Total'],
                 "ProductId": product_item['ProductId'],
-                
+                "Discount": discount_value # aqui o valor do fieldKey: 'quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75'
             },
 
         # Crie uma nova seção para cada produto
