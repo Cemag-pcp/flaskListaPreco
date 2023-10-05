@@ -110,20 +110,28 @@
 </div>
 
 <script>
-   // Script para procurar na lista de cards
    document.getElementById("searchInput").addEventListener("input", function () {
-      var searchValue = this.value.toLowerCase();
-      var cards = document.querySelectorAll(".custom-card");
+    var searchValue = this.value.toLowerCase();
+    var cards = document.querySelectorAll(".custom-card");
 
-      cards.forEach(function (card) {
-         var cardText = card.textContent.toLowerCase();
-         if (cardText.includes(searchValue)) {
+    cards.forEach(function (card) {
+        var cardText = card.textContent.toLowerCase();
+        var parentCol = card.closest(".col-md-4.mb-3");
+
+        if (cardText.includes(searchValue)) {
             card.style.display = "block";
-         } else {
+            if (parentCol) {
+                parentCol.style.display = "block";
+            }
+        } else {
             card.style.display = "none";
-         }
-      });
-   });
+            if (parentCol) {
+                parentCol.style.display = "none";
+            }
+        }
+    });
+});
+
 </script>
 
 <!-- <script>

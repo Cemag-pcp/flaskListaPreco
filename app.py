@@ -1145,9 +1145,12 @@ def consulta():
 
     print(df)
 
-    df = df.merge(tb_favoritos, how='left', on='codigo')
+    try :
+        df = df.merge(tb_favoritos, how='left', on='codigo')
 
-    print(df)
+        print(df)   
+    except:
+        pass
 
     cur.execute(
         """select regiao from users where username = '{}'""".format(representante))
@@ -1170,8 +1173,11 @@ def consulta():
 
     df['pneu'] = df['pneu'].fillna('Sem pneu')
 
-    df = df.sort_values(by='favorito')
-
+    try: 
+        df = df.sort_values(by='favorito')
+    except: 
+        pass
+    
     data = df.values.tolist()
 
     descricao_unique = df[['descGenerica']
