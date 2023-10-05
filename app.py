@@ -219,8 +219,12 @@ def lista():
 
     df_produtos = api_lista_produtos()
 
-    df = df_produtos.merge(df_precos, how='left', on='codigo')
+    tb_favoritos = tabela_favoritos(representante)
 
+    df = df_produtos.merge(df_precos, how='left', on='codigo')
+    
+    df = df.merge(tb_favoritos, how='left', on='codigo')
+    
     regiao = buscarRegiaoCliente(nome_cliente)
 
     df = df[df['lista_nova'] == regiao]
@@ -230,7 +234,11 @@ def lista():
 
     df['pneu_tratado'] = df['pneu_tratado'].fillna('Sem pneu')
 
+    df = df.sort_values(by='favorito')
+
     data = df.values.tolist()
+
+    print(df)
 
     descricao_unique = df[['descGenerica']
                           ].drop_duplicates().values.tolist()
@@ -316,6 +324,24 @@ def lista_favoritos():
         conn.close()
 
     return 'Sucesso'
+
+
+def tabela_favoritos(representante):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
+                            password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("""
+                SELECT *
+                FROM tb_favoritos
+                WHERE representante = '{}'
+                """.format(representante))
+
+    tb_favoritos = cur.fetchall()
+    tb_favoritos = pd.DataFrame(tb_favoritos) 
+
+    return tb_favoritos
 
 
 @app.route('/remove/<string:id>', methods=['POST', 'GET'])
@@ -1111,7 +1137,17 @@ def consulta():
 
     df_produtos = api_lista_produtos()
 
+    tb_favoritos = tabela_favoritos(representante)
+
+    print(tb_favoritos)
+
     df = df_produtos.merge(df_precos, how='left', on='codigo')
+
+    print(df)
+
+    df = df.merge(tb_favoritos, how='left', on='codigo')
+
+    print(df)
 
     cur.execute(
         """select regiao from users where username = '{}'""".format(representante))
@@ -1134,6 +1170,8 @@ def consulta():
 
     df['pneu'] = df['pneu'].fillna('Sem pneu')
 
+    df = df.sort_values(by='favorito')
+
     data = df.values.tolist()
 
     descricao_unique = df[['descGenerica']
@@ -1147,8 +1185,6 @@ def consulta():
     descricao_generica_unique = df[[
         'outras_caracteristicas_tratadas']].drop_duplicates().values.tolist()
     lista_unique = df[['lista_nova']].drop_duplicates().values.tolist()
-
-    print('funcionou')
 
     return render_template('consulta.html', data=data,
                            descricao_unique=descricao_unique, modelo_unique=modelo_unique,
@@ -2027,7 +2063,7 @@ def listarOrcamentos(nomeRepresentante):
     data = response.json()
     data1 = data['value']
 
-    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1 &$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
+    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{}&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
         idRep)
 
     headers = {
@@ -2070,6 +2106,7 @@ def listarOrcamentos(nomeRepresentante):
             unique_data.append(item)
 
     data = unique_data
+    print(data)
 
     # url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=Quotes&$expand=Quotes($select=Id,ContactName,DealId,QuoteNumber,Amount,ExternallyAccepted,CreateDate,DocumentUrl)".format(
     #     idRep)

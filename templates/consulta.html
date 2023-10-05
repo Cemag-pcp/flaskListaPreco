@@ -164,13 +164,13 @@
             <td data-label="Favorito">
               <div class="toggle" id="maquina-parada-toggle">
                 <label class="switch2">
-                  {% if row[27] == 'on' %}:
+                  {% if row[24] == 'on' %}:
                   <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito"
-                    data-row-id="{{row[1]}}" checked>
+                    data-row-id="{{row[0]}}" checked>
                   <span class="slider round"></span>
                   {% else %}
                   <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito"
-                    data-row-id="{{row[1]}}">
+                    data-row-id="{{row[0]}}">
                   <span class="slider round"></span>
                   {% endif %}
                 </label>
@@ -181,6 +181,7 @@
               <button class="btn btn-primary btn-sm" onclick="toggleRowColor(this); toggleCardItem(this);"
                 id='botão_enviar_carrinho'><i class="fa-sharp fa-solid fa-paper-plane"></i> Enviar</button>
             </td>
+            
           </tr>
           {% endfor %}
         </tbody>
@@ -427,17 +428,17 @@
 
     dados.forEach(function (row) {
 
-      var variavel1 = `${row[27]}`;
+      var variavel1 = `${row[24]}`;
 
       var favoritoCheckbox = '';
       if (variavel1 === 'on') {
         favoritoCheckbox = `
-              <input class=s"btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}" checked> 
+              <input class=s"btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[0]}" checked> 
               <span class="slider round"></span>
             `;
       } else {
         favoritoCheckbox = ` 
-              <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[1]}"> 
+              <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" data-row-id="${row[0]}"> 
               <span class="slider round"></span>
             `;
       }
