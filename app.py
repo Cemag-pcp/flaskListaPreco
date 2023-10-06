@@ -223,8 +223,11 @@ def lista():
 
     df = df_produtos.merge(df_precos, how='left', on='codigo')
     
-    df = df.merge(tb_favoritos, how='left', on='codigo')
-    
+    try:
+        df = df.merge(tb_favoritos, how='left', on='codigo')
+    except:
+        pass
+
     regiao = buscarRegiaoCliente(nome_cliente)
 
     df = df[df['lista_nova'] == regiao]
@@ -234,7 +237,10 @@ def lista():
 
     df['pneu_tratado'] = df['pneu_tratado'].fillna('Sem pneu')
 
-    df = df.sort_values(by='favorito')
+    try:
+        df = df.sort_values(by='favorito')
+    except:
+        pass
 
     data = df.values.tolist()
 
@@ -1155,7 +1161,10 @@ def consulta():
 
     df = df_produtos.merge(df_precos, how='left', on='codigo')
 
-    df = df.merge(tb_favoritos, how='left', on='codigo')
+    try:
+        df = df.merge(tb_favoritos, how='left', on='codigo')
+    except:
+        pass
 
     cur.execute(
         """select regiao from users where username = '{}'""".format(representante))
@@ -1180,7 +1189,10 @@ def consulta():
 
     df['pneu'] = df['pneu'].fillna('Sem pneu')
 
-    df = df.sort_values(by='favorito')
+    try:
+        df = df.sort_values(by='favorito')
+    except:
+        pass
 
     tb_listarItensMaisVendidos = listarItensMaisVendidos(representante)
 
