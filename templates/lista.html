@@ -140,6 +140,15 @@
   <div>
     <button onclick="limparFiltros()" class="limpar_filtros" >Limpar Filtros</button>
   </div>
+  <div div class="hidden">
+    <label for="filtro-produto-mais-vendido">Produtos mais vendidos:</label>
+    <div class="toggle" id="maquina-parada-toggle">
+      <label class="switch2">
+        <input class="btn btn-secondary btn-sm favorito-btn" type="checkbox" name="favorito" id="favorito" onchange="botaoFavoritos()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
 </div>
 
 <!-- TABELA -->
@@ -378,6 +387,71 @@
     });
 
   }
+
+  function botaoFavoritos() {
+    $("#loading-overlay").show();
+    var descricao = $('#filtro-descricao').val();
+    var modelo = $('#filtro-modelo').val();
+    var eixo = $('#filtro-eixo').val();
+    var mola_freio = $('#filtro-molaFreio').val();
+    var tamanho = $('#filtro-tamanho').val();
+    var rodado = $('#filtro-rodado').val();
+    var pneu = $('#filtro-pneu').val();
+    var descricao_generica = $('#filtro-descricao-generica').val();
+    var filtro_nome = $('#filtro-nome').val();
+    var lista_preco = $('#filtro-lista').val();
+    var buttonFav = true;
+
+    // obter os valores selecionados em cada dropdown
+
+    // enviar a solicitação AJAX para o servidor
+    $.ajax({
+      url: '/atualizar-dados',
+      method: 'POST',
+      data: {
+        descricao: descricao,
+        modelo: modelo,
+        eixo: eixo,
+        mola_freio: mola_freio,
+        tamanho: tamanho,
+        rodado: rodado,
+        pneu: pneu,
+        descricao_generica: descricao_generica,
+        filtro_nome: filtro_nome,
+        lista_preco: lista_preco,
+        buttonFav: buttonFav
+        // inclua outros dropdowns aqui
+      },
+      success: function (response) {
+        // atualizar o DataFrame com os dados retornados
+        var dadosAtualizados = response.dados;
+        var descricaoAtualizada = response.descricao;
+        var modeloAtualizado = response.modelo;
+        var eixoAtualizado = response.eixo;
+        var molaFreioAtualizado = response.mola_freio;
+        var tamanhoAtualizado = response.tamanho;
+        var rodadoAtualizado = response.rodado;
+        var pneuAtualizado = response.pneu;
+        var descricaoGenericaAtualizado = response.descricao_generica;
+        var filtroNomeAtualizado = response.filtro_nome;
+        var listaAtualizado = response.lista_preco;
+
+        // faça o processamento necessário para atualizar o DataFrame na página
+
+        // atualizar a tabela com os dados retornados
+        atualizarTabela(dadosAtualizados);
+        atualizarDropdowns(descricaoAtualizada, modeloAtualizado, eixoAtualizado, molaFreioAtualizado, tamanhoAtualizado, rodadoAtualizado, pneuAtualizado, descricaoGenericaAtualizado, listaAtualizado);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
+
+      },
+      error: function (error) {
+        console.log(error);
+        $("#loading-overlay").hide(); // Oculta o overlay após atualizar os dados
+      }
+    });
+
+  }
+
 
   function atualizarTabela(dados) {
     $("#loading-overlay").show();

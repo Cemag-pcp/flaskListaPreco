@@ -876,15 +876,18 @@ def checkbox():
 @app.route('/atualizar-dados', methods=['POST'])
 def atualizar_dados():
 
-    nome_cliente = request.form['filtro_nome']
-    descricao = request.form['descricao']
-    modelo = request.form['modelo']
-    eixo = request.form['eixo']
-    mola_freio = request.form['mola_freio']
-    tamanho = request.form['tamanho']
-    rodado = request.form['rodado']
-    pneu = request.form['pneu']
-    descricao_generica = request.form['descricao_generica']
+    nome_cliente = request.form.get('filtro_nome')
+    descricao = request.form.get('descricao')  
+    modelo = request.form.get('modelo')
+    eixo = request.form.get('eixo')
+    mola_freio = request.form.get('mola_freio')
+    tamanho = request.form.get('tamanho')
+    rodado = request.form.get('rodado')
+    pneu = request.form.get('pneu')
+    descricao_generica = request.form.get('descricao_generica')
+    buttonFav = request.form.get('buttonFav')
+
+    print(buttonFav)
 
     representante = session['user_id']
 
@@ -970,6 +973,17 @@ def atualizar_dados():
 
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(
         x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    if buttonFav:
+        tb_listarItensMaisVendidos = listarItensMaisVendidos(representante)
+
+        df = df.merge(tb_listarItensMaisVendidos, how='left', on='codigo')
+
+        df = df.sort_values(by='count', ascending=False)
+
+        df = df.dropna()
+    
+    print(df)
 
     descricao = df[['descGenerica']].drop_duplicates().values.tolist()
     modelo = df[['modelo']].drop_duplicates().values.tolist()
@@ -1139,18 +1153,14 @@ def consulta():
 
     tb_favoritos = tabela_favoritos(representante)
 
-    print(tb_favoritos)
-
     df = df_produtos.merge(df_precos, how='left', on='codigo')
-
-    print(df)
 
     df = df.merge(tb_favoritos, how='left', on='codigo')
 
-    print(df)
-
     cur.execute(
         """select regiao from users where username = '{}'""".format(representante))
+
+
 
     regiao = cur.fetchall()
     regiao = regiao[0]['regiao']
@@ -1171,6 +1181,14 @@ def consulta():
     df['pneu'] = df['pneu'].fillna('Sem pneu')
 
     df = df.sort_values(by='favorito')
+
+    tb_listarItensMaisVendidos = listarItensMaisVendidos(representante)
+
+    df = df.merge(tb_listarItensMaisVendidos, how='left', on='codigo')
+
+    df = df.sort_values(by='count', ascending=False)
+
+    print(df)
 
     data = df.values.tolist()
 
@@ -1203,20 +1221,42 @@ def listarMotivosPerda():
     return jsonify(listaMotivos) 
 
 
+def listarItensMaisVendidos(representante):
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
+                            password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("""
+                SELECT codigo, COUNT (codigo)
+                FROM tb_orcamento
+                WHERE representante = '{}'
+                GROUP BY codigo
+                ORDER BY count desc
+                LIMIT 10;
+                """.format(representante))
+
+    tb_carretasMaisVendidas = cur.fetchall()
+    tb_carretasMaisVendidas = pd.DataFrame(tb_carretasMaisVendidas)
+
+    return tb_carretasMaisVendidas
+
+
 @app.route('/atualizar-dados-sem-cliente', methods=['POST'])
 def atualizar_dados_sem_cliente():
+    
+    descricao = request.form.get('descricao')  
+    modelo = request.form.get('modelo')
+    eixo = request.form.get('eixo')
+    mola_freio = request.form.get('mola_freio')
+    tamanho = request.form.get('tamanho')
+    rodado = request.form.get('rodado')
+    pneu = request.form.get('pneu')
+    descricao_generica = request.form.get('descricao_generica')
+    lista_preco = request.form.get('lista_preco')
+    buttonFav = request.form.get('buttonFav')
 
-    descricao = request.form['descricao']
-    modelo = request.form['modelo']
-    eixo = request.form['eixo']
-    mola_freio = request.form['mola_freio']
-    tamanho = request.form['tamanho']
-    rodado = request.form['rodado']
-    pneu = request.form['pneu']
-    descricao_generica = request.form['descricao_generica']
-    lista_preco = request.form['lista_preco']
-
-    print(lista_preco)
+    print(buttonFav)
 
     # obter os valores selecionados em cada dropdown enviado pela solicitação AJAX
 
@@ -1319,11 +1359,19 @@ def atualizar_dados_sem_cliente():
     else:
         df = resultados
 
-    # df = df.dropna(subset='lista_nova')
-    print(df)
-
     df['preco'] = df['preco'].apply(lambda x: "R$ {:,.2f}".format(
         x).replace(",", "X").replace(".", ",").replace("X", "."))
+
+    if buttonFav:
+        tb_listarItensMaisVendidos = listarItensMaisVendidos(representante)
+
+        df = df.merge(tb_listarItensMaisVendidos, how='left', on='codigo')
+
+        df = df.sort_values(by='count', ascending=False)
+
+        df = df.dropna()
+
+    print(df)
 
     descricao = df[['descGenerica']].drop_duplicates().values.tolist()
     modelo = df[['modelo']].drop_duplicates().values.tolist()
@@ -2063,7 +2111,7 @@ def listarOrcamentos(nomeRepresentante):
     data = response.json()
     data1 = data['value']
 
-    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{}&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
+    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
         idRep)
 
     headers = {
@@ -2105,40 +2153,7 @@ def listarOrcamentos(nomeRepresentante):
             unique_set.add(item['DealId'])
             unique_data.append(item)
 
-    data = unique_data
-    print(data)
-
-    # url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=Quotes&$expand=Quotes($select=Id,ContactName,DealId,QuoteNumber,Amount,ExternallyAccepted,CreateDate,DocumentUrl)".format(
-    #     idRep)
-
-    # headers = {
-    #     "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
-    # }
-    
-    # response = requests.get(url, headers=headers)
-    
-    # data = response.json()
-    # data2 = data['value']
-
-    # # Percorra a lista e faça a modificação
-    # for item in data2:
-    #     for quote in item.get('Quotes', []):
-    #         if quote['ExternallyAccepted'] is None:
-    #             quote['ExternallyAccepted'] = "Não"
-    #         elif quote['ExternallyAccepted'] is True:
-    #             quote['ExternallyAccepted'] = "Sim"
-
-    # # Crie uma nova lista para armazenar os objetos internos
-    # new_data = []
-
-    # # Itere sobre os objetos originais e adicione apenas os objetos internos à nova lista
-    # for item in data2:
-    #     if 'Quotes' in item:
-    #         new_data.append(item['Quotes'])
-
-    # data = new_data
-
-    
+    data = unique_data    
 
     return data
 
