@@ -965,3 +965,8 @@ input{
   height: 37.5px !important; /* Use !important */
   align-items: center;
 }
+
+.filtros{
+  display: flex;
+  justify-content: space-between;
+}

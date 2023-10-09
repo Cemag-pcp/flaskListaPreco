@@ -2112,7 +2112,6 @@ def listarOrcamentos(nomeRepresentante):
             unique_data.append(item)
 
     data = unique_data
-    print(data)
 
     # url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=Quotes&$expand=Quotes($select=Id,ContactName,DealId,QuoteNumber,Amount,ExternallyAccepted,CreateDate,DocumentUrl)".format(
     #     idRep)

@@ -11,21 +11,35 @@
    </div>
 </form>
 <div class="container pt-4" style="transition: 0.5s;">
-   <div class="row">
+   <div class="row" style="display: flex; justify-content: flex-start;">
       <div class="col-md-6 mb-3">
-        <div class="input-group" style="width: 65%;">
-          <input type="text" id="searchInput" class="form-control" placeholder="Filtrar qualquer valor">
+        <div class="input-group filtros" style="width: 360px;">
+          <input type="text" id="searchInput" class="form-control" placeholder="Filtrar qualquer valor" style="width: 85%;">
           <div class="input-group-append">
             <span class="input-group-text">
               <i class="fa fa-search"></i>
             </span>
           </div>
+          <select id="filtroStatus" class="form-control" style="font-weight: 600;">
+            <option value="Status" selected hidden disabled>Selecione o filtro do Status...</option>
+            <option value="todos">Todos</option>
+            <option value="1">Em Aberto</option>
+            <option value="2">Ganha</option>
+            <option value="3">Perdida</option>
+         </select>
+         <select id="filtroAceito" class="form-control" style="display: none; font-weight: 600;">
+            <option value="Aceite" selected hidden disabled>Foi Aceito?</option>
+            <option value="todos">Todos</option>
+            <option value="Sim">Sim</option>
+            <option value="Não">Não</option>
+         </select>
         </div>
       </div>
     </div>
-   <div class="row">
+
+   <div class="row" id="cardsContainer">
       {% for dado in data %}
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4 mb-3" data-statusid="{{ dado.StatusId }}" data-externallyaccepted="{{ dado.ExternallyAccepted }}">
          <div class="custom-card">
             <div class="card-body">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
@@ -43,7 +57,7 @@
                {% else %}
                   <p></p>
                {% endif %}
-               <p class="card-text">Status:
+               <p class="card-text" id="status">Status:
                   {% if dado.StatusId == 1 %}
                   <span style="color: blue;">Em Aberto</span>
                   {% elif dado.StatusId == 2 %}
@@ -132,7 +146,7 @@
     });
 });
 
-</script>
+</script> 
 
 <!-- <script>
    function showModal(dealId) {
@@ -597,5 +611,62 @@
 }
 </script>
 
+
+<script>
+document.getElementById('filtroStatus').addEventListener('change', function() {
+    var filtroStatus = this.value; // Obtém o valor selecionado no filtro de status
+    var filtroAceito = document.getElementById('filtroAceito');
+
+    // Verifica se a opção selecionada no filtro de status é 'Em Aberto' (valor '1')
+    if (filtroStatus === '1') {
+        // Se for 'Em Aberto', mostra o filtro de aceitação
+        filtroAceito.style.display = 'inline-block'; // ou 'block', dependendo do seu layout
+    } else {
+        // Se não for 'Em Aberto', oculta o filtro de aceitação
+        filtroAceito.style.display = 'none';
+    }
+   var filtroAceito = 'todos'; // Define o valor do filtro de aceitação como 'todos'
+   var cards = document.querySelectorAll('.col-md-4'); // Seleciona todos os cards
+
+   cards.forEach(function(card) {
+      var status = card.querySelector('.card-text span').innerText.toLowerCase(); // Obtém o status do card (em aberto, ganha, perdida)
+      var cardStatusId = card.dataset.statusid; // Obtém o StatusId do atributo de dados do card
+      var aceito = card.dataset.externallyaccepted.toLowerCase(); // Obtém o ExternallyAccepted do atributo de dados do card
+
+      // Verifica se o StatusId do card corresponde à opção selecionada no select de status
+      // E se o ExternallyAccepted do card corresponde à opção selecionada no select de aceitação
+      if ((filtroStatus === 'todos' || cardStatusId === filtroStatus) &&
+          (filtroAceito === 'todos' || aceito === filtroAceito.toLowerCase())) {
+         card.style.display = 'block'; // Mostra o card
+      } else {
+         card.style.display = 'none'; // Oculta o card
+      }
+   });
+});
+
+
+document.getElementById('filtroAceito').addEventListener('change', function() {
+   var filtroAceito = this.value; // Obtém o valor selecionado no select de aceitação
+   var filtroStatus = document.getElementById('filtroStatus').value; // Obtém o valor selecionado no select de status
+   var cards = document.querySelectorAll('.col-md-4'); // Seleciona todos os cards
+
+   cards.forEach(function(card) {
+      var status = card.querySelector('.card-text span').innerText.toLowerCase(); // Obtém o status do card (em aberto, ganha, perdida)
+      var cardStatusId = card.dataset.statusid; // Obtém o StatusId do atributo de dados do card
+      var aceito = card.dataset.externallyaccepted.toLowerCase(); // Obtém o ExternallyAccepted do atributo de dados do card
+
+      // Verifica se o StatusId do card corresponde à opção selecionada no select de status
+      // E se o ExternallyAccepted do card corresponde à opção selecionada no select de aceitação
+      if ((filtroStatus === 'todos' || cardStatusId === filtroStatus) &&
+          ((filtroAceito === 'todos' || aceito === filtroAceito.toLowerCase()) || (filtroAceito === 'Sim' && status === '2') || (filtroAceito === 'Nao' && status === '3'))) {
+         card.style.display = 'block'; // Mostra o card
+      } else {
+         card.style.display = 'none'; // Oculta o card
+      }
+   });
+});
+
+
+</script>
 
 {% endblock %}
