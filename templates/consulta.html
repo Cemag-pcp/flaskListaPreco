@@ -125,7 +125,6 @@
 </div>
 
 <!-- TABELA -->
-
 <div class="container tabela_consulta">
   <div class="row" style="transition: 0.5s;">
     <div class="table-container">
@@ -1480,6 +1479,27 @@
 
     // Chame a função para atualizar os dados (você já tem isso definido em onchange)
     atualizarDados();
+  }
+</script>
+
+<script>
+  window.onload = function() {
+    fetch('/consulta', { method: 'POST' }) // Você pode ajustar o método conforme necessário
+      .then(response => response.json())
+      .then(data => {
+        const dataList = document.getElementsByClassName('listCard');
+        
+        data.lista_produtos.forEach(item => {
+          console.log()
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div>${item.description}</div>
+                <span class="cor">${item.color}</span>
+                <span class="quanti">${item.price}</span>
+            `;
+            dataList.appendChild(li);
+        });
+    });
   }
 </script>
 

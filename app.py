@@ -1143,9 +1143,21 @@ def opcoes():
     return render_template('opcoes.html', data=data, lista_motivos=lista_motivos)
 
 
-@app.route('/consulta')
+@app.route('/consulta', methods=['POST','GET'])
 @login_required
 def consulta():
+
+    quote_id = request.form['quote_id']
+
+    # Aqui, você deve obter os dados do backend, por exemplo, de um banco de dados
+    lista_produtos = [
+        {
+            'description': 'CBHM5000 GR SS RD M17',
+            'color': 'Laranja',
+            'price': 'R$ 23.325,00'
+        },
+        # Adicione mais itens de dados conforme necessário
+    ]
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
                             password=DB_PASS, host=DB_HOST)
@@ -1168,8 +1180,6 @@ def consulta():
 
     cur.execute(
         """select regiao from users where username = '{}'""".format(representante))
-
-
 
     regiao = cur.fetchall()
     regiao = regiao[0]['regiao']
@@ -1205,7 +1215,7 @@ def consulta():
     data = df.values.tolist()
 
     descricao_unique = df[['descGenerica']
-                          ].drop_duplicates().values.tolist()
+                        ].drop_duplicates().values.tolist()
     modelo_unique = df[['modelo']].drop_duplicates().values.tolist()
     eixo_unique = df[['eixo']].drop_duplicates().values.tolist()
     mola_freio_unique = df[['molaFreio']].drop_duplicates().values.tolist()
@@ -1217,11 +1227,11 @@ def consulta():
     lista_unique = df[['lista_nova']].drop_duplicates().values.tolist()
 
     return render_template('consulta.html', data=data,
-                           descricao_unique=descricao_unique, modelo_unique=modelo_unique,
-                           eixo_unique=eixo_unique, mola_freio_unique=mola_freio_unique,
-                           tamanho_unique=tamanho_unique, rodado_unique=rodado_unique,
-                           pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                           lista_unique=lista_unique, representante=representante)
+                        descricao_unique=descricao_unique, modelo_unique=modelo_unique,
+                        eixo_unique=eixo_unique, mola_freio_unique=mola_freio_unique,
+                        tamanho_unique=tamanho_unique, rodado_unique=rodado_unique,
+                        pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
+                        lista_unique=lista_unique, representante=representante, lista_produtos=lista_produtos)
 
 
 @app.route('/motivosPerda', methods=['GET'])
@@ -2304,7 +2314,7 @@ def atualizarEtapaFechamento(DealId):
 def escolherProposta():
 
     dealId = request.args.get('dealId')
-
+    
     print(dealId)
 
     url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$select=QuoteNumber,Id,Amount,DocumentUrl,Date".format(

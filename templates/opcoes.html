@@ -64,6 +64,10 @@
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
                   <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
                   <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+                  <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
+
+                  <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
+
                {% endif %}
             </div>
          </div>
@@ -143,7 +147,7 @@
 
       // Configuração da solicitação
       const requestOptions = {
-         method: 'POST', // Use 'POST' para enviar dados para o backend
+         method: 'GET', // Use 'POST' para enviar dados para o backend
          headers: {
             'Content-Type': 'application/json' // Tipo de conteúdo JSON
          },
@@ -369,6 +373,71 @@
 }
 </script>
 
+<script>
+   function showModalRevisar(dealId) {
+      // Defina o conteúdo do modal para a ação "Ganhar" com base no dealId
+      var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
+      
+      // Fechar o modal ao clicar no botão de fechar
+      $('#modalGanhar').on('click', '.close', function () {
+         $('#modalGanhar').modal('hide');
+      });
 
+      // Send a GET request to the backend
+      $.ajax({
+         url: '/escolherProposta',
+         type: 'GET',
+         data: {
+            dealId: dealId,
+         },
+         success: function (response) {
+            // Preencher a modal com os dados recebidos
+            var modalBody = $('.modal-body'); // Selecione o elemento com a classe modal-body
+            modalBody.empty(); // Limpe o conteúdo existente
+
+            $.each(response, function (index, item) {
+
+               var formattedAmount = 'R$ ' + parseFloat(item.Amount).toLocaleString('pt-BR', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+               });
+
+               // Crie um card para cada item
+               var card = $('<div class="card1">');
+               var cardBody = $('<div class="card-body1">');
+               
+               // Formatando data
+               var dataString = item.Date;
+               var dataFormatada = moment(dataString).format('DD/MM/YYYY HH:mm:ss');
+               var quote_id = item.Id;
+
+               // Adicione o conteúdo do card
+               cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
+               cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link para PDF</a><br>');
+               cardBody.append('<a>' + dataFormatada + '</a><br>');
+               
+               // Adicione um botão de confirmar ao card
+               // var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
+               
+               // cardBody.append(confirmButton);
+               
+               cardBody.append('<form action="/consulta" method="POST"><button name="quote_id" type="submit" value="' + quote_id + '">Revisar</button></form>');
+               card.append(cardBody);
+               
+               // Adicione o card à modal
+               modalBody.append(card);
+            });
+
+            $("#loading-overlay").hide();
+         },
+         error: function (error) {
+            console.log(error);
+         }
+      });
+
+      // Abra o modal
+      $('#modalGanhar').modal('show');
+   }
+</script>
 
 {% endblock %}

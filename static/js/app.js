@@ -60,7 +60,6 @@ function toggleCardItem(button) {
   const descricaoCarreta = columns[3].textContent; 
   const valorReal = columns[5].textContent;
 
-
   const corSelect = row.querySelector('.cor-dropdown');
   const cor = corSelect.value;
   const precoFinalInput = row.querySelector('.preco-input');
@@ -159,6 +158,7 @@ function toggleCardItem(button) {
     const quantity = items.length;
     quantitySpan.innerText = quantity.toString();
   }
+  
 }
 
 function toggleRowColor(checkbox) {
