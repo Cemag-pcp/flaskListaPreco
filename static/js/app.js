@@ -46,7 +46,6 @@ list.addEventListener('change', (event) => {
   }
 });
 
-
 function toggleCardItem(button) {
   const card = document.getElementById('card');
   const listCard = card.querySelector('.listCard');
@@ -78,7 +77,7 @@ function toggleCardItem(button) {
     // return; // Sai da função sem continuar a execução
   }
 
-  alert('Item  adicionado');
+  alert('Item adicionado');
 
   const item = document.createElement('li');
   item.dataset.description = description;

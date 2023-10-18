@@ -1147,18 +1147,15 @@ def opcoes():
 @login_required
 def consulta():
 
-    quote_id = request.form['quote_id']
+    if request.method == 'POST':
+        idquota = request.form.get('valor')
+        print(idquota) 
+    else:
+        idquota = None
 
-    # Aqui, você deve obter os dados do backend, por exemplo, de um banco de dados
-    lista_produtos = [
-        {
-            'description': 'CBHM5000 GR SS RD M17',
-            'color': 'Laranja',
-            'price': 'R$ 23.325,00'
-        },
-        # Adicione mais itens de dados conforme necessário
-    ]
-
+    # if 'idquote' in session:
+    #     idquota = session['idquote']
+    
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
                             password=DB_PASS, host=DB_HOST)
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -1231,7 +1228,7 @@ def consulta():
                         eixo_unique=eixo_unique, mola_freio_unique=mola_freio_unique,
                         tamanho_unique=tamanho_unique, rodado_unique=rodado_unique,
                         pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                        lista_unique=lista_unique, representante=representante, lista_produtos=lista_produtos)
+                        lista_unique=lista_unique, representante=representante, idquota=idquota)
 
 
 @app.route('/motivosPerda', methods=['GET'])
@@ -2487,6 +2484,34 @@ def dataHojeFormato():
     data_formatada = hoje.strftime("%Y-%m-%dT00:00:00-03:00")
 
     return data_formatada
+
+
+@app.route('/lista_produtos', methods=['POST','GET'])
+@login_required
+def lista_produtos():
+    
+    
+    # Aqui, você deve obter os dados do backend, por exemplo, de um banco de dados
+    lista_produtos = [
+        {
+            'description': 'CBHM5000 GR SS RD M17',
+            'color': 'Laranja',
+            'price': 'R$ 23.325,00'
+        },
+        # Adicione mais itens de dados conforme necessário
+    ]
+
+    return jsonify(lista_produtos)
+
+
+@app.route('/revisar/<idquote>', methods=['GET'])
+@login_required
+def revisar(idquote):
+    
+    if idquote is not None:
+        session['idquote'] = idquote
+
+    return redirect(url_for('consulta'))
 
 
 if __name__ == '__main__':

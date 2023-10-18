@@ -373,6 +373,7 @@
 }
 </script>
 
+
 <script>
    function showModalRevisar(dealId) {
       // Defina o conteúdo do modal para a ação "Ganhar" com base no dealId
@@ -421,7 +422,8 @@
                
                // cardBody.append(confirmButton);
                
-               cardBody.append('<form action="/consulta" method="POST"><button name="quote_id" type="submit" value="' + quote_id + '">Revisar</button></form>');
+               cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><button value="teste">Revisar</button></form>');
+
                card.append(cardBody);
                
                // Adicione o card à modal
