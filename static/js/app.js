@@ -177,6 +177,31 @@ function toggleRowColor(checkbox) {
   }
 }
 
+function formatAsReal1(value) {
+  // Convert the value to a number
+  const number = Number(value);
+
+  // Check if the number is valid
+  if (isNaN(number)) {
+    return '';
+  }
+
+  // Split the number into integer and decimal parts
+  const integerPart = Math.floor(number);
+  const decimalPart = (number - integerPart);
+
+  // Format the integer part with thousands separator
+  const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
+
+  // Format the decimal part with two decimal places and add leading zeros
+  const formattedDecimalPart = decimalPart.toFixed(2).split('.')[1].padEnd(2, '0');
+
+  // Construct the formatted value as Brazilian Real
+  const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
+
+  return formattedValue;
+}
+
 function updateTotal() {
   const listCard = document.querySelector('.listCard');
   const items = listCard.querySelectorAll('li');
@@ -188,11 +213,14 @@ function updateTotal() {
     const quantity = parseFloat(numElement.textContent);
     const priceText = precoElement.textContent.replace('R$', '').trim();
     const price = parseFloat(priceText.replace('.', '').replace(',', '.'));
-
+  
     totalValue += quantity * price;
+    console.log(totalValue)
   });
 
-  total.textContent = 'R$ ' + totalValue.toFixed(2);
+  totalValue = parseFloat(totalValue.toFixed(2));
+  total.textContent = formatAsReal1(totalValue);
+  console.log(total.textContent)
 }
 
 function formatNumber(number) {

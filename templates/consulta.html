@@ -14,7 +14,7 @@
 {% endif %}
 {% endwith %}
 
-<section class="container table__header" id="titulo">
+<section class="table__header" id="titulo">
   <h2>Lista de preços</h2>
 </section>
 
@@ -25,7 +25,7 @@
 
 <!-- FILTROS -->
 
-<div class="container filter-wrapper">
+<div class="filter-wrapper">
   <div>
     <label for="filtro-descricao">Categoria:</label>
     <select id="filtro-descricao" onchange="atualizarDados()">
@@ -209,7 +209,7 @@
   <div class="modal-content">
     <span class="close">&times;</span> <!-- Botão de fechar -->
 
-    <div>
+    <div id="filte-nome-select">
       <label for="filtro-nome-novo">Nome:</label>
       <input type="text" id="filtro-nome-novo" class="form-control" style="width: 90%;">
       <select id="resultado-nomes-novo" class="form-control" data-live-search="true" style="width: 90%;"
@@ -218,7 +218,7 @@
       </select>
     </div>
 
-    <div>
+    <div id="filte-contato">
       <label for="filtro-contatos-novo">Contatos:</label>
       <select id="resultado-contatos-novo" class="form-control" data-live-search="true" style="width: 90%;">
         <option value="">Selecione</option>
@@ -1497,7 +1497,7 @@
     function buscarProdutos(idquotaNameValue, skip) {
       var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
       // var apiUrl = `https://public-api2.ploomes.com/Quotes?$filter=Id eq ${idquotaNameValue}&$select=Sections&$expand=Sections($expand=Products)`;
-      var apiUrl = `https://public-api2.ploomes.com/Quotes?$filter=Id eq ${idquotaNameValue}&$expand=Sections($expand=Products), Products($expand=OtherProperties($filter=FieldKey+eq+'quote_product_76A1F57A-B40F-4C4E-B412-44361EB118D8'))`;
+      var apiUrl = `https://public-api2.ploomes.com/Quotes?$filter=Id+eq+${idquotaNameValue}&$expand=Sections($expand=Products), Products($expand=OtherProperties($filter=FieldKey+eq+'quote_product_76A1F57A-B40F-4C4E-B412-44361EB118D8')),OtherProperties($filter=FieldKey+eq+'quote_E85539A9-D0D3-488E-86C5-66A49EAF5F3A')`;
       
       // Faz a solicitação HTTP
       return fetch(apiUrl, {
@@ -1521,31 +1521,6 @@
       });
     }
 
-    function formatAsReal1(value) {
-      // Convert the value to a number
-      const number = Number(value);
-
-      // Check if the number is valid
-      if (isNaN(number)) {
-        return '';
-      }
-
-      // Split the number into integer and decimal parts
-      const integerPart = Math.floor(number);
-      const decimalPart = (number - integerPart) * 100;
-
-      // Format the integer part with thousands separator
-      const formattedIntegerPart = integerPart.toLocaleString('pt-BR');
-
-      // Format the decimal part with two decimal places and add leading zeros
-      const formattedDecimalPart = decimalPart.toFixed(2).split('.')[1].padEnd(2, '0');
-
-      // Construct the formatted value as Brazilian Real
-      const formattedValue = `R$ ${formattedIntegerPart},${formattedDecimalPart}`;
-
-      return formattedValue;
-    }
-
     // Chamando a função buscarProdutos
     buscarProdutos(idquotaNameValue, skip)
       .then(response => {
@@ -1554,23 +1529,66 @@
       })
       .then(data => {
         const products = data.value[0].Products;
-        
         const nomeCliente = data.value[0].ContactName;
         const nomeContato = data.value[0].PersonName;
         const notes = data.value[0].Notes;
         const total = data.value[0].Sections[0].Total;
+        const formaPagamento = data.value[0].OtherProperties[0].ObjectValueName;
 
+        let nomeInput = document.getElementById('filtro-nome-novo');
+        let nomeSelect = document.getElementById('resultado-nomes-novo');
+        let formaPagamentoSelect = document.getElementById('forma-pagamento')
+        let btnContinuar = document.getElementById('btnEnviar');
+        let divFiltroContato = document.getElementById('filte-contato');
+        let divFiltroNome = document.getElementById('filte-nome-select');
+
+        if(idquotaNameValue != 'None'){
+
+          btnContinuar.setAttribute('onclick', 'atualizarCliente()');
+
+          // Define o valor do input para nomeCliente
+          nomeInput.value = nomeCliente;
+          nomeInput.readOnly = true;
+          divFiltroContato.style.display = 'none';
+          divFiltroNome.style.display = 'none';
+
+          // Cria um novo elemento <option>
+          let optionFormaPagamento = document.createElement('option');
+          optionFormaPagamento.setAttribute('selected', 'selected');
+
+          // Cria um novo elemento <option>
+          let novoOption = document.createElement('option');
+          novoOption.setAttribute('selected', 'selected');
+
+          // Define o valor e o texto do novo option
+          novoOption.value = nomeCliente;
+          novoOption.textContent = nomeCliente;
+
+          // Define o valor e o texto do novo option
+          optionFormaPagamento.value = formaPagamento;
+          optionFormaPagamento.textContent = formaPagamento;
+
+          // Adiciona o novo option ao elemento <select>
+          formaPagamentoSelect.appendChild(optionFormaPagamento);
+          nomeSelect.appendChild(novoOption);
+
+        }
+        
         // Obtenha o elemento textarea pelo id
         var observacaoTextarea = document.getElementById('observacao');
         // Defina o valor do textarea
         observacaoTextarea.value = notes;
+
+        console.log(nomeCliente)
 
         products.forEach(product => {
           const idProduct = product.ProductId; // Acessando o ID do produto
           const corProduto = product.OtherProperties[0].ObjectValueName; // Acessando a cor do produto
           const unitPrice = formatAsReal1(product.Total / product.Quantity);
           const quantidadeProduto = product.Quantity;
-          
+          const precoOriginal= product.UnitPrice;
+          const descricaoProduto= product.ProductName;
+
           buscarNomeProdutos(idProduct, skip)
             .then(response => {
               return response.json();
@@ -1592,13 +1610,13 @@
 
               const descricaoCarretaElement = document.createElement('span');
               descricaoCarretaElement.classList.add('descCarreta');
-              descricaoCarretaElement.textContent = productName;
+              descricaoCarretaElement.textContent = descricaoProduto;
               descricaoCarretaElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
               item.appendChild(descricaoCarretaElement);
 
               const valorRealElement = document.createElement('span');
               valorRealElement.classList.add('valorReal');
-              valorRealElement.textContent = unitPrice;
+              valorRealElement.textContent = precoOriginal;
               valorRealElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
               item.appendChild(valorRealElement);
 
@@ -1637,11 +1655,42 @@
               // corElement.textContent = corProduto;
               // item.appendChild(corElement);
 
-              const precoElement = document.createElement('span');
+              // COMEÇO DA NOVA ALTERAÇÃO
+              const precoElement = document.createElement('input');
               precoElement.classList.add('quanti');
+              precoElement.value = unitPrice;
               precoElement.textContent = unitPrice;
               item.appendChild(precoElement);
+              const inputElement = document.querySelector('.quanti');
 
+              // Adicionando evento de escuta para detectar alterações no input
+              precoElement.addEventListener('blur', function() {
+                // Obtendo o novo valor do input
+                const novoValor = precoElement.value;
+                precoElement.textContent = novoValor;
+                formatPrice(precoElement);
+                updateTotal();
+              });
+
+              function formatPrice(input) {
+                const rawValue = input.value;
+                console.log("AQUI " + rawValue)
+
+                // Remove any non-digit characters from the input value
+                const cleanedValue = rawValue.replace(/[^0-9]/g, '');
+
+                // Format the cleaned value as Brazilian Real
+                const formattedValue = formatAsReal(cleanedValue);
+
+                // Set the formatted value back to the input
+                input.value = formattedValue;
+
+                // Clear the input if the formatted value is "R$ 0,00"
+                if (formattedValue === "R$ 0,00") {
+                  input.value = '';
+                }
+              }
+              // FIM DA NOVA ALTERAÇÃO
               const decreaseButton = document.createElement('button');
               decreaseButton.classList.add('diminuir');
               decreaseButton.textContent = '-';
@@ -1692,26 +1741,26 @@
               }
               
               const totalElement = document.querySelector('.total');
-              totalElement.textContent = 'R$ ' + total.toFixed(2);
+              totalElement.textContent = formatAsReal1(total);
               
-              function updateTotal() {
-                const listCard = document.querySelector('.listCard');
-                const items = listCard.querySelectorAll('li');
-                totalValue = 0; // Zere o totalValue
+              // function updateTotal() {
+              //   const listCard = document.querySelector('.listCard');
+              //   const items = listCard.querySelectorAll('li');
+              //   totalValue = 0; // Zere o totalValue
 
-                items.forEach((item) => {
-                  const numElement = item.querySelector('.numeros');
-                  const precoElement = item.querySelector('.quanti');
-                  const quantity = parseFloat(numElement.textContent);
-                  const priceText = precoElement.textContent.replace('R$', '').trim();
-                  const price = parseFloat(priceText.replace('.', '').replace(',', '.'));
+              //   items.forEach((item) => {
+              //     const numElement = item.querySelector('.numeros');
+              //     const precoElement = item.querySelector('.quanti');
+              //     const quantity = parseFloat(numElement.textContent);
+              //     const priceText = precoElement.textContent.replace('R$', '').trim();
+              //     const price = parseFloat(priceText.replace('.', '').replace(',', '.'));
 
-                  totalValue += quantity * price;
-                });
+              //     totalValue += quantity * price;
+              //   });
 
-                const totalElement = document.querySelector('.total');
-                totalElement.textContent = 'R$ ' + totalValue.toFixed(2);
-              }
+              //   const totalElement = document.querySelector('.total');
+              //   totalElement.textContent = 'R$ ' + totalValue.toFixed(2);
+              // }
 
               // Adicionar o elemento do produto à lista de produtos
               productList.appendChild(item);
