@@ -21,6 +21,7 @@
 <div style="display: none;">
   <input type="hidden" id="representante-name" value="{{ representante }}">
   <input type="hidden" id="idquota" value="{{ idquota }}">
+  <input type="hidden" id="dealIdBackend" value="{{ dealId}}">
 </div>
 
 <!-- FILTROS -->
@@ -873,7 +874,7 @@
 
 <script>
   // Função para enviar os dados para o backend usando fetch
-  function sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel) {
+  function sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel, idQuote, dealIdBackend) {
     // Crie um objeto com os dados do formulário
     var formData = {
       items: items,
@@ -881,7 +882,9 @@
       contato: contato,
       formaPagamento: formaPagamento,
       observacoes: observacoes,
-      nomeResponsavel: nomeResponsavel
+      nomeResponsavel: nomeResponsavel,
+      idQuote: idQuote,
+      dealIdBackend: dealIdBackend,
     };
 
     // Faça uma requisição POST para o backend usando fetch
@@ -963,7 +966,7 @@
     listItems.forEach(listItem => {
       const description = listItem.getAttribute('data-description');
       const corElement = listItem.querySelector('.cor');
-      const cor = corElement.textContent;
+      const cor = corElement.value;
       const quantiElement = listItem.querySelector('.quanti');
       const quanti = quantiElement.textContent;
       const numerosElement = listItem.querySelector('.numeros');
@@ -990,7 +993,9 @@
     var formaPagamento = document.getElementById('forma-pagamento').value;
     var observacoes = document.getElementById('observacao').value;
     var nomeResponsavel = document.getElementById('resultado-responsavel').value;
-
+    var idQuote = document.getElementById('idquota').value;
+    var dealIdBackend = document.getElementById('dealIdBackend').value;
+    
     // Verifique se o campo de forma de pagamento está vazio
     if (formaPagamento === '') {
       alert('Preencha o campo de forma de pagamento!');
@@ -999,7 +1004,7 @@
     }
 
     // Chame a função para enviar os dados para o backend usando fetch
-    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel);
+    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel, idQuote, dealIdBackend);
     copiarItensETotalParaAreaDeTransferencia();
   }
 
@@ -1534,9 +1539,10 @@
         const notes = data.value[0].Notes;
         const total = data.value[0].Sections[0].Total;
         const formaPagamento = data.value[0].OtherProperties[0].ObjectValueName;
-
+        
         let nomeInput = document.getElementById('filtro-nome-novo');
         let nomeSelect = document.getElementById('resultado-nomes-novo');
+        let contatoSelect = document.getElementById('resultado-contatos-novo')
         let formaPagamentoSelect = document.getElementById('forma-pagamento')
         let btnContinuar = document.getElementById('btnEnviar');
         let divFiltroContato = document.getElementById('filte-contato');
@@ -1549,6 +1555,7 @@
           // Define o valor do input para nomeCliente
           nomeInput.value = nomeCliente;
           nomeInput.readOnly = true;
+
           divFiltroContato.style.display = 'none';
           divFiltroNome.style.display = 'none';
 
@@ -1564,6 +1571,14 @@
           novoOption.value = nomeCliente;
           novoOption.textContent = nomeCliente;
 
+          // Cria um novo elemento <option>
+          let novoContatoOption = document.createElement('option');
+          novoContatoOption.setAttribute('selected', 'selected');
+
+          // Define o valor e o texto do novo option
+          novoContatoOption.value = nomeContato;
+          novoContatoOption.textContent = nomeContato;
+
           // Define o valor e o texto do novo option
           optionFormaPagamento.value = formaPagamento;
           optionFormaPagamento.textContent = formaPagamento;
@@ -1571,6 +1586,7 @@
           // Adiciona o novo option ao elemento <select>
           formaPagamentoSelect.appendChild(optionFormaPagamento);
           nomeSelect.appendChild(novoOption);
+          contatoSelect.appendChild(novoContatoOption);
 
         }
         
@@ -1602,10 +1618,16 @@
               console.log(quantidadeProduto);
               
               // Criar elementos HTML para o produto
+              // const item = document.createElement('li');
+              // item.dataset.productName = productName;
+              // const itemName = document.createElement('div');
+              // itemName.textContent = productName; // Set the item description
+              // item.appendChild(itemName);
+
               const item = document.createElement('li');
-              item.dataset.productName = productName;
+              item.setAttribute('data-description', productName);
               const itemName = document.createElement('div');
-              itemName.textContent = productName; // Set the item description
+              itemName.textContent = productName; // Define o conteúdo do item
               item.appendChild(itemName);
 
               const descricaoCarretaElement = document.createElement('span');
@@ -1619,7 +1641,6 @@
               valorRealElement.textContent = precoOriginal;
               valorRealElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
               item.appendChild(valorRealElement);
-
 
               // INICIO DROPDOWN DAS CORES NO CARRINHO DE COMPRA
 
@@ -1647,9 +1668,7 @@
               });
 
               // FIM DROPDOWN DAS CORES NO CARRINHO DE COMPRA 
-              
-              
-              
+                           
               // const corElement = document.createElement('span');
               // corElement.classList.add('cor');
               // corElement.textContent = corProduto;
@@ -1691,6 +1710,7 @@
                 }
               }
               // FIM DA NOVA ALTERAÇÃO
+
               const decreaseButton = document.createElement('button');
               decreaseButton.classList.add('diminuir');
               decreaseButton.textContent = '-';

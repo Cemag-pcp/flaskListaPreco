@@ -1045,6 +1045,8 @@ def obs():
 def process_data():
     data = request.get_json()
 
+    print(data)
+
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
                             password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
@@ -1064,6 +1066,12 @@ def process_data():
     formaPagamento = data['formaPagamento']
     observacoes = data['observacoes']
     nomeResponsavel = data['nomeResponsavel']
+    
+    try:
+        idQuote = data['idQuote']
+        dealId = data['dealIdBackend']
+    except:
+        pass
 
     unique_id = str(uuid.uuid4())  # Gerar id unico
 
@@ -1075,6 +1083,11 @@ def process_data():
     df_items['observacoes'] = observacoes
     df_items['representante'] = nome_completo
     df_items['id'] = unique_id
+    
+    try:
+        df_items['dealId'] = dealId
+    except:
+        pass
 
     if nomeResponsavel == '':
         df_items['nomeResponsavel'] = nome_completo
@@ -1088,6 +1101,16 @@ def process_data():
 
     descontoMaximo = (df_items['percentDesconto'] >= 0.192).any()
 
+    print(df_items)
+
+    try:
+        if idQuote != 'None':
+            revisarProposta(df_items, idQuote)
+
+            return jsonify({'message': 'success'})
+    except:
+        pass
+    
     criarProposta(df_items, descontoMaximo)
 
     query = """INSERT INTO tb_orcamento (id,nome_cliente,contato_cliente,forma_pagamento,observacoes,quantidade,preco_final,codigo,cor,representante) 
@@ -1138,8 +1161,6 @@ def opcoes():
     lista_motivos = listarMotivos()
     data = listarOrcamentos(nomeRepresentante)
 
-
-
     return render_template('opcoes.html', data=data, lista_motivos=lista_motivos)
 
 
@@ -1149,9 +1170,10 @@ def consulta():
 
     if request.method == 'POST':
         idquota = request.form.get('valor')
-        print(idquota) 
+        dealId = request.form.get('dealId')
     else:
         idquota = None
+        dealId = None
 
     # if 'idquote' in session:
     #     idquota = session['idquote']
@@ -1228,7 +1250,7 @@ def consulta():
                         eixo_unique=eixo_unique, mola_freio_unique=mola_freio_unique,
                         tamanho_unique=tamanho_unique, rodado_unique=rodado_unique,
                         pneu_unique=pneu_unique, descricao_generica_unique=descricao_generica_unique,
-                        lista_unique=lista_unique, representante=representante, idquota=idquota)
+                        lista_unique=lista_unique, representante=representante, idquota=idquota, dealId=dealId)
 
 
 @app.route('/motivosPerda', methods=['GET'])
@@ -1241,6 +1263,14 @@ def listarMotivosPerda():
 
 
 def listarItensMaisVendidos(representante):
+
+    """
+    Esta função pega os itens mais vendidos de cada representante
+
+    representante: nome do representante
+    tb_carretasMaisVendidas: tabela com as informações de carretas mais vendidas
+    por representante
+    """
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
                             password=DB_PASS, host=DB_HOST)
@@ -1804,6 +1834,214 @@ def criarProposta(df, descontoMaximo):
     return "Proposta criada"
 
 
+def revisarProposta(df, idQuote):
+
+    """Função para revisar proposta"""
+
+    nomeCliente = df['nome'][0]
+    nomeContato = df['contato'][0]
+    DealId = df['dealId'][0]
+
+    df['valorReal'] = df['valorReal'].astype(float)
+    df['numeros'] = df['numeros'].astype(int)
+
+    totalSemDesconto = (df['valorReal'] * df['numeros']).sum()
+
+    if nomeContato == '':
+        nomeContato = 'Null'
+    else:
+        personId = idContatoCliente(nomeContato, id(nomeCliente))
+
+    if df['nomeResponsavel'][0] == '':
+        nomeRepresentante = df['representante'][0]
+    else:
+        nomeRepresentante = df['nomeResponsavel'][0]
+
+    listaProdutos = df['description'].values.tolist()
+    formaPagamento = df['formaPagamento'][0]
+    listaCores = df['cor'].values.tolist()
+
+    listaPreco = df['quanti'].values.tolist()
+
+    df['observacoes'] = df['observacoes'].apply(lambda x: x.replace("<p>","").replace("</p>",""))
+    df["observacoes"] = df["observacoes"].apply(wrap_in_paragraph)
+
+    listaQuantidade = df['numeros'].values.tolist()
+    listaPrecoUnitario = df['valorReal'].values.tolist()
+    listaPercentDesconto = df['percentDesconto'].values.tolist()
+    valorSemDesconto = df['valorReal'].values.tolist()
+    
+    print(df)
+    
+    idFormaPagamento = idFormaPagamentoF(formaPagamento)
+    id_CondicaoPagamento = idCondicaoPagamento(formaPagamento)
+
+    # idRep = idRepresentante(nomeRepresentante)
+
+    # Suas três listas
+    ProductId = idCarretas(listaProdutos)
+    color = idCores(listaCores)
+    price = listaPreco
+    quantidade = listaQuantidade
+    precoUnitario = listaPrecoUnitario
+    percentDesconto = listaPercentDesconto
+    valorSemDesconto = valorSemDesconto
+
+    # Inicializar uma lista vazia
+    lista_product = []
+
+    # Criar um dicionário para cada conjunto de valores correspondentes e adicioná-lo à lista
+    for i in range(len(ProductId)):
+        product_info = {
+            "ProductId": ProductId[i],
+            "IdCor": color[i],
+            "Price": price[i],
+            "Quantity": quantidade[i],
+            "UnitPrice": precoUnitario[i],
+            "percentDesconto": percentDesconto[i],
+            "valorSemDesconto": valorSemDesconto[i]
+        }
+
+        lista_product.append(product_info)
+
+    # Inicializar uma variável para o total em valor e total e quantidade de itens
+    total = 0
+    totalItens = 0
+
+    # Calcular o total somando os preços
+    for product in lista_product:
+        total += product["Price"] * int(product['Quantity'])
+        totalItens += int(product['Quantity'])
+
+    # lista_product = df.to_dict(orient='records')
+    # Estrutura JSON para cada produto
+    products = []
+    for i, product_id in enumerate(lista_product):
+        product_json = {
+            "Quantity": product_id["Quantity"],
+            "UnitPrice": product_id["UnitPrice"],
+            "Total": product_id["Price"] * int(product_id["Quantity"]),
+            "ProductId": product_id["ProductId"],
+            "Ordination": i,
+            "OtherProperties": [
+                {
+                    "FieldKey": "quote_product_76A1F57A-B40F-4C4E-B412-44361EB118D8",  # Cor
+                    "IntegerValue": product_id["IdCor"]
+                },
+                {
+                    "FieldKey": "quote_product_E426CC8C-54CB-4B9C-8E4D-93634CF93455", # valor unit. c/ desconto
+                    "DecimalValue": product_id["Price"]
+                },
+                {
+                    "FieldKey": "quote_product_4D6B83EE-8481-46B2-A147-1836B287E14C",  # prazo dias
+                    "StringValue": "45;"
+                },
+                {
+                    "FieldKey": "quote_product_7FD5E293-CBB5-43C8-8ABF-B9611317DF75", # % de desconto no produto
+                    "DecimalValue" : product_id["percentDesconto"] * 100
+                },
+                {
+                    "FieldKey": "quote_product_A0AED1F2-458F-47D3-BA29-C235BDFC5D55", # Total sem desconto
+                    "DecimalValue": product_id["valorSemDesconto"] * int(product_id["Quantity"])
+                },
+            ]
+        }
+        products.append(product_json)
+
+    # Estrutura JSON principal com a lista de produtos
+    json_data = {
+        "Id": idQuote,
+        "DealId": DealId,
+        "PersonId": personId,
+        "TemplateId": 196596,
+        "Amount": total,
+        "Discount": 0,
+        "InstallmentsAmountFieldKey": "quote_amount",
+        "Notes": df['observacoes'][0],
+        "Sections": [
+            {
+                "Code": 0,
+                "Total": total,
+                "OtherProperties": [
+                    {
+                        "FieldKey": "quote_section_8136D2B9-1496-4C52-AB70-09B23A519286",  # Prazo conjunto
+                        "StringValue": "045;"
+                    },
+                    {
+                        "FieldKey": "quote_section_0F38DF78-FE65-471C-A391-9E8759470D4E",  # Total
+                        "DecimalValue": total
+                    },
+                    {
+                        "FieldKey": "quote_section_0E7B5C7B-AD6B-480F-B55E-7F7ABEC4B08C", # Total sem desconto
+                        "DecimalValue": totalSemDesconto
+                    },
+                    {
+                        "FieldKey": "quote_section_64320D57-6350-44AB-B849-6A6110354C79",  # Total de itens
+                        "IntegerValue": totalItens
+                    }
+                ],
+                "Products": products
+            }
+        ],
+        "OtherProperties": [
+            {
+                "FieldKey": "quote_0FB9F0CB-2619-44C5-92BD-1A2D2D818BFE",  # Forma de pagamento
+                "IntegerValue": idFormaPagamento
+            },
+            {
+                "FieldKey": "quote_DE50A0F4-1FBE-46AA-9B5D-E182533E4B4A",  # Texto simples
+                "StringValue": formaPagamento
+            },
+            {
+                "FieldKey": "quote_E85539A9-D0D3-488E-86C5-66A49EAF5F3A",  # Condições de pagamento
+                "IntegerValue": id_CondicaoPagamento
+            },
+            {
+                "FieldKey": "quote_F879E39D-E6B9-4026-8B4E-5AD2540463A3",  # Tipo de frete
+                "IntegerValue": 22886508
+            },
+            {
+                "FieldKey": "quote_6D0FC2AB-6CCC-4A65-93DD-44BF06A45ABE",  # Validade
+                "IntegerValue": 18826538
+            },
+            {
+                "FieldKey": "quote_520B942C-F3FD-4C6F-B183-C2E8C3EB6A33",  # Prazo de entrega
+                "IntegerValue": 45
+            },
+            {
+                "FieldKey": "quote_82F9DE57-6E06-402A-A444-47F350284117", # Atualizar dados
+                "BoolValue": True
+            },
+            {
+                "FieldKey": "quote_16CDE30A-C6F1-4998-8B73-661CF89160B8", # Permissão - Condicões de pagamento
+                "StringValue": "Permitido"
+            }
+        ]
+    }
+    
+    # if descontoMaximo:
+    #     json_data["ApprovalStatusId"] = 1
+    #     json_data["ApprovalLevelId"] = 6216
+
+    print(json_data)
+
+    # Converte a estrutura JSON em uma string JSON
+    # json_string = json.dumps(json_data, indent=2)
+    # json_string = json.dumps(json_data, separators=(',', ':'))
+
+    url = "https://public-api2.ploomes.com/Quotes(" + idQuote + ")/Review?$select=Id&preservePreviousTemplate=true&preload=true"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=json_data)
+
+    enviar_email(nomeRepresentante, nomeCliente, DealId)
+
+    return "Proposta criada"
+
+
 def id(nomeCliente):
     """Função para buscar o id do cliente"""
 
@@ -2118,7 +2356,7 @@ def listarOrcamentos(nomeRepresentante):
 
     idRep = idRepresentante(nomeRepresentante)
 
-    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{}&$orderby=Date desc&$select=DealId,ExternallyAccepted,ApprovalStatusId".format(
+    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{} and LastReview&$orderby=Date desc&$select=DealId,ExternallyAccepted,ApprovalStatusId".format(
         idRep)
 
     headers = {
@@ -2314,7 +2552,7 @@ def escolherProposta():
     
     print(dealId)
 
-    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{}&$select=QuoteNumber,Id,Amount,DocumentUrl,Date".format(
+    url = "https://public-api2.ploomes.com/Quotes?$filter=DealId+eq+{} and LastReview&$select=QuoteNumber,Id,Amount,DocumentUrl,Date".format(
         dealId)
 
     header = {

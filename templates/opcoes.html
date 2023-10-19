@@ -411,6 +411,7 @@
                var dataString = item.Date;
                var dataFormatada = moment(dataString).format('DD/MM/YYYY HH:mm:ss');
                var quote_id = item.Id;
+               var DealId = dealId;
 
                // Adicione o conteúdo do card
                cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
@@ -422,7 +423,8 @@
                
                // cardBody.append(confirmButton);
                
-               cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><button value="teste">Revisar</button></form>');
+               // cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><button value="teste">Revisar</button></form>');
+               cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><input type="hidden" name="dealId" value="' + DealId + '"><button type="submit">Revisar</button></form>');
 
                card.append(cardBody);
                

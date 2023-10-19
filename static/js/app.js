@@ -97,15 +97,77 @@ function toggleCardItem(button) {
   valorRealElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
   item.appendChild(valorRealElement);
 
-  const corElement = document.createElement('span');
+  // const corElement = document.createElement('span');
+  // corElement.classList.add('cor');
+  // corElement.textContent = cor;
+  // item.appendChild(corElement);
+
+  // INICIO DROPDOWN DAS CORES NO CARRINHO DE COMPRA
+
+  const coresDisponiveis = ["Laranja", "Vermelha", "Verde", "Azul", "Amarela"];
+
+  const corElement = document.createElement('select');
   corElement.classList.add('cor');
-  corElement.textContent = cor;
+
+  coresDisponiveis.forEach(cor => {
+    const option = document.createElement('option');
+    option.value = cor;
+    option.textContent = cor;
+    corElement.appendChild(option);
+  });
+
+  // Defina a cor atual selecionada (corProduto)
+  corElement.value = cor;
+
   item.appendChild(corElement);
 
-  const precoElement = document.createElement('span');
+  corElement.addEventListener('change', () => {
+    const novaCor = corElement.value;
+    // Faça o que for necessário para atualizar a cor do produto com novaCor
+    // Você pode usar novaCor para atualizar o produto no servidor ou onde for necessário.
+  });
+
+  // FIM DROPDOWN DAS CORES NO CARRINHO DE COMPRA 
+
+  // const precoElement = document.createElement('span');
+  // precoElement.classList.add('quanti');
+  // precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
+  // item.appendChild(precoElement);
+
+  const precoElement = document.createElement('input');
   precoElement.classList.add('quanti');
-  precoElement.textContent = precoFinal || preco; // Use precoFinal if not empty, otherwise use preco
+  precoElement.value = precoFinal || preco;
+  precoElement.textContent = precoFinal || preco;
   item.appendChild(precoElement);
+  const inputElement = document.querySelector('.quanti');
+
+  // Adicionando evento de escuta para detectar alterações no input
+  precoElement.addEventListener('blur', function() {
+    // Obtendo o novo valor do input
+    const novoValor = precoElement.value;
+    precoElement.textContent = novoValor;
+    formatPrice(precoElement);
+    updateTotal();
+  });
+
+  function formatPrice(input) {
+    const rawValue = input.value;
+    console.log("AQUI " + rawValue)
+
+    // Remove any non-digit characters from the input value
+    const cleanedValue = rawValue.replace(/[^0-9]/g, '');
+
+    // Format the cleaned value as Brazilian Real
+    const formattedValue = formatAsReal(cleanedValue);
+
+    // Set the formatted value back to the input
+    input.value = formattedValue;
+
+    // Clear the input if the formatted value is "R$ 0,00"
+    if (formattedValue === "R$ 0,00") {
+      input.value = '';
+    }
+  }
 
   const decreaseButton = document.createElement('button');
   decreaseButton.classList.add('diminuir');
