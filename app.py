@@ -2752,5 +2752,20 @@ def revisar(idquote):
     return redirect(url_for('consulta'))
 
 
+@app.route('/cadastrar-cliente')
+@login_required
+def clientes():
+
+    """
+    1. Mostrar as opções de criar CLIENTE e CONTATO
+    2. Dentro do modal de criar cliente pode ter uma opção de criar contato direto sem ter que ir para outra tela
+    """
+
+
+    
+
+    return 'teste'
+
+
 if __name__ == '__main__':
     app.run(port=8000)

@@ -4,10 +4,11 @@
 <form class="botoes_gerar_consultar" method="post">
    <div class="custom-card2">
    <h1 style="font-size: 30px;">Selecione uma opção:</h1>
-   <div class="opcoes_botoes"> 
-      <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
-      <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
-   </div>
+      <div class="opcoes_botoes"> 
+         <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
+         <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
+         <button class="cadastrar_cliente" name="option" id="modal-cadastrar-cliente">Cadastrar Cliente</button>
+      </div>
    </div>
 </form>
 <div class="container pt-4" style="transition: 0.5s;">
@@ -91,12 +92,6 @@
         <div class="modal fade" id="modalGanhar" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalGanharLabel">Ganhar proposta</h5>
-                        <button type="button" class="close" aria-label="Fechar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
                     <div class="modal-body">
                         <!-- Conteúdo do Modal Ganhar -->
                     </div>
@@ -203,6 +198,9 @@
             // Preencher a modal com os dados recebidos
             var modalBody = $('.modal-body'); // Selecione o elemento com a classe modal-body
             modalBody.empty(); // Limpe o conteúdo existente
+
+            // Título do modal
+            modalBody.append('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Ganhar proposta</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
 
             $.each(response, function (index, item) {
 
@@ -373,7 +371,6 @@
 }
 </script>
 
-
 <script>
    function showModalRevisar(dealId) {
       // Defina o conteúdo do modal para a ação "Ganhar" com base no dealId
@@ -396,6 +393,9 @@
             var modalBody = $('.modal-body'); // Selecione o elemento com a classe modal-body
             modalBody.empty(); // Limpe o conteúdo existente
 
+            // Título do modal
+            modalBody.append('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Revisar proposta</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+
             $.each(response, function (index, item) {
 
                var formattedAmount = 'R$ ' + parseFloat(item.Amount).toLocaleString('pt-BR', {
@@ -417,7 +417,7 @@
                cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
                cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link para PDF</a><br>');
                cardBody.append('<a>' + dataFormatada + '</a><br>');
-               
+
                // Adicione um botão de confirmar ao card
                // var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
                
@@ -443,5 +443,140 @@
       $('#modalGanhar').modal('show');
    }
 </script>
+
+<!-- Funções para criar elementos de modal para cadastro de empresa ou contato -->
+
+<script>
+
+   // Modal para abrir opções de cadastro de cliente ou contato
+
+   function showModalEscolhaClienteOuContato(event) {
+      event.preventDefault(); // Prevenir o envio do formulário padrão
+
+      // Defina o conteúdo do modal para a ação "Cadastrar Cliente"
+      var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
+      modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
+
+      // Aqui, você pode criar e adicionar o formulário ao modal
+      var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastro</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var botaoModalCliente = $('<button id="cadastrar-empresa">Empresa</button>');
+      var botaoModalContato = $('<button id="cadastrar-contato">Contato</button>');
+      
+      form_cadastrar_cliente.append(title, botaoModalCliente, botaoModalContato);
+
+      modalBody.appendChild(form_cadastrar_cliente[0]);
+
+      // Abra o modal
+      $('#modalGanhar').modal('show');
+   }
+
+   // Associar o evento de clique ao botão "Cadastrar Cliente ou contato"
+   $(document).on('click', '#modal-cadastrar-cliente', function (event) {
+      showModalEscolhaClienteOuContato(event);
+   });
+
+   // Fechar o modal ao clicar no botão de fechar
+   $('#modalGanhar').on('click', '.close', function () {
+      $('#modalGanhar').modal('hide');
+   });
+
+   // Modal de cadastro de cliente
+
+   function showModalCriarEmpresa(event) {
+      event.preventDefault(); // Prevenir o envio do formulário padrão
+
+      // Defina o conteúdo do modal para a ação "Cadastrar Cliente"
+      var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
+      modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
+
+      // Crie o formulário com rótulos acima dos campos de entrada
+      var form_cadastrar_empresa = $('<div class="cadastrar-empresa">');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar Empresa</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      form_cadastrar_empresa.append(title);
+
+
+      // // Aqui, você pode criar e adicionar o formulário ao modal
+      // var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
+      // var labelNomeInput = $('<label>Nome:</label>');
+      // var nomeInput = $('<input type="text" placeholder="Nome">');
+      // var labelTelefoneInput = $('<label>Telefone:</label>');
+      // var telefoneInput = $('<input type="tel" placeholder="Telefone">');
+      // var labelCidadeInput = $('<label>Cidade:</label>');
+      // var cidadeInput = $('<input type="cidade" placeholder="Cidade">');
+      // var labelResponsavelInput = $('<label>Responsável:</label>');
+      // var responsavelInput = $('<input type="responsavel" placeholder="Responsável">');
+      // var botaoEnviar = $('<button id="enviar-cadastro-cliente">Cadastrar</button>');
+      
+      var labelNomeInput = $('<label for="nomeInput" class="form-label">Nome:</label>');
+      var nomeInput = $('<input type="text" class="form-control" id="nomeInput" placeholder="Nome">');
+      var labelTelefoneInput = $('<label for="telefoneInput" class="form-label">Telefone:</label>');
+      var telefoneInput = $('<input type="tel" class="form-control" id="telefoneInput" placeholder="Telefone">');
+      var labelCidadeInput = $('<label class="form-label" for="cidadeInput">Cidade:</label>');
+      var cidadeInput = $('<input type="text" class="form-control" id="cidadeInput" placeholder="Cidade">');
+      var labelResponsavelInput = $('<label class="form-label" for="responsavelInput">Responsável:</label>');
+      var responsavelInput = $('<input type="text" class="form-control" id="responsavelInput" placeholder="Responsável">');
+
+      // Botão de envio
+      var botaoEnviar = $('<button id="enviar-cadastro-empresa">Cadastrar</button>');
+
+      // Adicione as linhas ao formulário
+      form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelTelefoneInput, telefoneInput,
+      labelCidadeInput, cidadeInput, labelResponsavelInput, responsavelInput, botaoEnviar);
+
+      modalBody.appendChild(form_cadastrar_empresa[0]);
+
+      // Abra o modal
+      $('#modalGanhar').modal('show');
+   }
+
+   // Associar o evento de clique ao botão "Cadastrar Empresa"
+   $(document).on('click', '#cadastrar-empresa', function (event) {
+      showModalCriarEmpresa(event);
+   });
+
+   // Fechar o modal ao clicar no botão de fechar
+   $('#modalGanhar').on('click', '.close', function () {
+      $('#modalGanhar').modal('hide');
+   });
+
+   // Modal de cadastro de contato
+
+   function showModalCriarContato(event) {
+      event.preventDefault(); // Prevenir o envio do formulário padrão
+
+      // Defina o conteúdo do modal para a ação "Cadastrar contato"
+      var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
+      modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
+
+      // Aqui, você pode criar e adicionar o formulário ao modal
+      var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var nomeInput = $('<input type="text" placeholder="Nome do cliente">');
+      var emailInput = $('<input type="email" placeholder="Email do cliente">');
+      var telefoneInput = $('<input type="tel" placeholder="Telefone do cliente">');
+      var botaoEnviar = $('<button id="enviar-cadastro-contato">Cadastrar</button>');
+      
+      form_cadastrar_cliente.append(title, nomeInput, emailInput, telefoneInput, botaoEnviar);
+
+      modalBody.appendChild(form_cadastrar_cliente[0]);
+
+      // Abra o modal
+      $('#modalGanhar').modal('show');
+   }
+
+   // Associar o evento de clique ao botão "Cadastrar contato"
+   $(document).on('click', '#cadastrar-contato', function (event) {
+      showModalCriarContato(event);
+   });
+
+   // Fechar o modal ao clicar no botão de fechar
+   $('#modalGanhar').on('click', '.close', function () {
+      $('#modalGanhar').modal('hide');
+   });
+
+</script>
+
+
 
 {% endblock %}

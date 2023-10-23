@@ -862,6 +862,33 @@ input{
     outline: none;
   }
 
+  .cadastrar_cliente{
+    background: rgb(2, 104, 199);
+    border: 2px solid rgb(2, 104, 199);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 250px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .cadastrar_cliente:hover {
+    background: rgb(2, 104, 199);
+    outline: none;
+  }
+  
+  .cadastrar_cliente:active {
+    background: rgb(2, 104, 199);
+    outline: none;
+  }
+
 @media (max-width:1000px){
   #filtrar {
     background: rgb(255, 161, 113);
@@ -896,6 +923,22 @@ input{
   .consulta_precos{
     background: rgb(0, 185, 108);
     border: 2px solid rgb(0, 194, 113);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 100%;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  .cadastrar_cliente{
+    background: rgb(2, 104, 199);
+    border: 2px solid rgb(2, 104, 199);
     border-radius: 4px;
     outline: none;
     padding: 15px;
