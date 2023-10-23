@@ -460,10 +460,13 @@
       // Aqui, você pode criar e adicionar o formulário ao modal
       var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastro</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
-      var botaoModalCliente = $('<button id="cadastrar-empresa">Empresa</button>');
-      var botaoModalContato = $('<button id="cadastrar-contato">Contato</button>');
+      var div = $('<div style="display:flex;justify-content:space-around;margin-top:20px;">')
+      var botaoModalCliente = $('<button id="cadastrar-empresa" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Empresa</button>');
+      var botaoModalContato = $('<button id="cadastrar-contato" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Contato</button>');
+
+      div.append(botaoModalCliente, botaoModalContato)
       
-      form_cadastrar_cliente.append(title, botaoModalCliente, botaoModalContato);
+      form_cadastrar_cliente.append(title,div);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
@@ -514,15 +517,65 @@
       var telefoneInput = $('<input type="tel" class="form-control" id="telefoneInput" placeholder="Telefone">');
       var labelCidadeInput = $('<label class="form-label" for="cidadeInput">Cidade:</label>');
       var cidadeInput = $('<input type="text" class="form-control" id="cidadeInput" placeholder="Cidade">');
+      var cidadeSugestoes = $('<div id="suggestions"></div>')
       var labelResponsavelInput = $('<label class="form-label" for="responsavelInput">Responsável:</label>');
-      var responsavelInput = $('<input type="text" class="form-control" id="responsavelInput" placeholder="Responsável">');
+      var responsavelInput = $('<select class="form-control" id="responsavelInput" placeholder="Responsável">');
+      var funcionarios = ["Amanda", "Ana Gysele", "Alan Luersen","Felipe Barros","Humberto","Katylene","Lahis","Luan","Lucas Gallo","Olindo","Pereira","Renato Rodi","Roberto","Sônia","Thays","Walter"];
+      
+      cidadeInput.on('input', function() {
+      var inputValue = $(this).val();
+      inputCidades(inputValue)
+         .then(function(cidades) {
+               // Limpe as sugestões anteriores
+               $('#suggestions').empty();
 
+               // Adicione as novas sugestões
+               cidades.forEach(function(cidade) {
+                  var suggestionItem = $('<div class="suggestion-item">' + cidade.Name + " - " + cidade.State.Name +'</div>');
+                  suggestionItem.on('mousedown', function(event) {
+                     // Impede que o input perca o foco
+                     event.preventDefault();
+                     // Preencha o campo cidadeInput com a sugestão clicada
+                     cidadeInput.val(cidade.Name);
+                     // Limpe as sugestões
+                     $('#suggestions').empty();
+                     $('#suggestions').hide();
+                  });
+                  // Adicione a sugestão à lista de sugestões
+                  $('#suggestions').append(suggestionItem);
+               });
+
+               $('#suggestions').show();
+         })
+         .catch(function(error) {
+               console.error(error);
+         });
+   })
+   .on('blur', function() {
+      // Esconda as sugestões quando o cursor sai do input
+   });
+
+      var optionDefault = $('<option></option>').attr({
+         'value': '',
+         'selected': 'selected',
+         'hidden': 'hidden',
+         'disabled': 'disabled',
+         'style': 'color: gray;'
+      }).text('Selecione um responsável');
+
+      // Adiciona o <option> padrão ao início do select
+      responsavelInput.append(optionDefault);
+
+      for (var i = 0; i < funcionarios.length; i++) {
+         var option = $('<option></option>').attr('value', funcionarios[i]).text(funcionarios[i]);
+         responsavelInput.append(option);
+      }
       // Botão de envio
-      var botaoEnviar = $('<button id="enviar-cadastro-empresa">Cadastrar</button>');
+      var botaoEnviar = $('<button id="enviar-cadastro-empresa" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
 
       // Adicione as linhas ao formulário
       form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelTelefoneInput, telefoneInput,
-      labelCidadeInput, cidadeInput, labelResponsavelInput, responsavelInput, botaoEnviar);
+      labelCidadeInput, cidadeInput, cidadeSugestoes,labelResponsavelInput, responsavelInput, botaoEnviar);
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
 
@@ -542,6 +595,24 @@
 
    // Modal de cadastro de contato
 
+   function inputCidades(inputValue) {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+      var apiUrl = `https://public-api2.ploomes.com/Cities?$expand=State,Country&$skip=0&$top=10&$filter=(startswith(Name,'${inputValue}'))&$select=Id,IBGECode,Name&$orderby=Name&$count=true`;
+
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
+               'User-Key': apiKey
+         }
+      })
+      .then(response => response.json())
+      .then(data => data.value)
+      .catch(error => {
+         console.error(error);
+         return [];
+      });
+   }
+  
    function showModalCriarContato(event) {
       event.preventDefault(); // Prevenir o envio do formulário padrão
 
@@ -552,12 +623,15 @@
       // Aqui, você pode criar e adicionar o formulário ao modal
       var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
-      var nomeInput = $('<input type="text" placeholder="Nome do cliente">');
-      var emailInput = $('<input type="email" placeholder="Email do cliente">');
-      var telefoneInput = $('<input type="tel" placeholder="Telefone do cliente">');
-      var botaoEnviar = $('<button id="enviar-cadastro-contato">Cadastrar</button>');
+      var labelNomeInput = $('<label class="form-label">Nome:</label>');
+      var nomeInput = $('<input type="text" class="form-control" placeholder="Nome do cliente">');
+      var labelEmailInput = $('<label class="form-label">Email:</label>');
+      var emailInput = $('<input type="email" class="form-control" placeholder="Email do cliente">');
+      var labelTelefoneInput = $('<label class="form-label">Telefone:</label>');
+      var telefoneInput = $('<input type="tel" class="form-control" placeholder="Telefone do cliente">');
+      var botaoEnviar = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
       
-      form_cadastrar_cliente.append(title, nomeInput, emailInput, telefoneInput, botaoEnviar);
+      form_cadastrar_cliente.append(title,labelNomeInput, nomeInput,labelEmailInput ,emailInput,labelTelefoneInput ,telefoneInput, botaoEnviar);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
