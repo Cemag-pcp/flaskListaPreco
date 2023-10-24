@@ -60,6 +60,20 @@
     margin-top: 10px;
   }
 
+  .suggestions{
+    display: none;
+    position: fixed;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    width: 95%;
+  }
+  
+  .suggestions .suggestion-item:hover{
+    cursor: pointer;
+    background-color: rgb(233, 233, 233);
+  }
+
   @media screen and (max-width: 600px) {
     .modal-content {
       position: relative;
@@ -75,6 +89,15 @@
   
     #fecharModal {
       margin-top: 20px; /* Ajuste a margem superior para separar o botão de fechar do conteúdo do modal */
+    }
+
+    .suggestions{
+      display: none;
+      position: fixed;
+      background-color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      width: 77%;
     }
   }
 
