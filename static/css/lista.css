@@ -1017,3 +1017,8 @@ input{
   justify-content: space-between;
   width: 45%;
 }
+
+#pagamentoOptions {
+  max-height: 200px; /* Defina a altura máxima das opções */
+  overflow-y: auto; /* Adicione uma barra de rolagem se as opções ultrapassarem a altura máxima */
+}

@@ -144,3 +144,40 @@
       outline: none;
     }
   }
+
+.form-row {
+  display: flex;
+  margin: auto;
+}
+  
+.form-row .form-group {
+    width: calc(50% - 10px);
+    margin-left: 3px;
+}
+
+.form-group input {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  font-size: 1em;
+}
+
+.form-group select {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  font-size: 1em;
+}
+  
+#pagamentoInput[readonly] {
+  background-color: #ffffff;
+  opacity: 1;
+}

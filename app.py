@@ -1161,7 +1161,7 @@ def opcoes():
     lista_motivos = listarMotivos()
     data = listarOrcamentos(nomeRepresentante)
 
-    return render_template('opcoes.html', data=data, lista_motivos=lista_motivos)
+    return render_template('opcoes.html', data=data, lista_motivos=lista_motivos,nomeRepresentante=nomeRepresentante)
 
 
 @app.route('/consulta', methods=['POST','GET'])
