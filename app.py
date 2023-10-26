@@ -1478,6 +1478,38 @@ def ganhar():
 
     return render_template('opcoes.html')
 
+@app.route('/cadastrar-empresa', methods=['POST'])
+@login_required
+def cadastrar_empresa():
+
+    data = request.json
+
+    nome = data['nome']
+    telefone = data['telefone']
+    tipoTelefone = data['tipoTelefone']
+    pagamento = data['pagamento']
+    cidade = data['cidade']
+    responsavel = data['responsavel']
+
+    print(nome,telefone,tipoTelefone,pagamento,cidade,responsavel)
+
+    return render_template('opcoes.html')
+
+@app.route('/cadastrar-contato', methods=['POST'])
+@login_required
+def cadastrar_contato():
+
+    data = request.json
+
+    nomeContato = data['nomeContato']
+    telefoneContato = data['telefoneContato']
+    empresaContato = data['empresaContato']
+    cidadeContato = data['cidadeContato']
+    responsavelContato = data['responsavelContato']
+
+    print(nomeContato,telefoneContato,empresaContato,cidadeContato,responsavelContato)
+
+    return render_template('opcoes.html')
 
 def obter_condicoes_pagamento(lista_opcoes_cliente, opcoes):
     """Função para Criar as opções de pagamento"""

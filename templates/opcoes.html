@@ -1,10 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<div style="display: none;">
-   <input type="hidden" id="representante-name" value="{{ nomeRepresentante }}">
-</div>
-
 <form class="botoes_gerar_consultar" method="post">
    <div class="custom-card2">
    <h1 style="font-size: 30px;">Selecione uma opção:</h1>
@@ -33,7 +29,7 @@
     </div>
    <div class="row">
       {% for dado in data %}
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4 mb-3" id="containerDosCards">
          <div class="custom-card">
             <div class="card-body">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
@@ -119,7 +115,7 @@
    // Script para procurar na lista de cards
    document.getElementById("searchInput").addEventListener("input", function () {
       var searchValue = this.value.toLowerCase();
-      var cards = document.querySelectorAll(".custom-card");
+      var cards = document.querySelectorAll("#containerDosCards");
 
       cards.forEach(function (card) {
          var cardText = card.textContent.toLowerCase();
@@ -225,8 +221,6 @@
                cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
                cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link para PDF</a><br>');
                cardBody.append('<a>' + dataFormatada + '</a><br>');
-               
-
 
                // Adicione um botão de confirmar ao card
                var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
@@ -500,32 +494,72 @@
       // Crie o formulário com rótulos acima dos campos de entrada
       var form_cadastrar_empresa = $('<div class="cadastrar-empresa">');
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar Empresa</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
-      form_cadastrar_empresa.append(title);
+      
+      var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
+      form_cadastrar_empresa.append(botaoVoltar,title);
+
+      $(document).on('click', '#btnVoltar', function(event) {
+      // Feche o modal atual
+         $('#cadastrar-empresa').modal('hide');
+
+         // Agora, abra o modal de escolha entre cliente ou contato
+         showModalEscolhaClienteOuContato(event);
+      });
 
       var labelNomeInput = $('<label for="nomeInput" class="form-label">Nome:</label>');
       var nomeInput = $('<input type="text" class="form-control" id="nomeInput" placeholder="Nome">');
+      nomeInput.attr('autocomplete', 'off');
       var labelTelefoneInput = $('<label for="telefoneInput" class="form-label">Telefone:</label>');
+      var form_row_telefone = $('<div class="form-row">')
       var telefoneInput = $('<input type="tel" class="form-control" id="telefoneInput" placeholder="Telefone">');
+      var tipoTelefone = $('<select class="form-control" id="tipoTelefone">');
+      telefoneInput.attr('autocomplete', 'off');
+      tipoTelefone.css('width', 'auto');
       var labelPagamento = $('<label class="form-label">Pagamento:</label>');
       var form_row = $('<div class="form-row" >')
+         
       var pagamentoInput= $('<textarea rows="2" cols="49" class="form-control" id="pagamentoInput">');
       pagamentoInput.attr('autocomplete', 'off');
       pagamentoInput.attr('readonly', true);
       pagamentoInput.css('cursor','pointer');
       pagamentoInput.css('width', 'auto');
+      pagamentoInput.css('height', '80px');
 
-      var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Remover</button>');
+      var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
+      botaoApagarUltimo.css('height', '42px');
       var pagamentoSugestoes = $('<div class="suggestions" id="suggestionsPagamento"></div>')
       var labelCidadeInput = $('<label class="form-label" for="cidadeInput">Cidade:</label>');
       var cidadeInput = $('<input type="text" class="form-control" id="cidadeInput" placeholder="Cidade">');
       cidadeInput.attr('autocomplete', 'off');
       var cidadeSugestoes = $('<div class="suggestions" id="suggestions"></div>')
       var labelResponsavelInput = $('<label class="form-label" for="responsavelInput">Responsável:</label>');
-      var responsavelInput = $('<input type="text" class="form-control" id="responsavelInput" placeholder="Responsável">');
+      var responsavelInput = $('<input type="text" class="form-control" id="responsavelInput" value="{{ nomeRepresentante }}" placeholder="Responsável">');
       responsavelInput.attr('autocomplete', 'off');
+      var valorFixoResponsavel = $('<input type="hidden" id="representante-name" value="{{ nomeRepresentante }}">').val()
       var responsavelSugestoes = $('<div class="suggestions" id="suggestionsResponsaveis"></div>');
       
       form_row.append(pagamentoInput,botaoApagarUltimo)
+      form_row_telefone.append(telefoneInput,tipoTelefone)
+
+      telefoneInput.on('input', function () {
+      var numeroFormatado = $(this).val().replace(/\D/g, '');
+
+      numeroFormatado = numeroFormatado.substring(0, 11);
+
+      if (numeroFormatado.length === 11) {
+         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
+      } else if (numeroFormatado.length === 10) {
+         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
+      }
+      $(this).val(numeroFormatado);
+   });
+
+      var tipo = ["Comercial", "Celular", "Residencial","Fax","Outros"]
+
+      for (var i = 0; i < tipo.length; i++) {
+         var option = $('<option></option>').attr('value', tipo[i]).text(tipo[i]);
+         tipoTelefone.append(option);
+      }
 
       cidadeInput.on('input', function() {
       var inputValue = $(this).val();
@@ -564,41 +598,52 @@
          $('#suggestions').hide();
       });
 
-      responsavelInput.on('input', function() {
-      var inputValue = $(this).val();
-      if (inputValue.trim() === '') {
-        $('#suggestionsResponsaveis').hide();
-        return;
-      }
-      inputResponsaveis(inputValue)
-      .then(function(responsaveis) {
-               // Limpe as sugestões anteriores
-               $('#suggestionsResponsaveis').empty();
+      buscarProfileId(valorFixoResponsavel)
+      .then(profileId => {
 
-               // Adicione as novas sugestões
-               responsaveis.forEach(function(responsavel) {
-                  var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
-                  suggestionItem.on('mousedown', function(event) {
-                     // Impede que o input perca o foco
-                     event.preventDefault();
-                     // Preencha o campo cidadeInput com a sugestão clicada
-                     responsavelInput.val(responsavel.Name);
-                     // Limpe as sugestões
-                     $('#suggestionsResponsaveis').empty();
-                     $('#suggestionsResponsaveis').hide();
-                  });
-                  // Adicione a sugestão à lista de sugestões
-                  $('#suggestionsResponsaveis').append(suggestionItem);
+        if (profileId === 1) {
+          
+         responsavelInput.on('input', function() {
+            var inputValue = $(this).val();
+            if (inputValue.trim() === '') {
+               $('#suggestionsResponsaveisContato').hide();
+               return;
+            }
+            inputResponsaveis(inputValue)
+            .then(function(responsaveis) {
+                     // Limpe as sugestões anteriores
+                     $('#suggestionsResponsaveisContato').empty();
+
+                     // Adicione as novas sugestões
+                     responsaveis.forEach(function(responsavel) {
+                        var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
+                        suggestionItem.on('mousedown', function(event) {
+                           // Impede que o input perca o foco
+                           event.preventDefault();
+                           // Preencha o campo cidadeInput com a sugestão clicada
+                           responsavelInput.val(responsavel.Name);
+                           // Limpe as sugestões
+                           $('#suggestionsResponsaveisContato').empty();
+                           $('#suggestionsResponsaveisContato').hide();
+                        });
+                        // Adicione a sugestão à lista de sugestões
+                        $('#suggestionsResponsaveisContato').append(suggestionItem);
+                     });
+
+                     $('#suggestionsResponsaveisContato').show();
+               })
+               .catch(function(error) {
+                     console.error(error);
                });
+            })
+            .on('blur', function() {
+               $('#suggestionsResponsaveisContato').hide();
+            });
 
-               $('#suggestionsResponsaveis').show();
-         })
-         .catch(function(error) {
-               console.error(error);
-         });
-      })
-      .on('blur', function() {
-         $('#suggestionsResponsaveis').hide();
+        } else {
+          // Ocultar o elemento de responsável
+          responsavelInput.attr("readonly", true);
+        }
       });
 
       var selectedPayments = [];
@@ -639,6 +684,8 @@
                            if (!selectedPayments.includes(selectedPayment)) {
                               selectedPayments.push(selectedPayment);
                               pagamentoInput.val(selectedPayments.join(', '));
+                           } else{
+                              alert("Valor já adicionado")
                            }
 
                            $('#suggestionsPagamento').empty();
@@ -659,15 +706,36 @@
       .on('blur', function() {
          $('#suggestionsPagamento').hide();
       });
-      
-      // Botão de envio
-      var botaoEnviar = $('<button id="enviar-cadastro-empresa" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
 
+      var botaoEnviar = $('<button id="enviar-cadastro-empresa" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
+      
       // Adicione as linhas ao formulário
-      form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelTelefoneInput, telefoneInput,labelPagamento,form_row, pagamentoSugestoes,
+      form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelTelefoneInput, form_row_telefone,labelPagamento,form_row, pagamentoSugestoes,
       labelCidadeInput, cidadeInput, cidadeSugestoes,labelResponsavelInput, responsavelInput, responsavelSugestoes, botaoEnviar);
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
+
+      botaoEnviar.on('click', function () {
+      var telefone = $('#telefoneInput').val();
+      
+      // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
+      var regexTelefone = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
+      
+      if ($('#nomeInput').val() !== '' &&
+         regexTelefone.test(telefone) &&
+         $('#pagamentoInput').val() !== '' &&
+         $('#cidadeInput').val() !== '' &&
+         $('#responsavelInput').val() !== '') {
+         
+         enviarCadastroEmpresa();
+      } else {
+         if (telefone === '' || !regexTelefone.test(telefone)) {
+               alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
+         } else {
+               alert('Por favor, preencha todos os campos.');
+         }
+      }
+   });
 
       // Abra o modal
       $('#modalGanhar').modal('show');
@@ -682,7 +750,72 @@
    $('#modalGanhar').on('click', '.close', function () {
       $('#modalGanhar').modal('hide');
    });
+   
+   function enviarCadastroEmpresa(){
+      const nome = $('#nomeInput').val();
+      const telefone = $('#telefoneInput').val();
+      const tipoTelefone = $('#tipoTelefone').val();
+      const pagamento = $('#pagamentoInput').val();
+      const cidade = $('#cidadeInput').val();
+      const responsavel = $('#responsavelInput').val();
 
+      $.ajax({
+            url: '/cadastrar-empresa',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+               nome: nome,
+               telefone: telefone,
+               tipoTelefone:tipoTelefone,
+               pagamento:pagamento,
+               cidade:cidade,
+               responsavel:responsavel
+            }),
+            success: function (response) {
+               $("#loading-overlay").show();
+               window.location.reload();
+
+               setTimeout(function() {
+                  $("#loading-overlay").show();
+               }, 5000); // 5000 milissegundos (5 segundos)
+            },
+            error: function (error) {
+               console.log(error);
+            }
+      });
+   }
+
+   function enviarCadastroContato(){
+      const nomeContato = $('#nomeInputContato').val();
+      const telefoneContato = $('#telefoneInputContato').val();
+      const empresaContato = $('#empresaInputContato').val();
+      const cidadeContato = $('#cidadeInputContato').val();
+      const responsavelContato = $('#responsavelInputContato').val();
+
+      $.ajax({
+            url: '/cadastrar-contato',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+               nomeContato: nomeContato,
+               telefoneContato: telefoneContato,
+               empresaContato:empresaContato,
+               cidadeContato:cidadeContato,
+               responsavelContato:responsavelContato
+            }),
+            success: function (response) {
+               $("#loading-overlay").show();
+               window.location.reload();
+               
+               setTimeout(function() {
+                  $("#loading-overlay").show();;
+               }, 5000); // 5000 milissegundos (5 segundos)
+            },
+            error: function (error) {
+               console.log(error);
+            }
+      });
+   }
    // Modal de cadastro de contato
 
    function showModalCriarContato(event) {
@@ -696,38 +829,55 @@
       var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
 
+      var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
+      form_cadastrar_cliente.append(botaoVoltar,title);
+
+      $(document).on('click', '#btnVoltar', function(event) {
+      // Feche o modal atual
+         $('#cadastrar-cliente').modal('hide');
+
+         // Agora, abra o modal de escolha entre cliente ou contato
+         showModalEscolhaClienteOuContato(event);
+      });
+
       var labelNomeInput = $('<label class="form-label">Nome:</label>');
-      var nomeInput = $('<input type="text" class="form-control" placeholder="Nome do cliente">');
-      
-      var labelEmailInput = $('<label class="form-label">Email:</label>');
-      var emailInput = $('<input type="email" class="form-control" placeholder="Email do cliente">');
+      var nomeInputContato = $('<input type="text" id="nomeInputContato" class="form-control" placeholder="Nome do cliente">');
+      nomeInputContato.attr('autocomplete', 'off');
       
       var labelTelefoneInput = $('<label class="form-label">Telefone:</label>');
-      var telefoneInput = $('<input type="tel" class="form-control" placeholder="Telefone do cliente">');
+      var telefoneInputContato = $('<input type="tel" id="telefoneInputContato" class="form-control" placeholder="Telefone do cliente">');
+      telefoneInputContato.attr('autocomplete', 'off');
          
       var labelEmpresaInput = $('<label class="form-label">Empresas:</label>');
-      var empresaInput = $('<input type="text" class="form-control" placeholder="Empresa">');
-      empresaInput.attr('autocomplete', 'off');
+      var empresaInputContato = $('<input type="text" id="empresaInputContato" class="form-control" placeholder="Empresa">');
+      empresaInputContato.attr('autocomplete', 'off');
       var EmpresaSugestoes = $('<div class="suggestions" id="suggestionsEmpresas"></div>')
 
       var labelCidadeInput = $('<label class="form-label">Cidade:</label>');
-      var cidadeInput = $('<input type="text" class="form-control" placeholder="Cidade">');
-      cidadeInput.attr('autocomplete', 'off');
+      var cidadeInputContato = $('<input type="text" id="cidadeInputContato" class="form-control" placeholder="Cidade">');
+      cidadeInputContato.attr('autocomplete', 'off');
       var cidadeSugestoes = $('<div class="suggestions" id="suggestionsCidadeContato"></div>')
 
       var labelResponsavelInput = $('<label class="form-label">Responsável:</label>');
-      var responsavelInput = $('<input type="text" class="form-control" placeholder="Responsável">');
-      responsavelInput.attr('autocomplete', 'off');
+      var responsavelInputContato = $('<input type="text" class="form-control" id="responsavelInputContato" value="{{ nomeRepresentante }}" placeholder="Responsável">');
+      responsavelInputContato.attr('autocomplete', 'off');
       var responsavelSugestoes = $('<div class="suggestions" id="suggestionsResponsaveisContato"></div>')
+      var valorFixoResponsavel = $('<input type="hidden" id="representante-name" value="{{ nomeRepresentante }}">').val()
 
-      var botaoEnviar = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
-      
-      form_cadastrar_cliente.append(title,labelNomeInput, nomeInput,labelEmailInput ,emailInput,labelTelefoneInput ,telefoneInput,
-      labelEmpresaInput,empresaInput,EmpresaSugestoes,labelCidadeInput,cidadeInput,cidadeSugestoes,labelResponsavelInput,responsavelInput,responsavelSugestoes,botaoEnviar);
+      telefoneInputContato.on('input', function () {
+      var numeroFormatado = $(this).val().replace(/\D/g, '');
 
-      modalBody.appendChild(form_cadastrar_cliente[0]);
+      numeroFormatado = numeroFormatado.substring(0, 11);
 
-      cidadeInput.on('input', function() {
+      if (numeroFormatado.length === 11) {
+         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
+      } else if (numeroFormatado.length === 10) {
+         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
+      }
+      $(this).val(numeroFormatado);
+      });
+
+      cidadeInputContato.on('input', function() {
       var inputValue = $(this).val();
       if (inputValue.trim() === '') {
          $('#suggestionsCidadeContato').hide();
@@ -745,7 +895,7 @@
                      // Impede que o input perca o foco
                      event.preventDefault();
                      // Preencha o campo cidadeInput com a sugestão clicada
-                     cidadeInput.val(cidade.Name);
+                     cidadeInputContato.val(cidade.Name);
                      // Limpe as sugestões
                      $('#suggestionsCidadeContato').empty();
                      $('#suggestionsCidadeContato').hide();
@@ -764,44 +914,55 @@
          $('#suggestionsCidadeContato').hide();
       });
 
-      responsavelInput.on('input', function() {
-      var inputValue = $(this).val();
-      if (inputValue.trim() === '') {
-        $('#suggestionsResponsaveisContato').hide();
-        return;
-      }
-      inputResponsaveis(inputValue)
-      .then(function(responsaveis) {
-               // Limpe as sugestões anteriores
-               $('#suggestionsResponsaveisContato').empty();
+      buscarProfileId(valorFixoResponsavel)
+      .then(profileId => {
 
-               // Adicione as novas sugestões
-               responsaveis.forEach(function(responsavel) {
-                  var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
-                  suggestionItem.on('mousedown', function(event) {
-                     // Impede que o input perca o foco
-                     event.preventDefault();
-                     // Preencha o campo cidadeInput com a sugestão clicada
-                     responsavelInput.val(responsavel.Name);
-                     // Limpe as sugestões
+        if (profileId === 1) {
+          
+         responsavelInputContato.on('input', function() {
+            var inputValue = $(this).val();
+            if (inputValue.trim() === '') {
+               $('#suggestionsResponsaveisContato').hide();
+               return;
+            }
+            inputResponsaveis(inputValue)
+            .then(function(responsaveis) {
+                     // Limpe as sugestões anteriores
                      $('#suggestionsResponsaveisContato').empty();
-                     $('#suggestionsResponsaveisContato').hide();
-                  });
-                  // Adicione a sugestão à lista de sugestões
-                  $('#suggestionsResponsaveisContato').append(suggestionItem);
-               });
 
-               $('#suggestionsResponsaveisContato').show();
-         })
-         .catch(function(error) {
-               console.error(error);
-         });
-      })
-      .on('blur', function() {
-         $('#suggestionsResponsaveisContato').hide();
+                     // Adicione as novas sugestões
+                     responsaveis.forEach(function(responsavel) {
+                        var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
+                        suggestionItem.on('mousedown', function(event) {
+                           // Impede que o input perca o foco
+                           event.preventDefault();
+                           // Preencha o campo cidadeInput com a sugestão clicada
+                           responsavelInputContato.val(responsavel.Name);
+                           // Limpe as sugestões
+                           $('#suggestionsResponsaveisContato').empty();
+                           $('#suggestionsResponsaveisContato').hide();
+                        });
+                        // Adicione a sugestão à lista de sugestões
+                        $('#suggestionsResponsaveisContato').append(suggestionItem);
+                     });
+
+                     $('#suggestionsResponsaveisContato').show();
+               })
+               .catch(function(error) {
+                     console.error(error);
+               });
+            })
+            .on('blur', function() {
+               $('#suggestionsResponsaveisContato').hide();
+            });
+
+        } else {
+          // Ocultar o elemento de responsável
+          responsavelInputContato.attr("readonly", true);
+        }
       });
 
-      empresaInput.on('input', function() {
+      empresaInputContato.on('input', function() {
       var inputValue = $(this).val();
       if (inputValue.trim() === '') {
         $('#suggestionsEmpresas').hide();
@@ -819,7 +980,7 @@
                      // Impede que o input perca o foco
                      event.preventDefault();
                      // Preencha o campo cidadeInput com a sugestão clicada
-                     empresaInput.val(empresa.Name);
+                     empresaInputContato.val(empresa.Name);
                      // Limpe as sugestões
                      $('#suggestionsEmpresas').empty();
                      $('#suggestionsEmpresas').hide();
@@ -836,6 +997,36 @@
       })
       .on('blur', function() {
          $('#suggestionsEmpresas').hide();
+      });
+
+      var botaoEnviarContato = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
+
+      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,labelTelefoneInput ,telefoneInputContato,
+      labelEmpresaInput,empresaInputContato,EmpresaSugestoes,labelCidadeInput,cidadeInputContato,cidadeSugestoes,labelResponsavelInput,responsavelInputContato,
+      responsavelSugestoes,botaoEnviarContato);
+
+      modalBody.appendChild(form_cadastrar_cliente[0]);
+
+      botaoEnviarContato.on('click', function () {
+      var telefoneContato = $('#telefoneInputContato').val();
+      
+      // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
+      var regexTelefoneContato = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
+      
+      if ($('#nomeInputContato').val() !== '' &&
+         regexTelefoneContato.test(telefoneContato) &&
+         $('#pagamentoInputContato').val() !== '' &&
+         $('#cidadeInputContato').val() !== '' &&
+         $('#responsavelInputContato').val() !== '') {
+         
+         enviarCadastroContato();
+      } else {
+         if (telefoneContato === '' || !regexTelefoneContato.test(telefoneContato)) {
+               alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
+         } else {
+               alert('Por favor, preencha todos os campos.');
+         }
+      }
       });
 
       // Abra o modal
@@ -859,9 +1050,33 @@
 
 <script>
 
+function buscarProfileId(representanteNameValue) {
+
+   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+   var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'`;
+
+   return fetch(apiUrl, {
+   method: 'GET',
+   headers: {
+      'User-Key': apiKey
+   }
+   })
+   .then(response => response.json())
+   .then(data => {
+      if (data && data.value && data.value.length > 0) {
+         return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
+      }
+      return null; // Retorna null se nenhum ID for encontrado
+   })
+   .catch(error => {
+      console.error(error);
+      return null;
+   });
+}
+
 function inputCidades(inputValue) {
       var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-      var apiUrl = `https://public-api2.ploomes.com/Cities?$expand=State,Country&$skip=0&$top=10&$filter=(startswith(Name,'${inputValue}'))&$select=Id,IBGECode,Name&$orderby=Name&$count=true`;
+      var apiUrl = `https://public-api2.ploomes.com/Cities?$expand=State,Country&$skip=0&$top=5&$filter=(startswith(Name,'${inputValue}'))&$select=Id,IBGECode,Name&$orderby=Name&$count=true`;
 
       return fetch(apiUrl, {
          method: 'GET',
@@ -918,8 +1133,8 @@ function inputPagamentos(inputValue){
 function inputEmpresas(inputValue){
    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
    
-   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=startswith(Name,'${inputValue}')&$select=Id,Name&$orderby=Name&$count=true`;
-
+   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name&$orderby=Name&$count=true`;
+   // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
    return fetch(apiUrl, {
       method: 'GET',
       headers: {

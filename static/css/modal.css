@@ -146,10 +146,12 @@
   }
 
 .form-row {
-  display: flex;
-  margin: auto;
+    display: flex;
+    margin: auto;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
 }
-  
 .form-row .form-group {
     width: calc(50% - 10px);
     margin-left: 3px;
