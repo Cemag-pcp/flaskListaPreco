@@ -1489,9 +1489,13 @@ def cadastrar_empresa():
     tipoTelefone = data['tipoTelefone']
     pagamento = data['pagamento']
     cidade = data['cidade']
-    responsavel = data['responsavel']
+    nomeRepresentante = data['responsavel']
 
-    print(nome,telefone,tipoTelefone,pagamento,cidade,responsavel)
+    listaPagamento = pagamento.split(', ')
+
+    nome_estado,id_cidade = idCidade(cidade)
+    codigoTipoTelefone =  idTipoTelefone(tipoTelefone)
+    criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelefone, telefone,nome,nome_estado,id_cidade)
 
     return render_template('opcoes.html')
 
@@ -1503,11 +1507,12 @@ def cadastrar_contato():
 
     nomeContato = data['nomeContato']
     telefoneContato = data['telefoneContato']
+    tipoTelefoneContato = data['tipoTelefoneContato']
     empresaContato = data['empresaContato']
     cidadeContato = data['cidadeContato']
     responsavelContato = data['responsavelContato']
 
-    print(nomeContato,telefoneContato,empresaContato,cidadeContato,responsavelContato)
+    print(nomeContato,telefoneContato,tipoTelefoneContato,empresaContato,cidadeContato,responsavelContato)
 
     return render_template('opcoes.html')
 
@@ -2238,6 +2243,46 @@ def idFormaPagamentoF(formaPagamento):
     return idFormaPagamento
 
 
+# def idCidade(nomeCidade):
+#     """Função para buscar o id da cidade"""
+
+#     # Define a URL da API e os nomes dos produtos que você deseja buscar
+#     url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+31965 and Name+eq+'{}'".format(
+#         nomeCidade)
+
+#     headers = {
+#         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+#     }
+
+#     response = requests.get(url, headers=headers)
+
+#     forma_pagamento = response.json()
+#     forma_pagamento = forma_pagamento['value']
+#     idFormaPagamento = forma_pagamento[0]['Id']
+
+#     return idFormaPagamento
+
+
+def idFormaPagamentoCriarContato(formaPagamento):
+    """Função para buscar o id da forma de pagamento"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+27971 and Name+eq+'{}'".format(
+        formaPagamento)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    forma_pagamento = response.json()
+    forma_pagamento = forma_pagamento['value']
+    idFormaPagamento = forma_pagamento[0]['Id']
+
+    return idFormaPagamento
+
+
 def idCondicaoPagamento(formaPagamento):
     """Função para buscar o id da condição de pagamento"""
 
@@ -2256,6 +2301,47 @@ def idCondicaoPagamento(formaPagamento):
     id_CondicaoPagamento = forma_pagamento[0]['Id']
 
     return id_CondicaoPagamento
+
+
+def idTipoTelefone(tipoTelefone):
+    """Função para buscar o id do tipo de contato"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/PhoneTypes?&$filter=Name+eq+'{}'".format(
+        tipoTelefone)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    tipoTelefone = response.json()
+    tipoTelefone = tipoTelefone['value']
+    idTipoTelefone = tipoTelefone[0]['Id']
+
+    return idTipoTelefone
+
+
+def idCidade(cidade):
+    """Função para buscar o id do tipo de contato"""
+
+    # Define a URL da API e os nomes dos produtos que você deseja buscar
+    url = "https://public-api2.ploomes.com/Cities?$top=20&$expand=Country,State&$filter=Name+eq+'{}'".format(
+        cidade)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    response = requests.get(url, headers=headers)
+
+    cidade = response.json()
+    cidade = cidade['value']
+    id_cidade = cidade[0]['Id']
+    nome_estado = cidade[0]['State']['Name']
+
+    return nome_estado,id_cidade
 
 
 def obterEmailRepresentante(nomeRepresentante):
@@ -2798,6 +2884,62 @@ def clientes():
 
     return 'teste'
 
+
+def criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelefone ,telefone,nomeEmpresa,nome_estado,id_cidade):
+
+    idResponsavel = idRepresentante(nomeRepresentante)
+
+    lista_json_data = []
+    for formapagamento in listaPagamento:
+
+        idFormaPagamento = idFormaPagamentoCriarContato(formapagamento)
+
+        json_data = {
+                    "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", # id Forma pagamento
+                    "IntegerValue": idFormaPagamento
+                }
+        
+        lista_json_data.append(json_data)
+
+    json_final = {
+        
+        "OtherProperties": 
+            lista_json_data
+        ,
+        "Phones": [
+            {
+                "Type": {
+                    "Id": codigoTipoTelefone,
+                    "Name": tipoTelefone
+                },
+                "TypeId": codigoTipoTelefone,
+                "PhoneNumber": telefone,
+                "Country": {
+                    "Id": 76,
+                    "Short": "BRA",
+                    "Short2": "BR",
+                    "Name": "BRASIL",
+                    "PhoneMask": "(99) 9999?9-9999"
+                },
+                "CountryId": 76
+            }
+        ],
+        "Name": nomeEmpresa,
+        "Tags": [],
+        "CityId": id_cidade,
+        "State": nome_estado,
+        "Country": "Brasil",
+        "OwnerId": idResponsavel,
+        "TypeId": 1
+    }
+
+    url = "https://public-api2.ploomes.com/Contacts"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=json_final)
 
 if __name__ == '__main__':
     app.run(port=8000)

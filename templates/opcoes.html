@@ -517,7 +517,7 @@
       tipoTelefone.css('width', 'auto');
       var labelPagamento = $('<label class="form-label">Pagamento:</label>');
       var form_row = $('<div class="form-row" >')
-         
+      
       var pagamentoInput= $('<textarea rows="2" cols="49" class="form-control" id="pagamentoInput">');
       pagamentoInput.attr('autocomplete', 'off');
       pagamentoInput.attr('readonly', true);
@@ -540,7 +540,7 @@
       
       form_row.append(pagamentoInput,botaoApagarUltimo)
       form_row_telefone.append(telefoneInput,tipoTelefone)
-
+   
       telefoneInput.on('input', function () {
       var numeroFormatado = $(this).val().replace(/\D/g, '');
 
@@ -668,7 +668,7 @@
          if (selectedPayments.length > 0 && selectedPayments[0] === '') {
                selectedPayments.shift();
          }
-
+         //VOLTAR
          inputPagamentos(inputValue)
                .then(function(pagamentos) {
                   $('#suggestionsPagamento').empty();
@@ -752,6 +752,7 @@
    });
    
    function enviarCadastroEmpresa(){
+      $("#loading-overlay").show();
       const nome = $('#nomeInput').val();
       const telefone = $('#telefoneInput').val();
       const tipoTelefone = $('#tipoTelefone').val();
@@ -791,6 +792,7 @@
       const empresaContato = $('#empresaInputContato').val();
       const cidadeContato = $('#cidadeInputContato').val();
       const responsavelContato = $('#responsavelInputContato').val();
+      const tipoTelefoneContato = $('#tipoTelefoneContato').val();
 
       $.ajax({
             url: '/cadastrar-contato',
@@ -801,7 +803,8 @@
                telefoneContato: telefoneContato,
                empresaContato:empresaContato,
                cidadeContato:cidadeContato,
-               responsavelContato:responsavelContato
+               responsavelContato:responsavelContato,
+               tipoTelefoneContato:tipoTelefoneContato
             }),
             success: function (response) {
                $("#loading-overlay").show();
@@ -845,13 +848,26 @@
       nomeInputContato.attr('autocomplete', 'off');
       
       var labelTelefoneInput = $('<label class="form-label">Telefone:</label>');
+
+      var form_row_telefone = $('<div class="form-row">')
       var telefoneInputContato = $('<input type="tel" id="telefoneInputContato" class="form-control" placeholder="Telefone do cliente">');
       telefoneInputContato.attr('autocomplete', 'off');
-         
+
+      var tipoTelefoneContato = $('<select class="form-control" id="tipoTelefoneContato">');
+      tipoTelefoneContato.attr('autocomplete', 'off');
+      tipoTelefoneContato.css('width', 'auto');
+      
+      form_row_readonly = $('<div class="form-row" >')
+      var empresasAdicionadasInput = $('<input type="text" id="empresasAdicionadas" class="form-control" readonly>')
       var labelEmpresaInput = $('<label class="form-label">Empresas:</label>');
+      var form_row = $('<div class="form-row" >')
       var empresaInputContato = $('<input type="text" id="empresaInputContato" class="form-control" placeholder="Empresa">');
       empresaInputContato.attr('autocomplete', 'off');
       var EmpresaSugestoes = $('<div class="suggestions" id="suggestionsEmpresas"></div>')
+      var addEmpresa = $('<button id="adicionarEmpresa" class="btn-primary">Adicionar</button>')
+
+      var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
+      botaoApagarUltimo.css('height', '42px');
 
       var labelCidadeInput = $('<label class="form-label">Cidade:</label>');
       var cidadeInputContato = $('<input type="text" id="cidadeInputContato" class="form-control" placeholder="Cidade">');
@@ -863,6 +879,10 @@
       responsavelInputContato.attr('autocomplete', 'off');
       var responsavelSugestoes = $('<div class="suggestions" id="suggestionsResponsaveisContato"></div>')
       var valorFixoResponsavel = $('<input type="hidden" id="representante-name" value="{{ nomeRepresentante }}">').val()
+
+      form_row_telefone.append(telefoneInputContato,tipoTelefoneContato)
+      form_row.append(empresaInputContato,addEmpresa)
+      form_row_readonly.append(empresasAdicionadasInput,botaoApagarUltimo)
 
       telefoneInputContato.on('input', function () {
       var numeroFormatado = $(this).val().replace(/\D/g, '');
@@ -877,12 +897,20 @@
       $(this).val(numeroFormatado);
       });
 
+      var tipoContato = ["Comercial", "Celular", "Residencial","Fax","Outros"]
+
+      for (var i = 0; i < tipoContato.length; i++) {
+         var option = $('<option></option>').attr('value', tipoContato[i]).text(tipoContato[i]);
+         tipoTelefoneContato.append(option);
+      }  
+
       cidadeInputContato.on('input', function() {
       var inputValue = $(this).val();
       if (inputValue.trim() === '') {
          $('#suggestionsCidadeContato').hide();
          return;
        } 
+
       inputCidades(inputValue)
          .then(function(cidades) {
                // Limpe as sugestões anteriores
@@ -962,47 +990,88 @@
         }
       });
 
-      empresaInputContato.on('input', function() {
-      var inputValue = $(this).val();
-      if (inputValue.trim() === '') {
-        $('#suggestionsEmpresas').hide();
-        return;
-      }
-      inputEmpresas(inputValue)
-      .then(function(empresas) {
-               // Limpe as sugestões anteriores
-               $('#suggestionsEmpresas').empty();
+      var selectedPayments = [];
+      var empresasAdicionadas = [];
 
-               // Adicione as novas sugestões
-               empresas.forEach(function(empresa) {
-                  var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
-                  suggestionItem.on('mousedown', function(event) {
-                     // Impede que o input perca o foco
-                     event.preventDefault();
-                     // Preencha o campo cidadeInput com a sugestão clicada
-                     empresaInputContato.val(empresa.Name);
-                     // Limpe as sugestões
-                     $('#suggestionsEmpresas').empty();
-                     $('#suggestionsEmpresas').hide();
-                  });
-                  // Adicione a sugestão à lista de sugestões
-                  $('#suggestionsEmpresas').append(suggestionItem);
-               });
+      // Adicione o evento de clique ao botão "Adicionar Empresa"
+      addEmpresa.on('click', function() {
+         var empresaDigitada = empresaInputContato.val().trim();
 
-               $('#suggestionsEmpresas').show();
-         })
-         .catch(function(error) {
-               console.error(error);
-         });
-      })
-      .on('blur', function() {
-         $('#suggestionsEmpresas').hide();
+         if (empresaDigitada !== '') {
+            // Adicione a empresa digitada ao array de empresas adicionadas
+            empresasAdicionadas.push(empresaDigitada);
+
+            // Atualize o input readonly com as empresas adicionadas
+            empresasAdicionadasInput.val(empresasAdicionadas.join(', '));
+
+            // Limpe o campo de entrada para adicionar outras opções
+            empresaInputContato.val('');
+         }
       });
+
+      botaoApagarUltimo.on('click', function() {
+         // Verifique se há empresas para apagar
+         if (empresasAdicionadas.length > 0) {
+            // Remova a última empresa adicionada do array
+            empresasAdicionadas.pop();
+            // Atualize o valor do input de empresas adicionadas
+            empresasAdicionadasInput.val(empresasAdicionadas.join(', '));
+         }
+      });
+
+      empresaInputContato.on('input', function () {
+      var inputValue = $(this).val().trim();
+      selectedPayments = inputValue.split(',').map(function (item) {
+         return item.trim();
+      });
+
+      if (selectedPayments.length > 0 && selectedPayments[0] === '') {
+         selectedPayments.shift();
+      }
+
+    if (inputValue.includes(',')) {
+        // Limpa o campo de entrada para que a busca por sugestões comece novamente
+        empresaInputContato.val('');
+    }
+
+    inputEmpresas(inputValue)
+        .then(function (empresas) {
+            // Limpe as sugestões anteriores
+            $('#suggestionsEmpresas').empty();
+
+            // Adicione as novas sugestões
+            empresas.forEach(function (empresa) {
+                var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
+                suggestionItem.on('mousedown', function (event) {
+                  // Impede que o input perca o foco
+                  event.preventDefault();
+
+                  var selectedPayment = empresa.Name;
+
+                  // Atualiza apenas o valor do input com o nome da empresa
+                  empresaInputContato.val(selectedPayment);
+
+                  $('#suggestionsEmpresas').empty();
+                  $('#suggestionsEmpresas').hide();
+               });
+                // Adicione a sugestão à lista de sugestões
+                $('#suggestionsEmpresas').append(suggestionItem);
+            });
+
+            $('#suggestionsEmpresas').show();
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+      })
+    .on('blur', function () {
+        $('#suggestionsEmpresas').hide();
+    });
 
       var botaoEnviarContato = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
 
-      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,labelTelefoneInput ,telefoneInputContato,
-      labelEmpresaInput,empresaInputContato,EmpresaSugestoes,labelCidadeInput,cidadeInputContato,cidadeSugestoes,labelResponsavelInput,responsavelInputContato,
+      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,labelTelefoneInput ,form_row_telefone, 
+      labelEmpresaInput,form_row_readonly,form_row,EmpresaSugestoes,labelCidadeInput,cidadeInputContato,cidadeSugestoes,labelResponsavelInput,responsavelInputContato,
       responsavelSugestoes,botaoEnviarContato);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);

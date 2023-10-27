@@ -1,0 +1,73 @@
+{
+    "OtherProperties": [
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", // id Forma pagamento
+            "IntegerValue": 18238519
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", // id Forma pagamento
+            "IntegerValue": 16764215
+        },
+        
+    ],
+    "Name": "TESTE APP",
+    "Phones": [
+        {
+            "Type": {
+                "Id": 1,
+                "Name": "Comercial"
+            },
+            "TypeId": 1,
+            "PhoneNumber": "(54) 77878-4848",
+            "Country": {
+                "Id": 76,
+                "Short": "BRA",
+                "Short2": "BR",
+                "Name": "BRASIL",
+                "PhoneMask": "(99) 9999?9-9999"
+            },
+            "CountryId": 76
+        }
+    ],
+    "Tags": [],
+    "CityId": 1,
+    "State": "Goiás",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "OriginId": null,
+    "TypeId": 1,
+    "CompanyId": null
+}
+
+
+{
+    "OtherProperties": [
+        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 18238519},
+        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 18238521},
+        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 16764215}
+    ],
+    "Phones": [
+        {
+            "Type": {"Id": 4, "Name": "Fax"},
+            "TypeId": 4,
+            "PhoneNumber": "(75) 62489-9256",
+            "Country": {"Id": 76, "Short": "BRA", "Short2": "BR", "Name": "BRASIL", "PhoneMask": "(99) 9999?9-9999"},
+            "CountryId": 76
+        }
+    ],
+    "Name": "TESTE APP - CEMAG",
+    "Tags": [],
+    "CityId": 1736,
+    "State": "GOIÁS",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "TypeId": 1
+}
+
+
+
+
+
+
+
+
