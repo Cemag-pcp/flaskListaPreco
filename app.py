@@ -1508,11 +1508,11 @@ def cadastrar_contato():
     nomeContato = data['nomeContato']
     telefoneContato = data['telefoneContato']
     tipoTelefoneContato = data['tipoTelefoneContato']
-    empresaContato = data['empresaContato']
+    empresasAdicionadasContato = data['empresasAdicionadasContato']
     cidadeContato = data['cidadeContato']
     responsavelContato = data['responsavelContato']
 
-    print(nomeContato,telefoneContato,tipoTelefoneContato,empresaContato,cidadeContato,responsavelContato)
+    print(nomeContato,telefoneContato,tipoTelefoneContato,empresasAdicionadasContato,cidadeContato,responsavelContato)
 
     return render_template('opcoes.html')
 
@@ -2884,6 +2884,38 @@ def clientes():
 
     return 'teste'
 
+def criarContato(nomeContato,nomeRepresentante,empresas,telefone,tipoTelefone,codigoTipoTelefone):
+    idResponsavel = idRepresentante(nomeRepresentante)
+    
+    {
+        "Id": "474",
+        "Name": "Contato Teste",
+        "Phones": [
+            {
+            "Type": {
+                "Id": 5,
+                "Name": "Outros"
+            },
+            "TypeId": 5,
+            "PhoneNumber": "(44) 44444-4444",
+            "Country": {
+                "Id": 76,
+                "Short": "BRA",
+                "Short2": "BR",
+                "Name": "BRASIL",
+                "PhoneMask": "(99) 9999?9-9999"
+            },
+            "CountryId": 76
+            }
+        ],
+        "Companies": [],
+        "CityId": 1830,
+        "State": "Ceará",
+        "Country": "Brasil",
+        "TypeId": 2,
+        "CompanyId": 20930151
+    }
+    
 
 def criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelefone ,telefone,nomeEmpresa,nome_estado,id_cidade):
 
@@ -2940,6 +2972,48 @@ def criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelef
     }
 
     requests.post(url, headers=headers, json=json_final)
+    
+
+
+def criarOrdemEmpresa(nomeCliente, nomeContato, nomeRepresentante):
+    """Função para gerar ordem de Empresa"""
+
+    ContactId = id(nomeCliente)
+
+    PersonId = idContatoCliente(nomeContato, ContactId)
+
+    OwnerId = idRepresentante(nomeRepresentante)
+
+    url = "https://public-api2.ploomes.com/Deals"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+
+    if PersonId == 'Null':
+
+        data = {
+            "ContactId": ContactId,
+            "OwnerId": OwnerId,
+            "StageId":174788
+
+        }
+
+    else:
+
+        data = {
+            "ContactId": ContactId,
+            "OwnerId": OwnerId,
+            "PersonId": PersonId,
+            "StageId":174788
+        }
+
+    # Fazendo a requisição POST com os dados no corpo
+    response = requests.post(url, headers=headers, json=data)
+
+
 
 if __name__ == '__main__':
     app.run(port=8000)

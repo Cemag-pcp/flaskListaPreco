@@ -1,14 +1,15 @@
+// Feito direto em Contacts
+
 {
     "OtherProperties": [
         {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", // id Forma pagamento
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
             "IntegerValue": 18238519
         },
         {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", // id Forma pagamento
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", 
             "IntegerValue": 16764215
         },
-        
     ],
     "Name": "TESTE APP",
     "Phones": [
@@ -42,16 +43,34 @@
 
 {
     "OtherProperties": [
-        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 18238519},
-        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 18238521},
-        {"FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", "IntegerValue": 16764215}
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 18238519
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 18238521
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 16764215
+        }
     ],
     "Phones": [
         {
-            "Type": {"Id": 4, "Name": "Fax"},
+            "Type": {
+                "Id": 4,
+                "Name": "Fax"
+            },
             "TypeId": 4,
             "PhoneNumber": "(75) 62489-9256",
-            "Country": {"Id": 76, "Short": "BRA", "Short2": "BR", "Name": "BRASIL", "PhoneMask": "(99) 9999?9-9999"},
+            "Country": {
+                "Id": 76,
+                "Short": "BRA",
+                "Short2": "BR",
+                "Name": "BRASIL",
+                "PhoneMask": "(99) 9999?9-9999"
+            },
             "CountryId": 76
         }
     ],
@@ -64,10 +83,71 @@
     "TypeId": 1
 }
 
+// Feito direto em deals
 
+// Cliente
+{
+    "Id": "461",
+    "Name": "Cliente Teste 2",
+    "OriginId": null,
+    "Phones": [
+      {
+        "Type": {
+          "Id": 3,
+          "Name": "Residencial"
+        },
+        "TypeId": 3,
+        "PhoneNumber": "(55) 55555-5555",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "CityId": 1830,
+    "State": "Ceará",
+    "Country": "Brasil",
+    "TypeId": 1
+}
 
+// Contato
+{
+  "Id": "474",
+  "Name": "Contato Teste",
+  "Phones": [
+    {
+      "Type": {
+        "Id": 5,
+        "Name": "Outros"
+      },
+      "TypeId": 5,
+      "PhoneNumber": "(44) 44444-4444",
+      "Country": {
+        "Id": 76,
+        "Short": "BRA",
+        "Short2": "BR",
+        "Name": "BRASIL",
+        "PhoneMask": "(99) 9999?9-9999"
+      },
+      "CountryId": 76
+    }
+  ],
+  "Companies": [],
+  "CityId": 1830,
+  "State": "Ceará",
+  "Country": "Brasil",
+  "TypeId": 2,
+  "CompanyId": 20930151
+} 
 
-
-
-
-
+//Deals
+{
+    "ContactId": 20930151,
+    "OwnerId": 119909,
+    "StageId": 174788
+}
+  

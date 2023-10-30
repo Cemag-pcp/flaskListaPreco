@@ -789,7 +789,7 @@
    function enviarCadastroContato(){
       const nomeContato = $('#nomeInputContato').val();
       const telefoneContato = $('#telefoneInputContato').val();
-      const empresaContato = $('#empresaInputContato').val();
+      const empresasAdicionadasContato = $('#empresasAdicionadas').val();
       const cidadeContato = $('#cidadeInputContato').val();
       const responsavelContato = $('#responsavelInputContato').val();
       const tipoTelefoneContato = $('#tipoTelefoneContato').val();
@@ -801,7 +801,7 @@
             data: JSON.stringify({
                nomeContato: nomeContato,
                telefoneContato: telefoneContato,
-               empresaContato:empresaContato,
+               empresasAdicionadasContato:empresasAdicionadasContato,
                cidadeContato:cidadeContato,
                responsavelContato:responsavelContato,
                tipoTelefoneContato:tipoTelefoneContato
@@ -858,13 +858,13 @@
       tipoTelefoneContato.css('width', 'auto');
       
       form_row_readonly = $('<div class="form-row" >')
-      var empresasAdicionadasInput = $('<input type="text" id="empresasAdicionadas" class="form-control" readonly>')
+      var empresasAdicionadasInput = $('<textarea type="text" id="empresasAdicionadas" class="form-control" readonly>')
       var labelEmpresaInput = $('<label class="form-label">Empresas:</label>');
       var form_row = $('<div class="form-row" >')
       var empresaInputContato = $('<input type="text" id="empresaInputContato" class="form-control" placeholder="Empresa">');
       empresaInputContato.attr('autocomplete', 'off');
       var EmpresaSugestoes = $('<div class="suggestions" id="suggestionsEmpresas"></div>')
-      var addEmpresa = $('<button id="adicionarEmpresa" class="btn-primary">Adicionar</button>')
+      var addEmpresa = $('<button id="adicionarEmpresa" class="btn btn-success btn-sm">Adicionar</button>')
 
       var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
       botaoApagarUltimo.css('height', '42px');
@@ -1086,7 +1086,8 @@
          regexTelefoneContato.test(telefoneContato) &&
          $('#pagamentoInputContato').val() !== '' &&
          $('#cidadeInputContato').val() !== '' &&
-         $('#responsavelInputContato').val() !== '') {
+         $('#responsavelInputContato').val() !== '' &&
+         $('#empresasAdicionadas').val() !== '') {
          
          enviarCadastroContato();
       } else {
