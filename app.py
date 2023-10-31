@@ -1487,15 +1487,14 @@ def cadastrar_empresa():
     nome = data['nome']
     telefone = data['telefone']
     tipoTelefone = data['tipoTelefone']
-    pagamento = data['pagamento']
     cidade = data['cidade']
     nomeRepresentante = data['responsavel']
-
-    listaPagamento = pagamento.split(', ')
+    tipo_id = 2
 
     nome_estado,id_cidade = idCidade(cidade)
     codigoTipoTelefone =  idTipoTelefone(tipoTelefone)
-    criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelefone, telefone,nome,nome_estado,id_cidade)
+    criarContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
+    criarOrdemEmpresa(nome, nomeRepresentante)
 
     return render_template('opcoes.html')
 
@@ -1507,12 +1506,13 @@ def cadastrar_contato():
 
     nomeContato = data['nomeContato']
     telefoneContato = data['telefoneContato']
+    empresaInputContato = data['empresaInputContato']
     tipoTelefoneContato = data['tipoTelefoneContato']
-    empresasAdicionadasContato = data['empresasAdicionadasContato']
     cidadeContato = data['cidadeContato']
     responsavelContato = data['responsavelContato']
+    tipo_id = 1
 
-    print(nomeContato,telefoneContato,tipoTelefoneContato,empresasAdicionadasContato,cidadeContato,responsavelContato)
+    print(nomeContato,telefoneContato,empresaInputContato,tipoTelefoneContato,cidadeContato,responsavelContato,tipo_id)
 
     return render_template('opcoes.html')
 
@@ -2884,38 +2884,85 @@ def clientes():
 
     return 'teste'
 
-def criarContato(nomeContato,nomeRepresentante,empresas,telefone,tipoTelefone,codigoTipoTelefone):
+
+def criarContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id):
+    
     idResponsavel = idRepresentante(nomeRepresentante)
     
-    {
-        "Id": "474",
-        "Name": "Contato Teste",
+    # companyId  = id(nomeContato)
+    
+    # if tipo_id == 2:
+    #     contato["CompanyId"] = companyId
+       
+    #     contato = {
+    #         "Name": nomeContato,
+    #         "Phones": [
+    #             {
+    #                 "Type": {
+    #                     "Id": codigoTipoTelefone,
+    #                     "Name": tipoTelefone
+    #                 },
+    #                 "TypeId": codigoTipoTelefone,
+    #                 "PhoneNumber": telefone,
+    #                 "Country": {
+    #                     "Id": 76,
+    #                     "Short": "BRA",
+    #                     "Short2": "BR",
+    #                     "Name": "BRASIL",
+    #                     "PhoneMask": "(99) 9999?9-9999"
+    #                 },
+    #                 "CountryId": 76
+    #             }
+    #         ],
+    #         "Companies": [
+    #             {
+    #             "CompanyId":companyId
+    #             }
+    #         ],
+    #         "CityId": id_cidade,
+    #         "State": nome_estado,
+    #         "Country": "Brasil",
+    #         "TypeId": tipo_id,
+    #         "OwnerId": idResponsavel
+
+    #     }
+
+    # else:
+    contato = {
+        "Name": nomeContato,
         "Phones": [
             {
-            "Type": {
-                "Id": 5,
-                "Name": "Outros"
-            },
-            "TypeId": 5,
-            "PhoneNumber": "(44) 44444-4444",
-            "Country": {
-                "Id": 76,
-                "Short": "BRA",
-                "Short2": "BR",
-                "Name": "BRASIL",
-                "PhoneMask": "(99) 9999?9-9999"
-            },
-            "CountryId": 76
+                "Type": {
+                    "Id": codigoTipoTelefone,
+                    "Name": tipoTelefone
+                },
+                "TypeId": codigoTipoTelefone,
+                "PhoneNumber": telefone,
+                "Country": {
+                    "Id": 76,
+                    "Short": "BRA",
+                    "Short2": "BR",
+                    "Name": "BRASIL",
+                    "PhoneMask": "(99) 9999?9-9999"
+                },
+                "CountryId": 76
             }
         ],
-        "Companies": [],
-        "CityId": 1830,
-        "State": "Ceará",
+        "CityId": id_cidade,
+        "State": nome_estado,
         "Country": "Brasil",
-        "TypeId": 2,
-        "CompanyId": 20930151
+        "TypeId": tipo_id,
+        "OwnerId": idResponsavel
     }
-    
+
+    url = "https://public-api2.ploomes.com/Contacts"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    requests.post(url, headers=headers, json=contato)
+
 
 def criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelefone ,telefone,nomeEmpresa,nome_estado,id_cidade):
 
@@ -2971,16 +3018,13 @@ def criarEmpresa(nomeRepresentante, listaPagamento, tipoTelefone,codigoTipoTelef
         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
     }
 
-    requests.post(url, headers=headers, json=json_final)
+    requests.post(url, headers=headers, json=json_final) 
     
 
-
-def criarOrdemEmpresa(nomeCliente, nomeContato, nomeRepresentante):
+def criarOrdemEmpresa(nomeCliente, nomeRepresentante):
     """Função para gerar ordem de Empresa"""
 
     ContactId = id(nomeCliente)
-
-    PersonId = idContatoCliente(nomeContato, ContactId)
 
     OwnerId = idRepresentante(nomeRepresentante)
 
@@ -2992,27 +3036,15 @@ def criarOrdemEmpresa(nomeCliente, nomeContato, nomeRepresentante):
 
     # Dados que você deseja enviar no corpo da solicitação POST
 
-    if PersonId == 'Null':
+    data = {
+        "ContactId": ContactId,
+        "OwnerId": OwnerId,
+        "StageId":174788
 
-        data = {
-            "ContactId": ContactId,
-            "OwnerId": OwnerId,
-            "StageId":174788
-
-        }
-
-    else:
-
-        data = {
-            "ContactId": ContactId,
-            "OwnerId": OwnerId,
-            "PersonId": PersonId,
-            "StageId":174788
-        }
+    }
 
     # Fazendo a requisição POST com os dados no corpo
-    response = requests.post(url, headers=headers, json=data)
-
+    requests.post(url, headers=headers, json=data)
 
 
 if __name__ == '__main__':

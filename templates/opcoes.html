@@ -89,15 +89,25 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modalGanhar" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel">
+        <div class="modal fade" id="modalSimNao" tabindex="-1" role="dialog" aria-labelledby="modalSimNaoLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <!-- Conteúdo do Modal Ganhar -->
+                        <!-- Conteúdo do Modal Sim ou Nao -->
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>   
+        
+        <div class="modal fade" id="modalGanhar" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel">
+         <div class="modal-dialog" role="document">
+             <div class="modal-content">
+                 <div class="modal-body">
+                     <!-- Conteúdo do Modal Ganhar -->
+                 </div>
+             </div>
+         </div>
+     </div> 
       </div>
       {% endfor %}
    </div>
@@ -482,6 +492,35 @@
       $('#modalGanhar').modal('hide');
    });
 
+   
+   function showModalContinuarAoContato(){
+      // Defina o conteúdo do modal para a ação "Cadastrar Cliente"
+      var modalBody = document.getElementById("modalSimNao").querySelector(".modal-body");
+      modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
+
+      // Aqui, você pode criar e adicionar o formulário ao modal
+      var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Deseja cadastrar o contato agora?</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var div = $('<div style="display:flex;justify-content:space-around;margin-top:20px;">')
+      var botaoModalNao = $('<button id="cadastrar-contato-nao" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Não</button>');
+      var botaoModalSim = $('<button id="cadastrar-contato-sim" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Sim</button>');
+
+      div.append(botaoModalNao, botaoModalSim)
+      
+      form_cadastrar_cliente.append(title,div);
+
+      modalBody.appendChild(form_cadastrar_cliente[0]);
+
+      // Abra o modal
+      $('#modalSimNao').modal('show');
+
+      // Fechar o modal ao clicar no botão de fechar
+      $('#modalSimNao').on('click', '.close', function () {
+         $('#modalSimNao').modal('hide');
+      });
+      
+   }
+
    // Modal de cadastro de cliente
 
    function showModalCriarEmpresa(event) {
@@ -515,8 +554,8 @@
       var tipoTelefone = $('<select class="form-control" id="tipoTelefone">');
       telefoneInput.attr('autocomplete', 'off');
       tipoTelefone.css('width', 'auto');
-      var labelPagamento = $('<label class="form-label">Pagamento:</label>');
-      var form_row = $('<div class="form-row" >')
+      var labelPagamento = $('<label class="form-label" style="display:none">Pagamento:</label>');
+      var form_row = $('<div class="form-row" style="display:none">')
       
       var pagamentoInput= $('<textarea rows="2" cols="49" class="form-control" id="pagamentoInput">');
       pagamentoInput.attr('autocomplete', 'off');
@@ -527,7 +566,7 @@
 
       var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
       botaoApagarUltimo.css('height', '42px');
-      var pagamentoSugestoes = $('<div class="suggestions" id="suggestionsPagamento"></div>')
+      var pagamentoSugestoes = $('<div class="suggestions" id="suggestionsPagamento" style="display:none"></div>')
       var labelCidadeInput = $('<label class="form-label" for="cidadeInput">Cidade:</label>');
       var cidadeInput = $('<input type="text" class="form-control" id="cidadeInput" placeholder="Cidade">');
       cidadeInput.attr('autocomplete', 'off');
@@ -715,19 +754,34 @@
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
 
-      botaoEnviar.on('click', function () {
+      // Associar o evento de clique ao botão "Cadastrar contato"
+      $(document).on('click', '#cadastrar-contato-sim', function (event) {
+         const empresaCriada = $('#nomeInput').val()
+         $('#modalSimNao').modal('hide');
+         $('#modalGanhar').show();
+         showModalCriarContato(event,empresaCriada);
+      });
+
+      $('#modalSimNao').on('click', '#cadastrar-contato-nao', function () {
+         $('#modalSimNao').modal('hide');
+         $('#modalGanhar').modal('hide');
+      });
+
+      botaoEnviar.on('click', function (event) {
       var telefone = $('#telefoneInput').val();
       
       // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
       var regexTelefone = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
-      
+
+      // Envio para o Ploomes
       if ($('#nomeInput').val() !== '' &&
          regexTelefone.test(telefone) &&
-         $('#pagamentoInput').val() !== '' &&
          $('#cidadeInput').val() !== '' &&
          $('#responsavelInput').val() !== '') {
          
          enviarCadastroEmpresa();
+         $('#modalGanhar').hide();
+         showModalContinuarAoContato();
       } else {
          if (telefone === '' || !regexTelefone.test(telefone)) {
                alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
@@ -752,11 +806,9 @@
    });
    
    function enviarCadastroEmpresa(){
-      $("#loading-overlay").show();
       const nome = $('#nomeInput').val();
       const telefone = $('#telefoneInput').val();
       const tipoTelefone = $('#tipoTelefone').val();
-      const pagamento = $('#pagamentoInput').val();
       const cidade = $('#cidadeInput').val();
       const responsavel = $('#responsavelInput').val();
 
@@ -768,17 +820,11 @@
                nome: nome,
                telefone: telefone,
                tipoTelefone:tipoTelefone,
-               pagamento:pagamento,
                cidade:cidade,
                responsavel:responsavel
             }),
             success: function (response) {
-               $("#loading-overlay").show();
-               window.location.reload();
-
-               setTimeout(function() {
-                  $("#loading-overlay").show();
-               }, 5000); // 5000 milissegundos (5 segundos)
+               console.log("Sucesso")
             },
             error: function (error) {
                console.log(error);
@@ -786,42 +832,7 @@
       });
    }
 
-   function enviarCadastroContato(){
-      const nomeContato = $('#nomeInputContato').val();
-      const telefoneContato = $('#telefoneInputContato').val();
-      const empresasAdicionadasContato = $('#empresasAdicionadas').val();
-      const cidadeContato = $('#cidadeInputContato').val();
-      const responsavelContato = $('#responsavelInputContato').val();
-      const tipoTelefoneContato = $('#tipoTelefoneContato').val();
-
-      $.ajax({
-            url: '/cadastrar-contato',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-               nomeContato: nomeContato,
-               telefoneContato: telefoneContato,
-               empresasAdicionadasContato:empresasAdicionadasContato,
-               cidadeContato:cidadeContato,
-               responsavelContato:responsavelContato,
-               tipoTelefoneContato:tipoTelefoneContato
-            }),
-            success: function (response) {
-               $("#loading-overlay").show();
-               window.location.reload();
-               
-               setTimeout(function() {
-                  $("#loading-overlay").show();;
-               }, 5000); // 5000 milissegundos (5 segundos)
-            },
-            error: function (error) {
-               console.log(error);
-            }
-      });
-   }
-   // Modal de cadastro de contato
-
-   function showModalCriarContato(event) {
+   function showModalCriarContato(event,parametroOpcional = "") {
       event.preventDefault(); // Prevenir o envio do formulário padrão
 
       // Defina o conteúdo do modal para a ação "Cadastrar contato"
@@ -830,7 +841,7 @@
 
       // Aqui, você pode criar e adicionar o formulário ao modal
       var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
-      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato - Criando novo contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
 
       var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
       form_cadastrar_cliente.append(botaoVoltar,title);
@@ -846,6 +857,7 @@
       var labelNomeInput = $('<label class="form-label">Nome:</label>');
       var nomeInputContato = $('<input type="text" id="nomeInputContato" class="form-control" placeholder="Nome do cliente">');
       nomeInputContato.attr('autocomplete', 'off');
+      var nomeSugestoes = $('<div class="suggestions" id="suggestionsNome"></div>')
       
       var labelTelefoneInput = $('<label class="form-label">Telefone:</label>');
 
@@ -857,17 +869,26 @@
       tipoTelefoneContato.attr('autocomplete', 'off');
       tipoTelefoneContato.css('width', 'auto');
       
-      form_row_readonly = $('<div class="form-row" >')
+      var form_row_readonly = $('<div class="form-row">')
       var empresasAdicionadasInput = $('<textarea type="text" id="empresasAdicionadas" class="form-control" readonly>')
       var labelEmpresaInput = $('<label class="form-label">Empresas:</label>');
-      var form_row = $('<div class="form-row" >')
+      var form_row = $('<div class="form-row">')
       var empresaInputContato = $('<input type="text" id="empresaInputContato" class="form-control" placeholder="Empresa">');
       empresaInputContato.attr('autocomplete', 'off');
       var EmpresaSugestoes = $('<div class="suggestions" id="suggestionsEmpresas"></div>')
       var addEmpresa = $('<button id="adicionarEmpresa" class="btn btn-success btn-sm">Adicionar</button>')
-
       var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
       botaoApagarUltimo.css('height', '42px');
+
+      if (parametroOpcional !== ""){
+         console.log("Entrou no IF")
+         EmpresaSugestoes.val(parametroOpcional); 
+         empresaInputContato.css('display','none')
+         botaoApagarUltimo.css('display','none')
+         addEmpresa.css('display','none')
+      } else {
+         // pass
+      }
 
       var labelCidadeInput = $('<label class="form-label">Cidade:</label>');
       var cidadeInputContato = $('<input type="text" id="cidadeInputContato" class="form-control" placeholder="Cidade">');
@@ -897,6 +918,60 @@
       $(this).val(numeroFormatado);
       });
 
+      nomeInputContato.on('input', function() {
+      var inputValue = $(this).val();
+      if (inputValue.trim() === '') {
+         $('#suggestionsNome').hide();
+         labelTelefoneInput.css('display', 'flex');
+         form_row_telefone.css('display', 'flex');
+         $('#modalGanharLabel').text("Cadastrar contato - Criando novo contato")
+         return;
+       } 
+
+       inputContatos(inputValue)
+         .then(function(contatos) {
+               // Limpe as sugestões anteriores
+               $('#suggestionsNome').empty();
+               empresasAdicionadasInput.empty();
+
+               // Adicione as novas sugestões
+               contatos.forEach(function(contato) {
+                  if(contato.Company){
+                     var suggestionItem = $('<div class="suggestion-item">' + contato.Name + ' ( ' + contato.Company.Name + ' ) ' +'</div>');
+                  } else {
+                     var suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                  }
+                  if(!contato.Name){
+                     $('#suggestionsNome').hide();
+                  }
+                  suggestionItem.on('mousedown', function(event) {
+                     // Impede que o input perca o foco
+                     event.preventDefault();
+                     // Preencha o campo cidadeInput com a sugestão clicada
+                     nomeInputContato.val(contato.Name);
+                     // Limpe as sugestões
+                     $('#suggestionsNome').empty();
+                     $('#suggestionsNome').hide();
+                     labelTelefoneInput.css('display','none')
+                     form_row_telefone.css('display', 'none');
+                     empresasAdicionadasInput.append(contato.Company.Name)
+                     $('#modalGanharLabel').text("Cadastrar contato - Utilizando contato já existente")
+                  });
+                  // Adicione a sugestão à lista de sugestões
+                  $('#suggestionsNome').append(suggestionItem);
+               });
+
+               $('#suggestionsNome').show();
+         })
+         .catch(function(error) {
+               console.error(error);
+         });
+      })
+      .on('blur', function() {
+         $('#suggestionsNome').hide();
+      });
+
+      
       var tipoContato = ["Comercial", "Celular", "Residencial","Fax","Outros"]
 
       for (var i = 0; i < tipoContato.length; i++) {
@@ -1070,7 +1145,7 @@
 
       var botaoEnviarContato = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
 
-      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,labelTelefoneInput ,form_row_telefone, 
+      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,nomeSugestoes,labelTelefoneInput ,form_row_telefone, 
       labelEmpresaInput,form_row_readonly,form_row,EmpresaSugestoes,labelCidadeInput,cidadeInputContato,cidadeSugestoes,labelResponsavelInput,responsavelInputContato,
       responsavelSugestoes,botaoEnviarContato);
 
@@ -1112,6 +1187,40 @@
    $('#modalGanhar').on('click', '.close', function () {
       $('#modalGanhar').modal('hide');
    });
+
+   function enviarCadastroContato(){
+      const nomeContato = $('#nomeInputContato').val();
+      const telefoneContato = $('#telefoneInputContato').val();
+      const empresaInputContato = $('#empresaInputContato').val();
+      const cidadeContato = $('#cidadeInputContato').val();
+      const responsavelContato = $('#responsavelInputContato').val();
+      const tipoTelefoneContato = $('#tipoTelefoneContato').val();
+
+      $.ajax({
+            url: '/cadastrar-contato',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+               nomeContato: nomeContato,
+               telefoneContato: telefoneContato,
+               empresaInputContato:empresaInputContato,
+               cidadeContato:cidadeContato,
+               responsavelContato:responsavelContato,
+               tipoTelefoneContato:tipoTelefoneContato
+            }),
+            success: function (response) {
+               $("#loading-overlay").show();
+               window.location.reload();
+               
+               setTimeout(function() {
+                  $("#loading-overlay").show();;
+               }, 5000); // 5000 milissegundos (5 segundos)
+            },
+            error: function (error) {
+               console.log(error);
+            }
+      });
+   }
 
 </script>
 
@@ -1204,6 +1313,25 @@ function inputEmpresas(inputValue){
    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
    
    var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name&$orderby=Name&$count=true`;
+   // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
+   return fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+            'User-Key': apiKey
+      }
+   })
+   .then(response => response.json())
+   .then(data => data.value)
+   .catch(error => {
+      console.error(error);
+      return [];
+   });
+}
+
+function inputContatos(inputValue){
+   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+   
+   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+2+and+(startswith(Name,'${inputValue}'))&$select=Id,Name&$orderby=Name&$count=true`;
    // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
    return fetch(apiUrl, {
       method: 'GET',
