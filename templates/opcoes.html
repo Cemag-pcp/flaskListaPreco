@@ -773,7 +773,9 @@
       modalBody.appendChild(form_cadastrar_empresa[0]);
 
       // Associar o evento de clique ao botão "Cadastrar contato"
-      $(document).on('click', '#cadastrar-contato-sim', function (event) {
+      $('#modalSimNao').on('click', '#cadastrar-contato-sim', function (event) {
+         var condicao = "Sim";
+         enviarCadastroEmpresa(condicao);
          const empresaCriada = $('#nomeInput').val()
          $('#modalSimNao').modal('hide');
          $('#modalGanhar').show();
@@ -783,6 +785,9 @@
       });
 
       $('#modalSimNao').on('click', '#cadastrar-contato-nao', function () {
+         var condicao = "Não";
+         enviarCadastroEmpresa(condicao);
+         console.log("Enviou")
          $('#modalSimNao').modal('hide');
          $('#modalGanhar').modal('hide');
       });
@@ -798,8 +803,7 @@
          regexTelefone.test(telefone) &&
          $('#cidadeInput').val() !== '' &&
          $('#responsavelInput').val() !== '') {
-         
-         // enviarCadastroEmpresa(); 
+       
          $('#modalGanhar').hide();
          showModalContinuarAoContato();
       } else {
@@ -825,7 +829,7 @@
       $('#modalGanhar').modal('hide');
    });
    
-   function enviarCadastroEmpresa(){
+   function enviarCadastroEmpresa(condicao){
       const nome = $('#nomeInput').val();
       const telefone = $('#telefoneInput').val();
       const tipoTelefone = $('#tipoTelefone').val();
@@ -841,7 +845,8 @@
                telefone: telefone,
                tipoTelefone:tipoTelefone,
                cidade:cidade,
-               responsavel:responsavel
+               responsavel:responsavel,
+               condicao:condicao
             }),
             success: function (response) {
                console.log("Sucesso")
@@ -947,6 +952,8 @@
             $('#suggestionsNome').hide();
             labelTelefoneInput.css('display', 'flex');
             form_row_telefone.css('display', 'flex');
+            labelCidadeInput.css('display','flex');
+            cidadeInputContato.css('display','flex');
             $('#modalGanharLabel').text("Cadastrar contato - Criando novo contato")
             return;
          } 
@@ -964,11 +971,12 @@
 
                   // Adicione o novoContato à lista de contatos
                   contatos.push(novoContato);
+                  contatos.forEach(function(contato) {
+                  var suggestionItem;
 
-                  // Se não houver contatos encontrados, adicione uma sugestão indicando que é um novo contato
-                  if (contatos.length === 0) {
-                     var novoContatosuggestionItem = $('<div class="suggestion-item"><strong>Novo contato:</strong> ' + inputValue + '</div>');
-                     novoContatosuggestionItem.on('mousedown', function(event) {
+                  if (contatos.length === 0 || (contato.Name === inputValue && !('Id' in contato))) {
+                     var suggestionItem = $('<div class="suggestion-item"><strong>Novo contato:</strong> ' + inputValue + '</div>');
+                     suggestionItem.on('mousedown', function(event) {
                         // Impede que o input perca o foco
                         event.preventDefault();
                         // Preencha o campo nomeInputContato com o valor original
@@ -976,54 +984,51 @@
                         // Limpe as sugestões
                         $('#suggestionsNome').empty();
                         $('#suggestionsNome').hide();
+                        labelTelefoneInput.css('display', 'flex');
+                        form_row_telefone.css('display', 'flex');
+                        labelCidadeInput.css('display','flex');
+                        cidadeInputContato.css('display','flex');
                      });
-                     // Adicione a sugestão à lista de sugestões
+                     if(contato.Name === inputValue){
+                        $('#suggestionsNome').append(suggestionItem);
+                        return
+                     }    
                      $('#suggestionsNome').show();
                   } else {
-                     contatos.forEach(function(contato) {
-                        var suggestionItem;
-                        if (contato.Company) {
-                              suggestionItem = $('<div class="suggestion-item">' + contato.Name + ' ( ' + contato.Company.Name + ' ) ' + '</div>');
-                        } else if(contato.Name == inputValue) {
-                              suggestionItem = $('<div class="suggestion-item"><strong>Novo contato:</strong> ' + inputValue + '</div>');
-                        }else {
-                              empresasAdicionadas = []
-                              suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                     if (contato.Company) {
+                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + ' ( ' + contato.Company.Name + ' ) ' + '</div>');
+                     } else {
+                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                     }
+                     suggestionItem.on('mousedown', function(event) {
+                        // Impede que o input perca o foco
+                        event.preventDefault();
+                        $('#suggestionsNome').empty();
+                        $('#suggestionsNome').hide();
+                        // Preencha o campo nomeInputContato com o valor do contato clicado
+                        nomeInputContato.val(contato.Name);
+                        // Limpe as sugestões
+                        $('#modalGanharLabel').text("Cadastrar contato - Utilizando contato já existente");
+                        labelTelefoneInput.css('display', 'none');
+                        form_row_telefone.css('display', 'none');
+                        labelCidadeInput.css('display','none');
+                        cidadeInputContato.css('display','none');
+                        cidadeInputContato.val('');
+                        telefoneInputContato.val('');
+                        tipoTelefoneContato.val('');
+                  
+                        empresasAdicionadas = [];
+                        if (!contato.Company) {
+
+                        } else {
+                              empresasAdicionadasInput.val(contato.Company.Name);
+                              empresasAdicionadas.push(empresasAdicionadasInput.val());
                         }
-                        suggestionItem.on('mousedown', function(event) {
-                              // Impede que o input perca o foco
-                              event.preventDefault();
-                              $('#suggestionsNome').empty();
-                                 $('#suggestionsNome').hide();
-                              if(contato.Name === inputValue){
-                                 // Preencha o campo nomeInputContato com o valor original
-                                 nomeInputContato.val(inputValue);                           
-                              } else{
-                                 // Preencha o campo nomeInputContato com o valor do contato clicado
-                                 nomeInputContato.val(contato.Name);
-                                 // Limpe as sugestões
-                                 $('#suggestionsNome').empty();
-                                 $('#suggestionsNome').hide();
-                                 $('#modalGanharLabel').text("Cadastrar contato - Utilizando contato já existente");
-                                 labelTelefoneInput.css('display', 'none');
-                                 form_row_telefone.css('display', 'none');
-                                 labelCidadeInput.css('display','none');
-                                 cidadeInputContato.css('display','none');
-                                 cidadeSugestoes.css('display','none');
-                              }
-                              empresasAdicionadas = []
-                              if (!contato.Company) {
-                                 empresasAdicionadasInput.val('');
-                                 empresasAdicionadas.push(empresasAdicionadasInput.val());  
-                              } else{
-                                 empresasAdicionadasInput.val(contato.Company.Name);
-                                 empresasAdicionadas.push(empresasAdicionadasInput.val());   
-                              }
-                        });
-                        $('#suggestionsNome').append(suggestionItem);
                      });
+                     $('#suggestionsNome').append(suggestionItem);
                      $('#suggestionsNome').show();
                   }
+               });
             })
             .catch(function(error) {
                   console.error(error);
@@ -1214,27 +1219,40 @@
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
+
+      // Verificação dos Campos de contato
       botaoEnviarContato.on('click', function () {
-      var telefoneContato = $('#telefoneInputContato').val();
-      
-      // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
-      var regexTelefoneContato = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
-      
-      if ($('#nomeInputContato').val() !== '' &&
-         regexTelefoneContato.test(telefoneContato) &&
-         $('#pagamentoInputContato').val() !== '' &&
-         $('#cidadeInputContato').val() !== '' &&
-         $('#responsavelInputContato').val() !== '' &&
-         $('#empresasAdicionadas').val() !== '') {
+         var telefoneContato = $('#telefoneInputContato').val();
+         var cidadeContato = $('#cidadeInputContato').val();
+         var tipoTelefoneContato = $('#tipoTelefoneContato').val();
+         var regexTelefoneContato = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
+         console.log(!$('#telefoneInputContato').is(':visible'))
          
-         enviarCadastroContato();
-      } else {
-         if (telefoneContato === '' || !regexTelefoneContato.test(telefoneContato)) {
-               alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
+         if ($('#nomeInputContato').val() !== '' &&
+            $('#responsavelInputContato').val() !== '' &&
+            $('#empresasAdicionadas').val() !== '' &&
+            (!$('#telefoneInputContato').is(':visible') || (telefoneContato !== '' && regexTelefoneContato.test(telefoneContato))) &&
+            (!$('#cidadeInputContato').is(':visible') || cidadeContato !== '')) {
+               if(!$('#adicionarEmpresa').is(':visible')){
+                  var condicao = "Contato"
+               }else{
+                  var condicao = "Negocio"
+               }
+               enviarCadastroContato(condicao);//POST CONTATO
+               $(this).prop('disabled', true);
          } else {
-               alert('Por favor, preencha todos os campos.');
+            if ($('#empresasAdicionadas').val() === ''){
+               alert('Por favor, adicione a(s) Empresa(s).');
+            } else if(cidadeContato === ''){
+                  alert('Por favor, preencha o campo de cidade');
+            } else if ($('#nomeInputContato').val() === '') {
+                  alert('Por favor, preencha o nome.');
+            } else if ($('#responsavelInputContato').val() === '') {
+                  alert('Por favor, preencha o responsável.');
+            } else if ((telefoneContato === '' || !regexTelefoneContato.test(telefoneContato) || tipoTelefoneContato === '')) {
+                  alert('Por favor, preencha todas as informações do telefone (Coloque o telefone com DDD)')
+            }
          }
-      }
       });
 
       // Abra o modal
@@ -1251,10 +1269,11 @@
       $('#modalGanhar').modal('hide');
    });
 
-   function enviarCadastroContato(){
+   function enviarCadastroContato(condicao){
+      $("#loading-overlay").show();
       const nomeContato = $('#nomeInputContato').val();
       const telefoneContato = $('#telefoneInputContato').val();
-      const empresaInputContato = $('#empresaInputContato').val();
+      const empresaInputContato = $('#empresasAdicionadas').val();
       const cidadeContato = $('#cidadeInputContato').val();
       const responsavelContato = $('#responsavelInputContato').val();
       const tipoTelefoneContato = $('#tipoTelefoneContato').val();
@@ -1269,14 +1288,14 @@
                empresaInputContato:empresaInputContato,
                cidadeContato:cidadeContato,
                responsavelContato:responsavelContato,
-               tipoTelefoneContato:tipoTelefoneContato
+               tipoTelefoneContato:tipoTelefoneContato,
+               condicao:condicao
             }),
             success: function (response) {
-               $("#loading-overlay").show();
                window.location.reload();
                
                setTimeout(function() {
-                  $("#loading-overlay").show();;
+                  $("#loading-overlay").show();
                }, 5000); // 5000 milissegundos (5 segundos)
             },
             error: function (error) {

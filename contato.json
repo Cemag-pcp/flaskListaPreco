@@ -151,3 +151,71 @@
     "StageId": 174788
 }
   
+
+{
+    "Name": "teste pessoa 9",
+    "Phones": [
+      {
+        "Type": {
+          "Id": 1,
+          "Name": "Comercial"
+        },
+        "TypeId": 1,
+        "PhoneNumber": "(88) 88888-8888",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "Companies": [
+      {
+        "CompanyId": 17166768
+      },
+      {
+        "CompanyId": 20925237
+      },
+      {
+        "CompanyId": 17193576
+      }
+    ],
+    "CityId": 1,
+    "State": "Goiás",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "TypeId": 2
+}
+
+{
+    "Name": "Saul",
+    "Phones": [
+      {
+        "Type": {"Id": 1, "Name": "Comercial"},
+        "TypeId": 1,
+        "PhoneNumber": "(85) 98888-8888",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "Companies": [
+        {
+            "CompanyId": 1979678254384
+        }
+    ],
+    "CompanyId": 1979678254384
+    "CityId": "1",
+    "State": "Goiás",
+    "Country": "Brasil",
+    "TypeId": 2,
+    "OwnerId": 119909
+}
