@@ -1492,15 +1492,15 @@ def cadastrar_empresa():
     condicao = data['condicao'] # Sim ou Não
     tipo_id = 1
 
-    # nome_estado,id_cidade = idCidade(cidade)
-    # codigoTipoTelefone =  idTipoTelefone(tipoTelefone)
+    nome_estado,id_cidade = idCidade(cidade)
+    codigoTipoTelefone =  idTipoTelefone(tipoTelefone)
     if condicao == 'Não':
-        # personId = criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
-        # criarOrdemEmpresa(nome,nomeRepresentante,personId)
-        print(condicao)
+        criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
+        criarOrdemEmpresa(nome,nomeRepresentante)
+        print("Condição é Não: " + condicao)
     else:
-        # criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
-        print(condicao)
+        criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
+        print("Condição é Sim: " + condicao)
 
     return render_template('opcoes.html')
 
@@ -1519,15 +1519,21 @@ def cadastrar_contato():
     condicao = data['condicao']
     listaEmpresas = empresaInputContato.split(', ')
     tipo_id = 2
-    
-    if telefoneContato == '' or tipoTelefoneContato == '' or cidadeContato == '':
+
+    if telefoneContato == '' or tipoTelefoneContato == '' or cidadeContato == '' and condicao == 'Contato':
         print("Função de atualizar: " + nomeContato,listaEmpresas,responsavelContato,tipo_id)
+    
+    elif condicao == 'Contato':
+        codigoTipoTelefone =  idTipoTelefone(tipoTelefoneContato)
+        nome_estado,id_cidade = idCidade(cidadeContato)
+        print(responsavelContato)
+        print("CONTATOO")
+        criarEmpresaEContato(nomeContato,responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
     else:
-        print(condicao)
-        # codigoTipoTelefone =  idTipoTelefone(tipoTelefoneContato)
-        # nome_estado,id_cidade = idCidade(cidadeContato)
-        # personId = criarEmpresaEContato(nomeContato,responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
-        # criarOrdemEmpresa(nomeContato,responsavelContato,personId)
+        codigoTipoTelefone =  idTipoTelefone(tipoTelefoneContato)
+        nome_estado,id_cidade = idCidade(cidadeContato)
+        personId = criarEmpresaEContato(nomeContato,responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
+        criarOrdemEmpresa(empresaInputContato,responsavelContato,personId)
 
     return render_template('opcoes.html')
 
@@ -2097,7 +2103,7 @@ def revisarProposta(df, idQuote):
 def id(nomeCliente):
     """Função para buscar o id do cliente"""
 
-    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=Name+eq+'{}'".format(
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=TypeId+eq+1 and Name+eq+'{}'".format(
         nomeCliente)
 
     headers = {
@@ -2905,7 +2911,7 @@ def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,cod
     idResponsavel = idRepresentante(nomeRepresentante)
     
     if tipo_id == 2:
-
+        
         lista_json_data = []
         for empresa in listaEmpresas:
 
@@ -2916,7 +2922,11 @@ def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,cod
                         }
             
             lista_json_data.append(json_data)
-       
+
+        companhia = []
+        if len(listaEmpresas) > 1:
+            companhia = lista_json_data
+
         contato = {
             "Name": nomeContato,
             "Phones": [
@@ -2937,8 +2947,8 @@ def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,cod
                     "CountryId": 76
                 }
             ],
-            "Companies": [],
-            "CompanyId":lista_json_data[0],
+            "Companies": companhia,
+            "CompanyId":lista_json_data[0]["CompanyId"],
             "CityId": id_cidade,
             "State": nome_estado,
             "Country": "Brasil",
@@ -2956,6 +2966,9 @@ def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,cod
         data_json = json.loads(response.text)
 
         person_id = data_json['value'][0]['Id']
+
+        print(contato)
+        print(person_id)
 
         return person_id
 
@@ -3076,6 +3089,7 @@ def criarOrdemEmpresa(nomeCliente, nomeRepresentante,personId=None):
         "StageId":174788,
         "PersonId": personId,
     }
+    print(data)
 
     # Fazendo a requisição POST com os dados no corpo
     requests.post(url, headers=headers, json=data)

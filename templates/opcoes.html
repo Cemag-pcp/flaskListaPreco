@@ -152,7 +152,7 @@
 
       // Configuração da solicitação
       const requestOptions = {
-         method: 'GET', // Use 'POST' para enviar dados para o backend
+         method: 'POST', // Use 'POST' para enviar dados para o backend
          headers: {
             'Content-Type': 'application/json' // Tipo de conteúdo JSON
          },
@@ -601,7 +601,7 @@
          .then(function(empresas) {
                empresas.forEach(function(empresa) {
                   if(inputValue === empresa.Name){
-                     alert('Empresa com o nome: "' + inputValue + '" já existente dentro do Ploomes, altere o nome da empresa')
+                     alert('Empresa com o nome: "' + inputValue + '" já existe dentro do Ploomes, altere o nome da empresa')
                      nomeInput.val('')
                      nomeInput.css('border','1px solid red')
                   }
@@ -774,7 +774,9 @@
 
       // Associar o evento de clique ao botão "Cadastrar contato"
       $('#modalSimNao').on('click', '#cadastrar-contato-sim', function (event) {
+         event.stopPropagation(); // interrompe a propagação do evento
          var condicao = "Sim";
+         $('#cadastrar-contato-sim').prop('disabled', true);
          enviarCadastroEmpresa(condicao);
          const empresaCriada = $('#nomeInput').val()
          $('#modalSimNao').modal('hide');
@@ -784,8 +786,10 @@
          }
       });
 
-      $('#modalSimNao').on('click', '#cadastrar-contato-nao', function () {
+      $('#modalSimNao').on('click', '#cadastrar-contato-nao', function (event) {
+         event.stopPropagation(); // interrompe a propagação do evento
          var condicao = "Não";
+         $('#cadastrar-contato-nao').prop('disabled', true);
          enviarCadastroEmpresa(condicao);
          console.log("Enviou")
          $('#modalSimNao').modal('hide');
@@ -996,7 +1000,7 @@
                      $('#suggestionsNome').show();
                   } else {
                      if (contato.Company) {
-                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + ' ( ' + contato.Company.Name + ' ) ' + '</div>');
+                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
                      } else {
                         suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
                      }
@@ -1221,7 +1225,7 @@
 
 
       // Verificação dos Campos de contato
-      botaoEnviarContato.on('click', function () {
+      botaoEnviarContato.one('click', function () {
          var telefoneContato = $('#telefoneInputContato').val();
          var cidadeContato = $('#cidadeInputContato').val();
          var tipoTelefoneContato = $('#tipoTelefoneContato').val();
@@ -1233,13 +1237,13 @@
             $('#empresasAdicionadas').val() !== '' &&
             (!$('#telefoneInputContato').is(':visible') || (telefoneContato !== '' && regexTelefoneContato.test(telefoneContato))) &&
             (!$('#cidadeInputContato').is(':visible') || cidadeContato !== '')) {
-               if(!$('#adicionarEmpresa').is(':visible')){
+               if($('#adicionarEmpresa').is(':visible')){
                   var condicao = "Contato"
                }else{
                   var condicao = "Negocio"
                }
-               enviarCadastroContato(condicao);//POST CONTATO
                $(this).prop('disabled', true);
+               enviarCadastroContato(condicao); //POST CONTATO
          } else {
             if ($('#empresasAdicionadas').val() === ''){
                alert('Por favor, adicione a(s) Empresa(s).');
@@ -1293,6 +1297,7 @@
             }),
             success: function (response) {
                window.location.reload();
+               alert('Contato Cadastrado com Sucesso');
                
                setTimeout(function() {
                   $("#loading-overlay").show();

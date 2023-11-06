@@ -212,10 +212,11 @@
             "CompanyId": 1979678254384
         }
     ],
-    "CompanyId": 1979678254384
+    "CompanyId": 1979678254384,
     "CityId": "1",
     "State": "Goiás",
     "Country": "Brasil",
     "TypeId": 2,
     "OwnerId": 119909
 }
+
