@@ -600,10 +600,10 @@
       inputEmpresas(inputValue)
          .then(function(empresas) {
                empresas.forEach(function(empresa) {
-                  if(inputValue === empresa.Name){
+                  if(inputValue.toLowerCase() === empresa.Name.toLowerCase()){
                      alert('Empresa com o nome: "' + inputValue + '" já existe dentro do Ploomes, altere o nome da empresa')
                      nomeInput.val('')
-                     nomeInput.css('border','1px solid red')
+                     nomeInput.css('border','1px solid red') 
                   }
                });
          })
@@ -772,6 +772,25 @@
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
 
+      var isEnviando = false; 
+
+      $('#modalSimNao').on('click', '#cadastrar-contato-nao', function (event) {
+         event.stopPropagation(); // interrompe a propagação do evento
+         if (isEnviando) {
+            return;
+         }
+         var condicao = "Não";
+         var botaoCadastrar = $('#cadastrar-contato-nao');
+
+         botaoCadastrar.prop('disabled', true);
+         enviarCadastroEmpresa(condicao);
+         console.log("Enviou")
+         $('#modalSimNao').modal('hide');
+         $('#modalGanhar').modal('hide');
+
+         isEnviando = true;
+      });
+
       // Associar o evento de clique ao botão "Cadastrar contato"
       $('#modalSimNao').on('click', '#cadastrar-contato-sim', function (event) {
          event.stopPropagation(); // interrompe a propagação do evento
@@ -784,16 +803,6 @@
          if(empresaCriada){
             showModalCriarContato(event,empresaCriada);
          }
-      });
-
-      $('#modalSimNao').on('click', '#cadastrar-contato-nao', function (event) {
-         event.stopPropagation(); // interrompe a propagação do evento
-         var condicao = "Não";
-         $('#cadastrar-contato-nao').prop('disabled', true);
-         enviarCadastroEmpresa(condicao);
-         console.log("Enviou")
-         $('#modalSimNao').modal('hide');
-         $('#modalGanhar').modal('hide');
       });
 
       botaoEnviar.on('click', function (event) {
@@ -834,6 +843,9 @@
    });
    
    function enviarCadastroEmpresa(condicao){
+      if(condicao == "Não"){
+         $("#loading-overlay").show();
+      }
       const nome = $('#nomeInput').val();
       const telefone = $('#telefoneInput').val();
       const tipoTelefone = $('#tipoTelefone').val();
@@ -854,6 +866,10 @@
             }),
             success: function (response) {
                console.log("Sucesso")
+               $('#cadastrar-contato-nao').prop('disabled', true);
+               if(condicao == "Não"){
+                  window.location.reload();
+               }
             },
             error: function (error) {
                console.log(error);

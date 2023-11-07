@@ -880,12 +880,12 @@ input{
   }
   
   .cadastrar_cliente:hover {
-    background: rgb(2, 104, 199);
+    background: rgb(1, 87, 167);
     outline: none;
   }
   
   .cadastrar_cliente:active {
-    background: rgb(2, 104, 199);
+    background: rgb(1, 87, 167);
     outline: none;
   }
 
