@@ -960,6 +960,7 @@ input{
     align-content: center;
     flex-wrap: wrap;
     height: 50vh; /* Ocupa 100% da altura da janela do navegador */
+    margin-bottom: 100px;
   }
   .opcoes_botoes{
     display: flex;
