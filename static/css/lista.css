@@ -24,7 +24,7 @@ nav{
   height: 100px;
   top: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10;
   box-shadow: 0 .2rem .5rem rgba(0, 0, 0, 0.192);
   display: flex;
   align-items: center;
@@ -862,6 +862,33 @@ input{
     outline: none;
   }
 
+  .cadastrar_cliente{
+    background: rgb(2, 104, 199);
+    border: 2px solid rgb(2, 104, 199);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 250px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .cadastrar_cliente:hover {
+    background: rgb(1, 87, 167);
+    outline: none;
+  }
+  
+  .cadastrar_cliente:active {
+    background: rgb(1, 87, 167);
+    outline: none;
+  }
+
 @media (max-width:1000px){
   #filtrar {
     background: rgb(255, 161, 113);
@@ -909,6 +936,22 @@ input{
     cursor: pointer;
     outline: none;
   }
+  .cadastrar_cliente{
+    background: rgb(2, 104, 199);
+    border: 2px solid rgb(2, 104, 199);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 100%;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
   .botoes_gerar_consultar{
     display: flex;
     flex-direction: column;
@@ -917,6 +960,7 @@ input{
     align-content: center;
     flex-wrap: wrap;
     height: 50vh; /* Ocupa 100% da altura da janela do navegador */
+    margin-bottom: 100px;
   }
   .opcoes_botoes{
     display: flex;
@@ -963,4 +1007,19 @@ input{
   border-radius: 4px;
   height: 37.5px !important; /* Use !important */
   align-items: center;
+}
+
+.select-group{
+  margin-top: 10px;
+  position: relative;
+  left: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 45%;
+}
+
+#pagamentoOptions {
+  max-height: 200px; /* Defina a altura máxima das opções */
+  overflow-y: auto; /* Adicione uma barra de rolagem se as opções ultrapassarem a altura máxima */
 }
