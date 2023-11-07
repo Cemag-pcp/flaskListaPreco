@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Lista de preço</title>
 
   <!-- Bootstrap CSS -->
@@ -45,6 +46,9 @@
   <!-- Font Awesome Kit -->
   <script src="https://kit.fontawesome.com/d1807a784c.js" crossorigin="anonymous"></script>
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
+  <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+
   <!-- Your Custom CSS Files -->
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lista.css') }}">
@@ -53,8 +57,6 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bar-progress.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/cards-modal.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/message-sucess.css') }}">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -85,7 +87,7 @@
       <div class="closeShopping" id="btnEnviar">Continuar</div>
     </div>
   </div>
-
+  
   <script src="static\js\favorito.js"></script>
   <script src="static/js/app.js"></script>
   <script src="static/js/back.js"></script>

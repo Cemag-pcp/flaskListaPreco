@@ -24,7 +24,7 @@ nav{
   height: 100px;
   top: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10;
   box-shadow: 0 .2rem .5rem rgba(0, 0, 0, 0.192);
   display: flex;
   align-items: center;
@@ -880,12 +880,12 @@ input{
   }
   
   .cadastrar_cliente:hover {
-    background: rgb(2, 104, 199);
+    background: rgb(1, 87, 167);
     outline: none;
   }
   
   .cadastrar_cliente:active {
-    background: rgb(2, 104, 199);
+    background: rgb(1, 87, 167);
     outline: none;
   }
 
@@ -960,6 +960,7 @@ input{
     align-content: center;
     flex-wrap: wrap;
     height: 50vh; /* Ocupa 100% da altura da janela do navegador */
+    margin-bottom: 100px;
   }
   .opcoes_botoes{
     display: flex;
@@ -1006,4 +1007,19 @@ input{
   border-radius: 4px;
   height: 37.5px !important; /* Use !important */
   align-items: center;
+}
+
+.select-group{
+  margin-top: 10px;
+  position: relative;
+  left: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 45%;
+}
+
+#pagamentoOptions {
+  max-height: 200px; /* Defina a altura máxima das opções */
+  overflow-y: auto; /* Adicione uma barra de rolagem se as opções ultrapassarem a altura máxima */
 }

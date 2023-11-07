@@ -1,0 +1,222 @@
+// Feito direto em Contacts
+
+{
+    "OtherProperties": [
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 18238519
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", 
+            "IntegerValue": 16764215
+        },
+    ],
+    "Name": "TESTE APP",
+    "Phones": [
+        {
+            "Type": {
+                "Id": 1,
+                "Name": "Comercial"
+            },
+            "TypeId": 1,
+            "PhoneNumber": "(54) 77878-4848",
+            "Country": {
+                "Id": 76,
+                "Short": "BRA",
+                "Short2": "BR",
+                "Name": "BRASIL",
+                "PhoneMask": "(99) 9999?9-9999"
+            },
+            "CountryId": 76
+        }
+    ],
+    "Tags": [],
+    "CityId": 1,
+    "State": "Goiás",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "OriginId": null,
+    "TypeId": 1,
+    "CompanyId": null
+}
+
+
+{
+    "OtherProperties": [
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 18238519
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 18238521
+        },
+        {
+            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
+            "IntegerValue": 16764215
+        }
+    ],
+    "Phones": [
+        {
+            "Type": {
+                "Id": 4,
+                "Name": "Fax"
+            },
+            "TypeId": 4,
+            "PhoneNumber": "(75) 62489-9256",
+            "Country": {
+                "Id": 76,
+                "Short": "BRA",
+                "Short2": "BR",
+                "Name": "BRASIL",
+                "PhoneMask": "(99) 9999?9-9999"
+            },
+            "CountryId": 76
+        }
+    ],
+    "Name": "TESTE APP - CEMAG",
+    "Tags": [],
+    "CityId": 1736,
+    "State": "GOIÁS",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "TypeId": 1
+}
+
+// Feito direto em deals
+
+// Cliente
+{
+    "Id": "461",
+    "Name": "Cliente Teste 2",
+    "OriginId": null,
+    "Phones": [
+      {
+        "Type": {
+          "Id": 3,
+          "Name": "Residencial"
+        },
+        "TypeId": 3,
+        "PhoneNumber": "(55) 55555-5555",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "CityId": 1830,
+    "State": "Ceará",
+    "Country": "Brasil",
+    "TypeId": 1
+}
+
+// Contato
+{
+  "Id": "474",
+  "Name": "Contato Teste",
+  "Phones": [
+    {
+      "Type": {
+        "Id": 5,
+        "Name": "Outros"
+      },
+      "TypeId": 5,
+      "PhoneNumber": "(44) 44444-4444",
+      "Country": {
+        "Id": 76,
+        "Short": "BRA",
+        "Short2": "BR",
+        "Name": "BRASIL",
+        "PhoneMask": "(99) 9999?9-9999"
+      },
+      "CountryId": 76
+    }
+  ],
+  "Companies": [],
+  "CityId": 1830,
+  "State": "Ceará",
+  "Country": "Brasil",
+  "TypeId": 2,
+  "CompanyId": 20930151
+} 
+
+//Deals
+{
+    "ContactId": 20930151,
+    "OwnerId": 119909,
+    "StageId": 174788
+}
+  
+
+{
+    "Name": "teste pessoa 9",
+    "Phones": [
+      {
+        "Type": {
+          "Id": 1,
+          "Name": "Comercial"
+        },
+        "TypeId": 1,
+        "PhoneNumber": "(88) 88888-8888",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "Companies": [
+      {
+        "CompanyId": 17166768
+      },
+      {
+        "CompanyId": 20925237
+      },
+      {
+        "CompanyId": 17193576
+      }
+    ],
+    "CityId": 1,
+    "State": "Goiás",
+    "Country": "Brasil",
+    "OwnerId": 119909,
+    "TypeId": 2
+}
+
+{
+    "Name": "Saul",
+    "Phones": [
+      {
+        "Type": {"Id": 1, "Name": "Comercial"},
+        "TypeId": 1,
+        "PhoneNumber": "(85) 98888-8888",
+        "Country": {
+          "Id": 76,
+          "Short": "BRA",
+          "Short2": "BR",
+          "Name": "BRASIL",
+          "PhoneMask": "(99) 9999?9-9999"
+        },
+        "CountryId": 76
+      }
+    ],
+    "Companies": [
+        {
+            "CompanyId": 1979678254384
+        }
+    ],
+    "CompanyId": 1979678254384,
+    "CityId": "1",
+    "State": "Goiás",
+    "Country": "Brasil",
+    "TypeId": 2,
+    "OwnerId": 119909
+}
+
