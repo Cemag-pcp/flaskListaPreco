@@ -1,3 +1,34 @@
+#mensagem {
+  position: fixed;
+  top: -50px; /* Define a posição inicial acima do viewport */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px;
+  border-radius: 5px;
+  width: 200px; /* Ajuste conforme necessário */
+  text-align: center;
+  transition: top 0.5s ease-in-out; /* Adiciona uma transição suave */
+  z-index: 1000;
+}
+
+#mensagem.sucesso {
+background-color: #4CAF50;
+color: white;
+}
+
+#mensagem.aviso {
+background-color: #ff9800;
+color: white;
+}
+
+.copy-icon {
+    cursor: pointer;
+}
+
+.hidden-text {
+    display: none;
+}
+
 .card1 {
   border: 1px solid #ccc;
   border-radius: 125px;

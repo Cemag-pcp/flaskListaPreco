@@ -58,6 +58,17 @@
                </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
+               <p class="card-text">
+                  PDF: 
+                  <span class="pdf-data" style="display: none;">{{ dado.pdf }}</span>
+                  <span class="copy-icon" onclick="copyText('{{dado.pdf}}')"><i class="fas fa-copy"></i></span>
+                  <a href="{{ dado.pdf }}" target="_blank"><i class="fa-solid fa-file"></i></a>
+                  Aceite: 
+                  <span class="aceite-data" style="display: none;">{{ dado.aceite }}</span> 
+                  <span class="copy-icon" onclick="copyText('{{dado.aceite}}')"><i class="fas fa-copy"></i></span>
+                  <a href="{{ dado.aceite }}" target="_blank"><i class="fa-solid fa-file"></i></a>
+
+              </p>
                {% if dado.StatusId == 2 or dado.StatusId == 3 or dado.ApprovalStatusId == 1 %}
                   <a></a>
                   <a></a>
@@ -68,7 +79,7 @@
                   <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
 
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-
+                  
                {% endif %}
             </div>
          </div>
@@ -111,6 +122,7 @@
       </div>
       {% endfor %}
    </div>
+
 </div>
 
 <div id="success-message" class="alert alert-success top-message slide-in" style="display: none;">
@@ -120,6 +132,46 @@
 <div id="loading-overlay" style="display: none;">
    <div id="loading-spinner"></div>
 </div>
+
+<div id="mensagem"></div>
+
+<script>
+
+   function exibirMensagem(tipo, texto) {
+      var mensagemElement = document.getElementById('mensagem');
+
+      // Define o texto da mensagem
+      mensagemElement.innerText = texto;
+
+      // Define a classe de estilo com base no tipo
+      mensagemElement.className = 'sucesso';
+      if (tipo === 'aviso') {
+      mensagemElement.className = 'aviso';
+      }
+
+      // Exibe a mensagem
+      mensagemElement.style.top = '20px'; // Define a posição para exibir a mensagem
+
+      // Aguarda 3 segundos e esconde a mensagem
+      setTimeout(function () {
+      mensagemElement.style.top = '-204px'; // Define a posição para esconder a mensagem
+      }, 3000); // 3000 milissegundos = 3 segundos
+   }
+</script>
+
+<script>
+   function copyText(selector) {
+      navigator.clipboard.writeText(selector)
+         .then(function() {
+               console.log('Link copiado:', selector);
+               exibirMensagem('sucesso','Link copiado')
+
+         })
+         .catch(function(err) {
+               console.error('Erro ao copiar link:', err);
+         });
+   }
+</script>
 
 <script>
    // Script para procurar na lista de cards

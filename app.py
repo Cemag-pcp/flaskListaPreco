@@ -2382,8 +2382,41 @@ def obterEmailRepresentante(nomeRepresentante):
     return emailRepresentante
 
 
-def obterDocumentoPdf(DealId):
+def buscarLinkAceitePdf(DealId):
+
     """Função para buscar o pdf e aceite da proposta"""
+
+    url = "https://public-api2.ploomes.com/Quotes?$top=10&$filter=DealId+eq+{}&$select=DocumentUrl,Key,ApprovalStatusId".format(
+        DealId)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    documentos = response.json()
+    documentos = documentos['value']
+
+    for doc in documentos:
+        pdf = doc['DocumentUrl']
+        key = doc['Key']
+        approver = doc['ApprovalStatusId']
+
+    if approver == 1:
+        
+        links =  {'pdf':pdf}
+
+    else:
+        aceite = "https://documents.ploomes.com/?k={}&entity=quote".format(key)
+
+        links =  {'pdf':pdf, 'aceite':aceite}
+
+    return links
+
+
+def obterDocumentoPdf(DealId):
+    """Função para buscar o pdf e aceite da proposta e preparar e-mail"""
 
     url = "https://public-api2.ploomes.com/Quotes?$top=10&$filter=DealId+eq+{}&$select=DocumentUrl,Key,ApprovalStatusId".format(
         DealId)
@@ -2528,9 +2561,10 @@ def listarOrcamentos(nomeRepresentante):
         deal_id = item1['DealId']
         if deal_id in deal_id_mapping:
             item2 = deal_id_mapping[deal_id]
-            combined_item = {**item1, **item2}
+            link = buscarLinkAceitePdf(deal_id)
+            combined_item = {**item1, **item2, **link}
             combined_json.append(combined_item)
-
+            
     for item in combined_json:
         if item['ExternallyAccepted'] is None:
             item['ExternallyAccepted'] = "Não"
@@ -2540,7 +2574,7 @@ def listarOrcamentos(nomeRepresentante):
     for item in combined_json:
         if item['LastUpdateDate']:
             item['LastUpdateDate'] = formatar_data(item['LastUpdateDate'])
-
+        
     unique_set = set()
     unique_data = []
 
