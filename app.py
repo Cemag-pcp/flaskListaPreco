@@ -3095,5 +3095,33 @@ def criarOrdemEmpresa(nomeCliente, nomeRepresentante,personId=None):
     requests.post(url, headers=headers, json=data)
     # requests.Response
 
+def criarRegistroInteracao(nomeCliente, nomeRepresentante,personId=None):
+    """Função para gerar ordem de Empresa"""
+
+    ContactId = id(nomeCliente)
+
+    OwnerId = idRepresentante(nomeRepresentante)
+
+    url = "https://app6-api2.ploomes.com/InteractionRecords"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+
+    data = {
+        "ContactId": ContactId,
+        "OwnerId": OwnerId,
+        "StageId":174788,
+        "PersonId": personId,
+    }
+    print(data)
+
+    # Fazendo a requisição POST com os dados no corpo
+    requests.post(url, headers=headers, json=data)
+    # requests.Response
+
+
 if __name__ == '__main__':
     app.run(port=8000)

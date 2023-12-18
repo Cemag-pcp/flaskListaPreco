@@ -109,6 +109,16 @@
              </div>
          </div>
      </div>   
+
+     <div class="modal fade" id="modalInteracao" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalInteracaoLabel">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <!-- Conteúdo do Modal Sim ou Nao -->
+              </div>
+          </div>
+      </div>
+  </div> 
         
         <div class="modal fade" id="modalGanhar" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel" aria-hidden="true">
          <div class="modal-dialog" role="document">
@@ -539,10 +549,14 @@
       modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
 
       // Aqui, você pode criar e adicionar o formulário ao modal
-      var form_cadastrar_cliente = $('<div class="cadastrar-cliente">');
-      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Registrar Interação</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var form_cadastrar_cliente = $('<div class="cadastrar-cliente-interação">');
+      var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Escolha a empresa que deseja registrar</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
+      var empresa_registrar = $('<label>Empresa: </label><input type="text" class="form-control" id="empresa_registrar" placeholder="Empresa" required>');
+      empresa_registrar.attr('autocomplete', 'off');
+      var EmpresaSugestoes = $('<div class="suggestions" id="suggestionsEmpresasRegistrar"></div>')
+      var todos_os_campos = $('<div style="display:none"></div>')
       var div = $('<div style="display:flex;flex-direction:column;margin-top:20px;gap: 3px;">')
-      var textarea = $('<label>Registro: </label><textarea id="campo-texto" class="form-control" placeholder="Digite aqui..."></textarea>');
+      var textarea = $('<label>Registro: </label><textarea id="campo-texto" class="form-control" placeholder="Digite aqui..." required></textarea>');
       var div_mais_campos = $('<div style="display: flex;justify-content: flex-end;align-items: center;color:gray; gap: 5px; margin-top: 10px;">')
       // Adicione esta linha ao criar o ícone
       var arrowIcon = $('<i style="cursor:pointer" id="arrow" class="fa-solid fa-angle-down"></i>');
@@ -567,7 +581,7 @@
       });
 
       // Substitua a linha original que cria o ícone pela linha modificada
-      var label_mais_campos = $('<label>Mais Campos</label>');
+      var label_mais_campos = $('<label>Campos não obrigatório</label>');
       var inputDate = $('<label>Data: </label><input id="campo-data" type="date" class="form-control">');
       inputDate.css('display','none');
       var contato_interacao = $('<label>Contatos: </label><input id="campo-texto-1" type="text" class="form-control">');
@@ -579,70 +593,62 @@
       responsavel_interacao.css('display','none');
       var responsavel_interacao_Sugestoes = $('<div class="suggestions" id="suggestionsResponsaveisInteracao"></div>')
       var valorFixoResponsavel = $('<input type="hidden" id="representante-name-contato" value="{{ nomeRepresentante }}">').val()
-      var button_salvar = $('<button class="btn btn-info btn-sm" style="margin-top:25px">Salvar</button>');
+      var button_salvar = $('<button type="submit" class="btn btn-info btn-sm" style="margin-top:25px">Salvar</button>');
 
       div_mais_campos.append(label_mais_campos,arrowIcon)
       div.append(textarea,div_mais_campos,inputDate)
 
+      empresa_registrar.on('change', function() {
+         // Verifique se o valor do campo empresa_registrar não está vazio
+         if ($(this).val().trim() !== '') {
+            // Se não estiver vazio, exiba todos_os_campos
+            todos_os_campos.css('display', 'block');
+            $(".modal-title").text("Registrar Interação");
+         } else {
+            // Se estiver vazio, oculte todos_os_campos
+            todos_os_campos.css('display', 'none');
+            $(".modal-title").text("Escolha a empresa que deseja registrar");
+         }
+      });
+
       contato_interacao.on('input', function() {
          var inputValue = $(this).val();
          if (inputValue.trim() === '') {
+            // Se o valor do input estiver vazio, oculta as sugestões e retorna
             $('#suggestions_contato_interacao').hide();
             return;
-         } 
-      
+         }
          inputNomesContatos(inputValue)
             .then(function(contatos) {
-                  // Limpe as sugestões anteriores
-                  $('#suggestions_contato_interacao').empty();
-                  
-                  var novoContato = {
-                     Name: inputValue, 
-                     Company: null // Se não houver uma empresa associada, você pode deixar esse campo como null
-                  };
-
-                  // Adicione o novoContato à lista de contatos
-                  contatos.push(novoContato);
-                  contatos.forEach(function(contato) {
+               // Limpe as sugestões anteriores
+               $('#suggestions_contato_interacao').empty();
+               
+               contatos.forEach(function(contato) {
                   var suggestionItem;
 
-                  if (contatos.length === 0 || (contato.Name === inputValue && !('Id' in contato))) {
-                     var suggestionItem = $('<div class="suggestion-item"><strong>Novo contato:</strong> ' + inputValue + '</div>');
-                     suggestionItem.on('mousedown', function(event) {
-                        // Impede que o input perca o foco
-                        event.preventDefault();
-                        // Preencha o campo nomeInputContato com o valor original
-                        contato_interacao.val(inputValue);
-                        // Limpe as sugestões
-                        $('#suggestions_contato_interacao').empty();
-                        $('#suggestions_contato_interacao').hide();
-                     });
-                     if(contato.Name === inputValue){
-                        $('#suggestions_contato_interacao').append(suggestionItem);
-                        return
-                     }    
-                     $('#suggestions_contato_interacao').show();
+                  if (contato.Company) {
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
                   } else {
-                     if (contato.Company) {
-                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
-                     } else {
-                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
-                     }
-                     suggestionItem.on('mousedown', function(event) {
-                        // Impede que o input perca o foco
-                        event.preventDefault();
-                        $('#suggestions_contato_interacao').empty();
-                        $('#suggestions_contato_interacao').hide();
-                        // Preencha o campo nomeInputContato com o valor do contato clicado
-                        contato_interacao.val(contato.Name);
-                     });
-                     $('#suggestions_contato_interacao').append(suggestionItem);
-                     $('#suggestions_contato_interacao').show();
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
                   }
+
+                  suggestionItem.on('mousedown', function(event) {
+                     // Impede que o input perca o foco
+                     event.preventDefault();
+                     $('#suggestions_contato_interacao').empty();
+                     $('#suggestions_contato_interacao').hide();
+                     // Preencha o campo nomeInputContato com o valor do contato clicado
+                     contato_interacao.val(contato.Name);
+
+                     $(".modal-title").text("Registrar Interação");
+                  });
+
+                  $('#suggestions_contato_interacao').append(suggestionItem);
+                  $('#suggestions_contato_interacao').show();
                });
             })
             .catch(function(error) {
-                  console.error(error);
+               console.error(error);
             });
       })
       .on('blur', function() {
@@ -693,9 +699,69 @@
 
         } else {
           // Ocultar o elemento de responsável
-          responsavelInputContato.attr("readonly", true);
+          responsavel_interacao.attr("readonly", true);
         }
       });
+
+      empresa_registrar.on('input', function () {
+      var inputValue = $(this).val().trim();
+      if (inputValue === '') {
+         $('#suggestionsEmpresasRegistrar').hide();
+         todos_os_campos.css('display', 'none');
+         return;
+      } 
+
+
+      selectedPayments = inputValue.split(',').map(function (item) {
+         return item.trim();
+      });
+
+      if (selectedPayments.length > 0 && selectedPayments[0] === '') {
+         selectedPayments.shift();
+      }
+
+    if (inputValue.includes(',')) {
+        // Limpa o campo de entrada para que a busca por sugestões comece novamente
+        empresa_registrar.val('');
+    }
+
+    inputEmpresas(inputValue)
+        .then(function (empresas) {
+            // Limpe as sugestões anteriores
+            $('#suggestionsEmpresasRegistrar').empty();
+
+            // Adicione as novas sugestões
+            empresas.forEach(function (empresa) {
+               empresa_registrar.on('blur', function () {
+
+               })
+               
+                var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
+                suggestionItem.on('mousedown', function (event) {
+                  // Impede que o input perca o foco
+                  event.preventDefault();
+
+                  var selectedPayment = empresa.Name;
+
+                  // Atualiza apenas o valor do input com o nome da empresa
+                  empresa_registrar.val(selectedPayment);
+
+                  $('#suggestionsEmpresasRegistrar').empty().hide();
+                  empresa_registrar.blur();
+               });
+                // Adicione a sugestão à lista de sugestões
+                $('#suggestionsEmpresasRegistrar').append(suggestionItem);
+            });
+
+            $('#suggestionsEmpresasRegistrar').show();
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+      })
+    .on('blur', function () {
+        $('#suggestionsEmpresasRegistrar').hide();
+    });
 
       // Abra o modal
       $('#modalInteracao').modal('show');
@@ -705,7 +771,8 @@
          $('#modalInteracao').modal('hide');
       });
 
-      form_cadastrar_cliente.append(title,div,contato_interacao,contato_interacao_Sugestoes,responsavel_interacao,responsavel_interacao_Sugestoes,button_salvar);
+      todos_os_campos.append(div,contato_interacao,contato_interacao_Sugestoes,responsavel_interacao,responsavel_interacao_Sugestoes,button_salvar)
+      form_cadastrar_cliente.append(title,empresa_registrar,EmpresaSugestoes,todos_os_campos);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
       
@@ -731,14 +798,6 @@
 
       var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
       form_cadastrar_empresa.append(botaoVoltar,title);
-
-      $(document).on('click', '#btnVoltar', function(event) {
-      // Feche o modal atual
-         $('#cadastrar-empresa').modal('hide');
-
-         // Agora, abra o modal de escolha entre cliente ou contato
-         showModalEscolhaClienteOuContato(event);
-      });
 
       var labelNomeInput = $('<label for="nomeInput" class="form-label">Nome:</label>');
       var nomeInput = $('<input type="text" class="form-control" id="nomeInput" placeholder="Nome">');
@@ -1027,6 +1086,14 @@
       $('#modalGanhar').modal('show');
    }
 
+   $(document).on('click', '#btnVoltar', function(event) {
+      // Feche o modal atual
+         $('#cadastrar-empresa').modal('hide');
+
+         // Agora, abra o modal de escolha entre cliente ou contato
+         showModalEscolhaClienteOuContato(event);
+   });
+
    // Associar o evento de clique ao botão "Cadastrar Empresa"
    $(document).on('click', '#cadastrar-empresa', function (event) {
       showModalCriarEmpresa(event);
@@ -1089,9 +1156,6 @@
       $(document).on('click', '#botao-modal-interacao', function(event) {
       // Feche o modal atual
          $('#cadastrar-cliente').modal('hide');
-
-         // Agora, abra o modal de escolha entre cliente ou contato
-         showModalEscolhaClienteOuContato(event);
       });
 
       var labelNomeInput = $('<label class="form-label">Nome:</label>');
