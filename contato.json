@@ -1,222 +1,292 @@
-// Feito direto em Contacts
-
 {
-    "OtherProperties": [
-        {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
-            "IntegerValue": 18238519
+  "ContactId": 20925237,
+  "Content": "testeeee",
+  "Date": "2023-12-18T00:00-0300",
+  "Contacts": [
+     {
+        "Id": 18393290,
+        "TypeId": 2,
+        "Name": "TESTE LUAN",
+        "LegalName": null,
+        "Register": null,
+        "CNPJ": null,
+        "CPF": null,
+        "StatusId": 103544,
+        "CompanyId": 16900584,
+        "RelationshipId": null,
+        "LineOfBusinessId": null,
+        "OriginId": null,
+        "NumberOfEmployeesId": null,
+        "ClassId": 0,
+        "OwnerId": 94033,
+        "Birthday": null,
+        "NextAnniversary": null,
+        "PreviousAnniversary": null,
+        "Note": null,
+        "Email": null,
+        "Website": null,
+        "RoleId": null,
+        "DepartmentId": null,
+        "Skype": null,
+        "Facebook": null,
+        "StreetAddress": null,
+        "StreetAddressNumber": null,
+        "StreetAddressLine2": null,
+        "Neighborhood": null,
+        "ZipCode": null,
+        "ForeignZipCode": null,
+        "CityId": 1,
+        "StateId": 9,
+        "CountryId": 76,
+        "CurrencyId": null,
+        "EmailMarketing": null,
+        "CNAECode": null,
+        "CNAEName": null,
+        "CNAESecondary": null,
+        "Latitude": null,
+        "Longitude": null,
+        "ImportId": null,
+        "CreateImportationId": null,
+        "UpdateImportationId": null,
+        "FirstTaskId": null,
+        "FirstTaskDate": "2022-10-13T09:20:00-03:00",
+        "LastInteractionRecordId": null,
+        "LastDealId": null,
+        "LastOrderId": null,
+        "TasksOrdination": 1,
+        "LeadId": null,
+        "Editable": true,
+        "Deletable": true,
+        "CreatorId": 94031,
+        "UpdaterId": 87363,
+        "CreateDate": "2022-09-12T14:10:40.633-03:00",
+        "LastUpdateDate": "2023-06-21T10:57:23.757-03:00",
+        "Key": null,
+        "LastDocumentId": null,
+        "AvatarUrl": null,
+        "HasConsent": null,
+        "LastCompanyId": null,
+        "IdentityDocument": null,
+        "HasScheduledTasks": true,
+        "ImportationIdCreate": null,
+        "ImportationIdUpdate": null,
+        "PublicFormIdCreate": null,
+        "PublicFormIdUpdate": null,
+        "Company": {
+           "Id": 16900584,
+           "TypeId": 1,
+           "Name": "teste",
+           "LegalName": null,
+           "Register": null,
+           "CNPJ": null,
+           "CPF": null,
+           "StatusId": 103547,
+           "CompanyId": null,
+           "RelationshipId": null,
+           "LineOfBusinessId": null,
+           "OriginId": null,
+           "NumberOfEmployeesId": null,
+           "ClassId": 0,
+           "OwnerId": 94033,
+           "Birthday": null,
+           "NextAnniversary": null,
+           "PreviousAnniversary": null,
+           "Note": null,
+           "Email": null,
+           "Website": null,
+           "RoleId": null,
+           "DepartmentId": null,
+           "Skype": null,
+           "Facebook": null,
+           "StreetAddress": null,
+           "StreetAddressNumber": null,
+           "StreetAddressLine2": null,
+           "Neighborhood": null,
+           "ZipCode": null,
+           "ForeignZipCode": null,
+           "CityId": 2967,
+           "StateId": 14,
+           "CountryId": 76,
+           "CurrencyId": null,
+           "EmailMarketing": null,
+           "CNAECode": null,
+           "CNAEName": null,
+           "CNAESecondary": null,
+           "Latitude": null,
+           "Longitude": null,
+           "ImportId": null,
+           "CreateImportationId": null,
+           "UpdateImportationId": null,
+           "FirstTaskId": null,
+           "FirstTaskDate": "2022-09-12T09:20:00-03:00",
+           "LastInteractionRecordId": null,
+           "LastDealId": null,
+           "LastOrderId": null,
+           "TasksOrdination": 1,
+           "LeadId": null,
+           "Editable": true,
+           "Deletable": true,
+           "CreatorId": 94040,
+           "UpdaterId": 87363,
+           "CreateDate": "2022-02-15T14:44:20.57-03:00",
+           "LastUpdateDate": "2023-06-20T10:15:39.36-03:00",
+           "Key": null,
+           "LastDocumentId": null,
+           "AvatarUrl": null,
+           "HasConsent": null,
+           "LastCompanyId": null,
+           "IdentityDocument": null,
+           "HasScheduledTasks": true,
+           "ImportationIdCreate": null,
+           "ImportationIdUpdate": null,
+           "PublicFormIdCreate": null,
+           "PublicFormIdUpdate": null
         },
-        {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA", 
-            "IntegerValue": 16764215
+        "Owner": {
+           "Id": 94033,
+           "Name": "Katylene",
+           "Email": "katylene@cemag.com.br",
+           "Phone": "85988840063",
+           "AvatarUrl": "https://stgploomescrmprd01.blob.core.windows.net/crm-prd/40B25927D70A/Avatar/Thumb/1f17c751c38341eba6492d4f80c391be.jpeg",
+           "RoleId": null,
+           "ProfileId": 1,
+           "Facebook": null,
+           "LinkedIn": "Katylene Coelho",
+           "Birthday": null,
+           "NextAnniversary": null,
+           "PreviousAnniversary": null,
+           "Integration": false,
+           "NativeIntegration": false,
+           "GoogleAuthenticatorConfigured": null,
+           "UserKey": null,
+           "LastLogin": null,
+           "Frequency": null,
+           "AccountOwner": false,
+           "ActiveSmtp": false,
+           "LastSeen": "2023-12-19T15:50:22.467-03:00",
+           "LastSeenRoute": "~/contact/21075660",
+           "Editable": true,
+           "Suspended": false,
+           "CreatorId": 78934,
+           "UpdaterId": 87362,
+           "CreateDate": "2021-03-18T15:32:51.77-03:00",
+           "UpdateDate": "2023-08-23T11:14:25.11-03:00",
+           "LastUpdateDate": "2023-08-23T11:14:25.11-03:00",
+           "LastSeenPlatform": "Web",
+           "ResetPassword": false,
+           "Language": "pt-BR",
+           "LanguageId": 1,
+           "NoLogin": null,
+           "Profile": {
+              "Id": 1,
+              "Name": "Administrador",
+              "Administrator": true,
+              "ContactsModule": true,
+              "ContactsView": 1,
+              "ContactsEdit": 1,
+              "ContactsDelete": 1,
+              "ContactsPersonCreatePermission": true,
+              "ContactsCompanyCreatePermission": true,
+              "ContactsCreatePermission": true,
+              "ContactsProductsViewPermission": true,
+              "ContactsProductsCreatePermission": true,
+              "ContactsProductsEditPermission": true,
+              "ContactsProductsDeletePermission": true,
+              "DealsModule": true,
+              "DealsView": 1,
+              "DealsContactsView": false,
+              "DealsEdit": 1,
+              "DealsContactsEdit": false,
+              "DealsDelete": 1,
+              "DealsContactsDelete": false,
+              "DealsCreatePermission": true,
+              "DealsWinOrLosePermission": true,
+              "DealsReopenPermission": true,
+              "QuotesModule": true,
+              "QuotesCreatePermission": true,
+              "QuotesEditPermission": true,
+              "QuotesDeletePermission": true,
+              "LeadsModule": true,
+              "LeadsView": 1,
+              "LeadsEdit": 1,
+              "LeadsUpdateStatusPermission": true,
+              "LeadsDelete": 1,
+              "LeadsCreatePermission": true,
+              "OrdersModule": true,
+              "OrdersView": 1,
+              "OrdersEdit": 1,
+              "OrdersDelete": 1,
+              "OrdersCreatePermission": true,
+              "DocumentsModule": true,
+              "DocumentsCreatePermission": true,
+              "DocumentsEditPermission": true,
+              "DocumentsDeletePermission": true,
+              "UsersView": 1,
+              "ProductsAdministerPermission": true,
+              "ProductsCreatePermission": true,
+              "ProductsEditPermission": true,
+              "ProductsDeletePermission": true,
+              "TablesCreatePermission": true,
+              "LossReasonsCreatePermission": true,
+              "TagsCreatePermission": true,
+              "CitiesCreatePermission": true,
+              "OtherOptionsCreatePermission": true,
+              "ExcelExportPermission": true,
+              "ExcelImportPermission": true,
+              "ReportsModule": true,
+              "EmailsModule": true,
+              "EmailsView": 1,
+              "TasksModule": true,
+              "FullMainTimeline": true,
+              "GoalsContactsCreate": 1,
+              "GoalsDealsCreate": 1,
+              "GoalsLeadsCreate": 1,
+              "GoalsOrdersCreate": 1,
+              "GoalsDocumentsCreate": 1,
+              "GoalsTasksCreate": 1,
+              "GoalsInteractionRecordsCreate": 1,
+              "ChatModule": true,
+              "ChatPermission": 1,
+              "FieldsCreatePermission": true,
+              "FieldsEditPermission": true,
+              "FieldsDeletePermission": true,
+              "Editable": false,
+              "Listable": true,
+              "LogsViewPermission": 1,
+              "HomeMessagesCreate": 1,
+              "TeamsView": 1,
+              "GoalsModule": true,
+              "LibraryModule": true,
+              "AttachmentBaseFolderCreatePermission": true,
+              "ContactPublicFormsCreatePermission": true,
+              "DealPublicFormsCreatePermission": true,
+              "CreatorId": 0,
+              "CreateDate": "2018-07-19T22:47:24.9-03:00",
+              "UpdaterId": null,
+              "UpdateDate": null,
+              "QuoteSharePermission": true,
+              "OrderSharePermission": true,
+              "DocumentSharePermission": true,
+              "InteractionRecordDeletePermission": true,
+              "InteractionRecordEditPermission": true
+           }
         },
-    ],
-    "Name": "TESTE APP",
-    "Phones": [
-        {
-            "Type": {
-                "Id": 1,
-                "Name": "Comercial"
-            },
-            "TypeId": 1,
-            "PhoneNumber": "(54) 77878-4848",
-            "Country": {
-                "Id": 76,
-                "Short": "BRA",
-                "Short2": "BR",
-                "Name": "BRASIL",
-                "PhoneMask": "(99) 9999?9-9999"
-            },
-            "CountryId": 76
-        }
-    ],
-    "Tags": [],
-    "CityId": 1,
-    "State": "Goiás",
-    "Country": "Brasil",
-    "OwnerId": 119909,
-    "OriginId": null,
-    "TypeId": 1,
-    "CompanyId": null
-}
-
-
-{
-    "OtherProperties": [
-        {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
-            "IntegerValue": 18238519
-        },
-        {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
-            "IntegerValue": 18238521
-        },
-        {
-            "FieldKey": "contact_7A306110-6643-4AF7-9E1C-DDF1EFAC36FA",
-            "IntegerValue": 16764215
-        }
-    ],
-    "Phones": [
-        {
-            "Type": {
-                "Id": 4,
-                "Name": "Fax"
-            },
-            "TypeId": 4,
-            "PhoneNumber": "(75) 62489-9256",
-            "Country": {
-                "Id": 76,
-                "Short": "BRA",
-                "Short2": "BR",
-                "Name": "BRASIL",
-                "PhoneMask": "(99) 9999?9-9999"
-            },
-            "CountryId": 76
-        }
-    ],
-    "Name": "TESTE APP - CEMAG",
-    "Tags": [],
-    "CityId": 1736,
-    "State": "GOIÁS",
-    "Country": "Brasil",
-    "OwnerId": 119909,
-    "TypeId": 1
-}
-
-// Feito direto em deals
-
-// Cliente
-{
-    "Id": "461",
-    "Name": "Cliente Teste 2",
-    "OriginId": null,
-    "Phones": [
-      {
-        "Type": {
-          "Id": 3,
-          "Name": "Residencial"
-        },
-        "TypeId": 3,
-        "PhoneNumber": "(55) 55555-5555",
-        "Country": {
-          "Id": 76,
-          "Short": "BRA",
-          "Short2": "BR",
-          "Name": "BRASIL",
-          "PhoneMask": "(99) 9999?9-9999"
-        },
-        "CountryId": 76
-      }
-    ],
-    "CityId": 1830,
-    "State": "Ceará",
-    "Country": "Brasil",
-    "TypeId": 1
-}
-
-// Contato
-{
-  "Id": "474",
-  "Name": "Contato Teste",
-  "Phones": [
-    {
-      "Type": {
-        "Id": 5,
-        "Name": "Outros"
-      },
-      "TypeId": 5,
-      "PhoneNumber": "(44) 44444-4444",
-      "Country": {
-        "Id": 76,
-        "Short": "BRA",
-        "Short2": "BR",
-        "Name": "BRASIL",
-        "PhoneMask": "(99) 9999?9-9999"
-      },
-      "CountryId": 76
-    }
+        "Phones": [
+           {
+              "Id": 62310995,
+              "ContactId": 18393290,
+              "PhoneNumber": "(85) 99901-2483",
+              "SearchPhoneNumber": 85999012483,
+              "TypeId": 1,
+              "CountryId": 76
+           }
+        ]
+     }
   ],
-  "Companies": [],
-  "CityId": 1830,
-  "State": "Ceará",
-  "Country": "Brasil",
-  "TypeId": 2,
-  "CompanyId": 20930151
-} 
-
-//Deals
-{
-    "ContactId": 20930151,
-    "OwnerId": 119909,
-    "StageId": 174788
+  "OtherProperties": [
+     {
+        "FieldKey": "interaction_record_EF9D0AE3-2A8E-44C1-AB6E-910795489B79",
+        "IntegerValue": 119909
+     }
+  ]
 }
-  
-
-{
-    "Name": "teste pessoa 9",
-    "Phones": [
-      {
-        "Type": {
-          "Id": 1,
-          "Name": "Comercial"
-        },
-        "TypeId": 1,
-        "PhoneNumber": "(88) 88888-8888",
-        "Country": {
-          "Id": 76,
-          "Short": "BRA",
-          "Short2": "BR",
-          "Name": "BRASIL",
-          "PhoneMask": "(99) 9999?9-9999"
-        },
-        "CountryId": 76
-      }
-    ],
-    "Companies": [
-      {
-        "CompanyId": 17166768
-      },
-      {
-        "CompanyId": 20925237
-      },
-      {
-        "CompanyId": 17193576
-      }
-    ],
-    "CityId": 1,
-    "State": "Goiás",
-    "Country": "Brasil",
-    "OwnerId": 119909,
-    "TypeId": 2
-}
-
-{
-    "Name": "Saul",
-    "Phones": [
-      {
-        "Type": {"Id": 1, "Name": "Comercial"},
-        "TypeId": 1,
-        "PhoneNumber": "(85) 98888-8888",
-        "Country": {
-          "Id": 76,
-          "Short": "BRA",
-          "Short2": "BR",
-          "Name": "BRASIL",
-          "PhoneMask": "(99) 9999?9-9999"
-        },
-        "CountryId": 76
-      }
-    ],
-    "Companies": [
-        {
-            "CompanyId": 1979678254384
-        }
-    ],
-    "CompanyId": 1979678254384,
-    "CityId": "1",
-    "State": "Goiás",
-    "Country": "Brasil",
-    "TypeId": 2,
-    "OwnerId": 119909
-}
-
