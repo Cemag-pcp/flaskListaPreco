@@ -34,7 +34,25 @@
          <div class="custom-card">
             <div class="card-body">
                <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
+               {% if dado.PersonId != None %}
                <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
+               {% else %}
+               <div class="card-content" style="display: flex; justify-content: space-between;">
+                  <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
+                  <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;" title="Adicione um contato"></i>
+              </div>
+              <div class="campo_adicional" style="display: none;">
+                  <div class="caret-down"></div>
+                  <h6 style="border-bottom: 1px solid lightgrey; padding: 5px;">Adicionar Contato</h6>
+                  <div style="margin-top: 10px; margin-bottom: 10px;">
+                     <label>Contato: </label>
+                     <input type="text" class="form-control campo_input">
+                     <div class="suggestions_2 suggestions_campo_input" style="display: none;"></div>
+                  </div>
+                  <button type="submit" class="btn btn-info btn-sm">Salvar</button>
+                  <button class="btn btn-danger btn-sm botao_cancelar">Cancelar</button>
+              </div>
+               {% endif %}
                <p class="data-aceito card-aceito">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
                   <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
                   {% else %}
@@ -63,13 +81,17 @@
                   <a></a>
                   <a></a>
                {% else %}
+                  {% if dado.PersonId != None %}
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
                   <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
                   <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
                   <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
 
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-
+                  {% else %}
+                  <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+                  <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
+                  {% endif %}
                {% endif %}
             </div>
          </div>
@@ -141,6 +163,82 @@
 <div id="loading-overlay" style="display: none;">
    <div id="loading-spinner"></div>
 </div>
+
+<script>
+   $(document).ready(function() {
+      // Ao clicar no botão "plus"
+      $(".botao_plus").on("click", function() {
+         // Encontre os elementos associados ao card específico
+         var cardContent = $(this).closest('.card-content');
+         var campoAdicional = cardContent.siblings('.campo_adicional');
+
+         // Exibir o campo adicional apenas no card clicado
+         campoAdicional.show();
+      });
+
+      // Ao clicar no botão "cancelar"
+      $(".botao_cancelar").on("click", function() {
+         // Ocultar o campo adicional associado ao botão clicado
+         $(this).closest('.campo_adicional').hide();
+      });
+   });
+</script>
+
+<script>$(document).ready(function() {
+   function contatos_Valores() {
+      var campo_inputs = $('.campo_input');
+      var suggestions_campo_inputs = $('.suggestions_campo_input');
+
+      campo_inputs.on('input', function () {
+         var inputValue = $(this).val();
+         var suggestions_campo_input = $(this).siblings('.suggestions_campo_input');
+
+         if (inputValue.trim() === '') {
+            suggestions_campo_input.hide();
+            return;
+         }
+
+         inputNomesContatos(inputValue)
+            .then(function (contatosResponse) {
+               suggestions_campo_input.empty();
+
+               contatosResponse.forEach(function (contato) {
+                  var suggestionItem;
+
+                  if (contato.Company) {
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
+                  } else {
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                  }
+
+                  suggestionItem.on('click', function (event) {
+                     event.preventDefault();
+                     suggestions_campo_input.empty();
+                     suggestions_campo_input.hide();
+                     $('.campo_input').val(contato.Name);
+
+                     $(".modal-title").text("Registrar Interação");
+                  });
+
+                  suggestions_campo_input.append(suggestionItem);
+                  suggestions_campo_input.show();
+               });
+            })
+            .catch(function (error) {
+               console.error(error);
+            });
+      })
+      campo_inputs.on('blur', function() {
+         // Agora, o código a seguir é executado quando o campo perde o foco
+         suggestions_campo_inputs.hide();
+      });
+   }
+
+   // Chama a função quando o documento estiver pronto
+   contatos_Valores();
+});
+
+</script>
 
 <script>
    // Script para procurar na lista de cards
@@ -582,7 +680,7 @@
 
       // Substitua a linha original que cria o ícone pela linha modificada
       var label_mais_campos = $('<label>Campos não obrigatório</label>');
-      var inputDate = $('<label>Data: </label><input id="campo-data" type="date" class="form-control">');
+      var inputDate = $('<label>Data: </label><input id="campo-data" type="date" class="form-control" style="min-height: 40px;">');
       inputDate.css('display','none');
       var contato_interacao = $('<label>Contatos: </label><input id="campo-texto-1" type="text" class="form-control">');
       contato_interacao.attr('autocomplete', 'off');
@@ -598,7 +696,7 @@
       div_mais_campos.append(label_mais_campos,arrowIcon)
       div.append(textarea,div_mais_campos,inputDate)
 
-      empresa_registrar.on('change', function() {
+      empresa_registrar.on('blur', function() {
          // Verifique se o valor do campo empresa_registrar não está vazio
          if ($(this).val().trim() !== '') {
             // Se não estiver vazio, exiba todos_os_campos
@@ -827,9 +925,9 @@
       const dados = {
         nome_empresa: nome_empresa || null,
         registro: registro || null,
-        dataRegistro: dataRegistro || null,
-        contatoRegistro: contatoRegistro || null,
-        responsavelRegistro: responsavelRegistro || null
+        dataRegistro: dataRegistro || [],
+        contatoRegistro: contatoRegistro || [],
+        responsavelRegistro: responsavelRegistro || []
       };
 
       $.ajax({
@@ -849,6 +947,7 @@
             error: function (error) {
                console.log(error);
                $("#loading-overlay").hide();
+               alert("Erro ao enviar a informação para o servidor, verifique se o contato ou a empresa foi selecionada corretamente")
             }
       });
    }

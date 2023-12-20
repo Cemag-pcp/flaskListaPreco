@@ -1066,3 +1066,21 @@ input{
   max-height: 200px; /* Defina a altura máxima das opções */
   overflow-y: auto; /* Adicione uma barra de rolagem se as opções ultrapassarem a altura máxima */
 }
+
+.campo_adicional{
+  position: absolute;
+  top: -154px;
+  right: 5px;
+  background-color: white;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px;
+}
+
+.campo_adicional .caret-down {
+  position: absolute;
+  top: 169px;
+  right: 40px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 13px solid #fff;
+}

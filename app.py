@@ -2312,6 +2312,15 @@ def obterContatos(nomeContato):
 
     obterContatos = obterContatos['value']
 
+    if obterContatos:
+        # Itera sobre cada contato e adiciona as informações adicionais
+        for contato in obterContatos:
+            contato['display'] = contato.get('Name', '')  # Adiciona o display com base no nome do contato
+            contato['subtitle'] = {}  # Adiciona um subtítulo vazio
+            contato['subtitleTooltip'] = f" Empresa: {contato['Company']['Name']}"  # Adiciona o subtítuloTooltip com base no nome da empresa
+            contato['tooltipHTML'] = {}  # Adiciona um tooltipHTML vazio
+            contato['ContactId'] = contato.get('Id', 0)  # Adiciona o ContactId com base no Id do contato
+
     return obterContatos
 
 def idFormaPagamentoCriarContato(formaPagamento):
@@ -2537,7 +2546,7 @@ def listarOrcamentos(nomeRepresentante):
     data = response.json()
     data1 = data['value']
 
-    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
+    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount,PersonId".format(
         idRep)
 
     headers = {
@@ -3134,7 +3143,11 @@ def criarRegistroInteracao(nome_empresa,registro,dataRegistro,contatoRegistro,re
 
     Contacts = obterContatos(contatoRegistro)
 
-    data_formatada = converter_formato_data(dataRegistro)
+    if dataRegistro != '':
+        data_formatada = converter_formato_data(dataRegistro)
+    else: 
+        data_formatada = dataHojeFormato()
+    
 
     url = "https://app6-api2.ploomes.com/InteractionRecords"
 
@@ -3158,7 +3171,7 @@ def criarRegistroInteracao(nome_empresa,registro,dataRegistro,contatoRegistro,re
     print(data)
 
     # Fazendo a requisição POST com os dados no corpo
-    # requests.post(url, headers=headers, json=data)
+    requests.post(url, headers=headers, json=data)
 
 
 if __name__ == '__main__':

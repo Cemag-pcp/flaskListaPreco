@@ -68,8 +68,22 @@
     padding: 10px;
     width: 95%;
   }
+
+  .suggestions_2{
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    width: 95%;
+  }
   
   .suggestions .suggestion-item:hover{
+    cursor: pointer;
+    background-color: rgb(233, 233, 233);
+  }
+
+  .suggestions_2 .suggestion-item:hover{
     cursor: pointer;
     background-color: rgb(233, 233, 233);
   }
@@ -98,6 +112,14 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
       padding: 10px;
       width: 77%;
+    }
+    .suggestions_2{
+      display: none;
+      position: absolute;
+      background-color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      width: 90%;
     }
   }
 
