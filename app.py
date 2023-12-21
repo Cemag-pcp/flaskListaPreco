@@ -13,7 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from io import BytesIO
 from datetime import date
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import uuid
 from sqlalchemy import create_engine
 import warnings
@@ -1537,6 +1537,42 @@ def cadastrar_contato():
 
     return render_template('opcoes.html')
 
+@app.route('/cadastrar-interacao', methods=['POST'])
+@login_required
+def cadastrar_interacao():
+
+    data = request.json
+
+    nome_empresa = data['nome_empresa']
+    registro = data['registro']
+    dataRegistro  = data['dataRegistro']
+    contatoRegistro = data['contatoRegistro']
+    responsavelRegistro = data['responsavelRegistro']
+
+    print(nome_empresa,registro,dataRegistro,contatoRegistro,responsavelRegistro)
+    criarRegistroInteracao(nome_empresa,registro,dataRegistro,contatoRegistro,responsavelRegistro)
+
+    return render_template('opcoes.html')
+
+@app.route('/atualizar-contato', methods=['POST'])
+@login_required
+def atualizar_contato():
+
+    data = request.json
+
+    idDeals = data['idDeals']
+    nomeEmpresa = data['nomeEmpresa']
+    campoInput  = data['campoInput']
+
+    print(nomeEmpresa,campoInput,idDeals)
+
+    resposta = atualizandoContato(nomeEmpresa,campoInput,idDeals)
+
+    if resposta == "Erro":
+        return jsonify("Erro")
+
+    return render_template('opcoes.html')
+
 def obter_condicoes_pagamento(lista_opcoes_cliente, opcoes):
     """Função para Criar as opções de pagamento"""
 
@@ -2121,6 +2157,23 @@ def id(nomeCliente):
     return idCliente
 
 
+def converter_formato_data(data_string):
+
+    # Converter a string de data para um objeto datetime
+    data_obj = datetime.strptime(data_string, '%Y-%m-%d')
+
+    # Criar um objeto timezone representando -03:00
+    fuso_horario = timezone(timedelta(hours=-3))
+
+    # Adicionar o fuso horário ao objeto datetime
+    data_obj_com_fuso = data_obj.replace(tzinfo=fuso_horario)
+
+    # Formatar a data no formato desejado
+    data_formatada = data_obj_com_fuso.strftime('%Y-%m-%dT%H:%M%z')
+
+    return data_formatada
+
+
 def idContatoCliente(nomeContato, idCliente):
     """Função para buscar o id do contato"""
 
@@ -2145,6 +2198,32 @@ def idContatoCliente(nomeContato, idCliente):
             idContato = idContato['Id']
 
     return idContato
+
+
+def idContato(nomeContato):
+    """Função para buscar o id do contato"""
+
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeContato)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    ids = response.json()
+    ids = ids['value']
+
+    if len(ids) == 0:
+        idContato = 'Null'
+
+    else:
+
+        for idContato in ids:
+            idContato = idContato['Id']
+
+    return idContato
+
 
 
 def idRepresentante(nomeRepresentante):
@@ -2264,25 +2343,30 @@ def idFormaPagamentoF(formaPagamento):
     return idFormaPagamento
 
 
-# def idCidade(nomeCidade):
-#     """Função para buscar o id da cidade"""
+def obterContatos(nomeContato): 
 
-#     # Define a URL da API e os nomes dos produtos que você deseja buscar
-#     url = "https://public-api2.ploomes.com/Fields@OptionsTables@Options?$select=Id&$filter=TableId+eq+31965 and Name+eq+'{}'".format(
-#         nomeCidade)
+    url = f"https://public-api2.ploomes.com/Contacts?$filter=TypeId+eq+2 and Name+eq+'{nomeContato}'&$expand=Company,Owner($expand=Profile),Phones"
 
-#     headers = {
-#         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
-#     }
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
 
-#     response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers)
 
-#     forma_pagamento = response.json()
-#     forma_pagamento = forma_pagamento['value']
-#     idFormaPagamento = forma_pagamento[0]['Id']
+    obterContatos = response.json()
 
-#     return idFormaPagamento
+    obterContatos = obterContatos['value']
 
+    if obterContatos:
+        # Itera sobre cada contato e adiciona as informações adicionais
+        for contato in obterContatos:
+            contato['display'] = contato.get('Name', '')  # Adiciona o display com base no nome do contato
+            contato['subtitle'] = {}  # Adiciona um subtítulo vazio
+            contato['subtitleTooltip'] = f" Empresa: {contato['Company']['Name']}"  # Adiciona o subtítuloTooltip com base no nome da empresa
+            contato['tooltipHTML'] = {}  # Adiciona um tooltipHTML vazio
+            contato['ContactId'] = contato.get('Id', 0)  # Adiciona o ContactId com base no Id do contato
+
+    return obterContatos
 
 def idFormaPagamentoCriarContato(formaPagamento):
     """Função para buscar o id da forma de pagamento"""
@@ -2540,7 +2624,7 @@ def listarOrcamentos(nomeRepresentante):
     data = response.json()
     data1 = data['value']
 
-    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount".format(
+    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount,PersonId".format(
         idRep)
 
     headers = {
@@ -3128,6 +3212,77 @@ def criarOrdemEmpresa(nomeCliente, nomeRepresentante,personId=None):
     # Fazendo a requisição POST com os dados no corpo
     requests.post(url, headers=headers, json=data)
     # requests.Response
+
+def criarRegistroInteracao(nome_empresa,registro,dataRegistro,contatoRegistro,responsavelRegistro):
+    """Função para gerar ordem de Empresa"""
+
+    ContactId = id(nome_empresa)
+
+    OwnerId = idRepresentante(responsavelRegistro)
+
+    Contacts = obterContatos(contatoRegistro)
+
+    if dataRegistro != '':
+        data_formatada = converter_formato_data(dataRegistro)
+    else: 
+        data_formatada = dataHojeFormato()
+    
+
+    url = "https://app6-api2.ploomes.com/InteractionRecords"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+
+    data = {
+        "ContactId": ContactId,
+        "Content": registro,
+        "Date": data_formatada,
+        "Contacts":Contacts,
+        "OtherProperties":[{
+            "FieldKey": "interaction_record_EF9D0AE3-2A8E-44C1-AB6E-910795489B79",
+            "IntegerValue": OwnerId
+        }]
+    }
+    
+    print(data)
+
+    # Fazendo a requisição POST com os dados no corpo
+    requests.post(url, headers=headers, json=data)
+
+
+def atualizandoContato(nome_empresa,contatoRegistro,idDeals):
+    """Função para gerar ordem de Empresa"""
+
+    idDeals = int(idDeals)
+
+    ContactId = idContato(contatoRegistro)
+
+    print(ContactId)
+
+    if ContactId == 'Null':
+        return 'Erro'
+
+    url = f"https://app6-api2.ploomes.com/Deals({idDeals})"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+
+    data = {
+            "Id": idDeals,
+            "PersonId": ContactId
+        }
+    
+    print(data)
+
+    # Fazendo a requisição POST com os dados no corpo
+    requests.patch(url, headers=headers, json=data)
+
 
 if __name__ == '__main__':
     app.run(port=8000)

@@ -889,6 +889,33 @@ input{
     outline: none;
   }
 
+  .interacao_cliente{
+    background-color: rgba(255, 25, 56, 0.6);
+    border: 2px solid rgba(255, 25, 56, 0.6);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 250px;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .interacao_cliente:hover {
+    background: rgba(211, 0, 28, 0.6);
+    outline: none;
+  }
+  
+  .interacao_cliente:active {
+    background: rgba(211, 0, 28, 0.6);
+    outline: none;
+  }
+
 @media (max-width:1000px){
   #filtrar {
     background: rgb(255, 161, 113);
@@ -939,6 +966,22 @@ input{
   .cadastrar_cliente{
     background: rgb(2, 104, 199);
     border: 2px solid rgb(2, 104, 199);
+    border-radius: 4px;
+    outline: none;
+    padding: 15px;
+    width: 100%;
+    margin-right: 15px;
+    margin-top: 25px;
+    color: #ffffff;
+    font-size: 1.2em;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+  .interacao_cliente{
+    background-color: rgba(255, 25, 56, 0.6);
+    border: 2px solid rgba(255, 25, 56, 0.6);
     border-radius: 4px;
     outline: none;
     padding: 15px;
@@ -1022,4 +1065,22 @@ input{
 #pagamentoOptions {
   max-height: 200px; /* Defina a altura máxima das opções */
   overflow-y: auto; /* Adicione uma barra de rolagem se as opções ultrapassarem a altura máxima */
+}
+
+.campo_adicional{
+  position: absolute;
+  top: -154px;
+  right: 5px;
+  background-color: white;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 8px;
+}
+
+.campo_adicional .caret-down {
+  position: absolute;
+  top: 169px;
+  right: 40px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 13px solid #fff;
 }
