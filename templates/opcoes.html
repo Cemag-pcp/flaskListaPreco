@@ -33,7 +33,8 @@
       <div class="col-md-4 mb-3" id="containerDosCards">
          <div class="custom-card">
             <div class="card-body">
-               <!-- <h5 class="card-title">{{ dado.DealId }}</h5> -->
+               <input class="id-deals" type="text" value="{{ dado.DealId }}" style="display: none;">
+               <input class="nome-empresa" type="text" value="{{ dado.ContactName }}" style="display: none;">
                {% if dado.PersonId != None %}
                <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
                {% else %}
@@ -41,6 +42,7 @@
                   <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
                   <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;" title="Adicione um contato"></i>
               </div>
+              <p style="color: red;">Adicione um contato para ganhar proposta</p>
               <div class="campo_adicional" style="display: none;">
                   <div class="caret-down"></div>
                   <h6 style="border-bottom: 1px solid lightgrey; padding: 5px;">Adicionar Contato</h6>
@@ -49,7 +51,7 @@
                      <input type="text" class="form-control campo_input">
                      <div class="suggestions_2 suggestions_campo_input" style="display: none;"></div>
                   </div>
-                  <button type="submit" class="btn btn-info btn-sm">Salvar</button>
+                  <button class="btn btn-info btn-sm salvarContato" onclick="enviarDeals($(this).closest('.custom-card'))">Salvar</button>
                   <button class="btn btn-danger btn-sm botao_cancelar">Cancelar</button>
               </div>
                {% endif %}
@@ -89,6 +91,7 @@
 
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
                   {% else %}
+                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
                   <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
                   {% endif %}
@@ -167,6 +170,7 @@
 <script>
    $(document).ready(function() {
       // Ao clicar no botão "plus"
+      var campo_input = $(".campo_input");
       $(".botao_plus").on("click", function() {
          // Encontre os elementos associados ao card específico
          var cardContent = $(this).closest('.card-content');
@@ -180,14 +184,18 @@
       $(".botao_cancelar").on("click", function() {
          // Ocultar o campo adicional associado ao botão clicado
          $(this).closest('.campo_adicional').hide();
+         campo_input.val('')
       });
    });
 </script>
 
-<script>$(document).ready(function() {
+<script>
+
+$(document).ready(function () {
    function contatos_Valores() {
       var campo_inputs = $('.campo_input');
       var suggestions_campo_inputs = $('.suggestions_campo_input');
+      var salvar_contato = $('.salvarContato');
 
       campo_inputs.on('input', function () {
          var inputValue = $(this).val();
@@ -211,13 +219,11 @@
                      suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
                   }
 
-                  suggestionItem.on('click', function (event) {
+                  suggestionItem.on('mousedown', function (event) {
                      event.preventDefault();
-                     suggestions_campo_input.empty();
                      suggestions_campo_input.hide();
-                     $('.campo_input').val(contato.Name);
-
-                     $(".modal-title").text("Registrar Interação");
+                     suggestions_campo_input.empty();
+                     campo_inputs.val(contato.Name);
                   });
 
                   suggestions_campo_input.append(suggestionItem);
@@ -227,8 +233,9 @@
             .catch(function (error) {
                console.error(error);
             });
-      })
-      campo_inputs.on('blur', function() {
+      });
+
+      campo_inputs.on('blur', function () {
          // Agora, o código a seguir é executado quando o campo perde o foco
          suggestions_campo_inputs.hide();
       });
@@ -237,6 +244,7 @@
    // Chama a função quando o documento estiver pronto
    contatos_Valores();
 });
+
 
 </script>
 
@@ -949,6 +957,45 @@
                $("#loading-overlay").hide();
                alert("Erro ao enviar a informação para o servidor, verifique se o contato ou a empresa foi selecionada corretamente")
             }
+      });
+   }
+
+   function enviarDeals(cardElement) {
+      $("#loading-overlay").show();
+
+      const idDeals = cardElement.find('.id-deals').val();
+      const nomeEmpresa = cardElement.find('.nome-empresa').val();
+      const campoInput = cardElement.find('.campo_input').val();
+
+      console.log(idDeals, nomeEmpresa, campoInput);
+
+      const dados = {
+         idDeals: idDeals || null,
+         nomeEmpresa: nomeEmpresa || null,
+         campoInput: campoInput || null
+      };
+
+      $.ajax({
+         url: '/atualizar-contato',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({
+               idDeals: idDeals,
+               nomeEmpresa: nomeEmpresa,
+               campoInput: campoInput
+         }),
+         success: function (response) {
+            if(response == "Erro"){
+               alert("Erro ao enviar a informação para o servidor, verifique se o contato foi selecionada corretamente");
+               $("#loading-overlay").hide();
+            } else {
+               location.reload();
+            }
+         },
+         error: function (error) {
+            $("#loading-overlay").hide();
+            alert("Erro ao enviar a informação para o servidor, verifique se o contato foi selecionada corretamente");
+         }
       });
    }
 

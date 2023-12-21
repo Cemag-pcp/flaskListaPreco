@@ -1554,6 +1554,25 @@ def cadastrar_interacao():
 
     return render_template('opcoes.html')
 
+@app.route('/atualizar-contato', methods=['POST'])
+@login_required
+def atualizar_contato():
+
+    data = request.json
+
+    idDeals = data['idDeals']
+    nomeEmpresa = data['nomeEmpresa']
+    campoInput  = data['campoInput']
+
+    print(nomeEmpresa,campoInput,idDeals)
+
+    resposta = atualizandoContato(nomeEmpresa,campoInput,idDeals)
+
+    if resposta == "Erro":
+        return jsonify("Erro")
+
+    return render_template('opcoes.html')
+
 def obter_condicoes_pagamento(lista_opcoes_cliente, opcoes):
     """Função para Criar as opções de pagamento"""
 
@@ -2179,6 +2198,32 @@ def idContatoCliente(nomeContato, idCliente):
             idContato = idContato['Id']
 
     return idContato
+
+
+def idContato(nomeContato):
+    """Função para buscar o id do contato"""
+
+    url = "https://public-api2.ploomes.com/Contacts?$top=100&$select=Id&$filter=Name+eq+'{}'".format(nomeContato)
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    ids = response.json()
+    ids = ids['value']
+
+    if len(ids) == 0:
+        idContato = 'Null'
+
+    else:
+
+        for idContato in ids:
+            idContato = idContato['Id']
+
+    return idContato
+
 
 
 def idRepresentante(nomeRepresentante):
@@ -3172,6 +3217,37 @@ def criarRegistroInteracao(nome_empresa,registro,dataRegistro,contatoRegistro,re
 
     # Fazendo a requisição POST com os dados no corpo
     requests.post(url, headers=headers, json=data)
+
+
+def atualizandoContato(nome_empresa,contatoRegistro,idDeals):
+    """Função para gerar ordem de Empresa"""
+
+    idDeals = int(idDeals)
+
+    ContactId = idContato(contatoRegistro)
+
+    print(ContactId)
+
+    if ContactId == 'Null':
+        return 'Erro'
+
+    url = f"https://app6-api2.ploomes.com/Deals({idDeals})"
+
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3",
+    }
+
+    # Dados que você deseja enviar no corpo da solicitação POST
+
+    data = {
+            "Id": idDeals,
+            "PersonId": ContactId
+        }
+    
+    print(data)
+
+    # Fazendo a requisição POST com os dados no corpo
+    requests.patch(url, headers=headers, json=data)
 
 
 if __name__ == '__main__':
