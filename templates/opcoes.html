@@ -180,6 +180,87 @@
 </div>
 
 <script>
+   $(document).ready(function() {
+      // Ao clicar no botão "plus"
+      var campo_input = $(".campo_input");
+      $(".botao_plus").on("click", function() {
+         // Encontre os elementos associados ao card específico
+         var cardContent = $(this).closest('.card-content');
+         var campoAdicional = cardContent.siblings('.campo_adicional');
+
+         // Exibir o campo adicional apenas no card clicado
+         campoAdicional.show();
+      });
+
+      // Ao clicar no botão "cancelar"
+      $(".botao_cancelar").on("click", function() {
+         // Ocultar o campo adicional associado ao botão clicado
+         $(this).closest('.campo_adicional').hide();
+         campo_input.val('')
+      });
+   });
+</script>
+
+<script>
+
+$(document).ready(function () {
+   function contatos_Valores() {
+      var campo_inputs = $('.campo_input');
+      var suggestions_campo_inputs = $('.suggestions_campo_input');
+      var salvar_contato = $('.salvarContato');
+
+      campo_inputs.on('input', function () {
+         var inputValue = $(this).val();
+         var suggestions_campo_input = $(this).siblings('.suggestions_campo_input');
+
+         if (inputValue.trim() === '') {
+            suggestions_campo_input.hide();
+            return;
+         }
+
+         inputNomesContatos(inputValue)
+            .then(function (contatosResponse) {
+               suggestions_campo_input.empty();
+
+               contatosResponse.forEach(function (contato) {
+                  var suggestionItem;
+
+                  if (contato.Company) {
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
+                  } else {
+                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                  }
+
+                  suggestionItem.on('mousedown', function (event) {
+                     event.preventDefault();
+                     suggestions_campo_input.hide();
+                     suggestions_campo_input.empty();
+                     campo_inputs.val(contato.Name);
+                  });
+
+                  suggestions_campo_input.append(suggestionItem);
+                  suggestions_campo_input.show();
+               });
+            })
+            .catch(function (error) {
+               console.error(error);
+            });
+      });
+
+      campo_inputs.on('blur', function () {
+         // Agora, o código a seguir é executado quando o campo perde o foco
+         suggestions_campo_inputs.hide();
+      });
+   }
+
+   // Chama a função quando o documento estiver pronto
+   contatos_Valores();
+});
+
+
+</script>
+
+<script>
    // Script para procurar na lista de cards
    document.getElementById("searchInput").addEventListener("input", function () {
       var searchValue = this.value.toLowerCase();
