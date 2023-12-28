@@ -54,6 +54,7 @@ function toggleCardItem(button) {
   const row = button.parentNode.parentNode;
   const columns = row.getElementsByTagName('td');
 
+  const nomeCarreta = columns[1].textContent;
   const description = columns[2].textContent;
   const preco = columns[5].textContent; 
   const descricaoCarreta = columns[3].textContent; 
@@ -84,6 +85,12 @@ function toggleCardItem(button) {
   const itemName = document.createElement('div');
   itemName.textContent = description; // Set the item description
   item.appendChild(itemName);
+
+  const nomeCarretaElement = document.createElement('span');
+  nomeCarretaElement.classList.add('nomeCarreta');
+  nomeCarretaElement.textContent = nomeCarreta;
+  nomeCarretaElement.style.display = 'none'; // Adicione esta linha para ocultar o elemento
+  item.appendChild(nomeCarretaElement);
 
   const descricaoCarretaElement = document.createElement('span');
   descricaoCarretaElement.classList.add('descCarreta');
@@ -123,6 +130,7 @@ function toggleCardItem(button) {
 
   corElement.addEventListener('change', () => {
     const novaCor = corElement.value;
+    console.log(novaCor)
     // Faça o que for necessário para atualizar a cor do produto com novaCor
     // Você pode usar novaCor para atualizar o produto no servidor ou onde for necessário.
   });

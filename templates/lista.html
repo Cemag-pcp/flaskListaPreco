@@ -858,13 +858,15 @@
     let itensTexto = '';
     listItems.forEach(listItem => {
       const descricao = listItem.getAttribute('data-description');
-      const cor = listItem.querySelector('.cor').textContent;
+      const corElement = listItem.querySelector('.cor');
+      const cor = corElement.value;
+      const nomeCarreta = listItem.querySelector('.nomeCarreta').textContent;
       const preco = listItem.querySelector('.quanti').textContent;
       const quantidade = listItem.querySelector('.numeros').textContent;
       const descricaoCarreta = listItem.querySelector('.descCarreta').textContent;
 
       // Construa a string para cada item
-      itensTexto += `${descricaoCarreta}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
+      itensTexto += `${nomeCarreta} - ${descricaoCarreta}\nCor: ${cor}\nPreço: ${preco}\nQuantidade: ${quantidade}\n\n`;
     });
 
     // Obtenha o valor do elemento HTML que contém o total
