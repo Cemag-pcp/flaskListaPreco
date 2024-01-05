@@ -1533,11 +1533,11 @@ def cadastrar_contato():
         nome_estado,id_cidade = idCidade(cidadeContato)
         print(responsavelContato)
         print("CONTATOO")
-        criarEmpresaEContato(nomeContato,responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
+        criarEmpresaEContato(nomeContato,'',responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
     else:
         codigoTipoTelefone =  idTipoTelefone(tipoTelefoneContato)
         nome_estado,id_cidade = idCidade(cidadeContato)
-        personId = criarEmpresaEContato(nomeContato,responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
+        personId = criarEmpresaEContato(nomeContato,'',responsavelContato,telefoneContato,tipoTelefoneContato,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas)
         criarOrdemEmpresa(empresaInputContato,responsavelContato,personId)
 
     return render_template('opcoes.html')
