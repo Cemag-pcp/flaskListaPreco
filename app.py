@@ -1485,6 +1485,7 @@ def cadastrar_empresa():
     data = request.json
 
     nome = data['nome']
+    cnpj = data['cnpj']
     telefone = data['telefone']
     tipoTelefone = data['tipoTelefone']
     cidade = data['cidade']
@@ -1492,14 +1493,18 @@ def cadastrar_empresa():
     condicao = data['condicao'] # Sim ou Não
     tipo_id = 1
 
+    cnpj = ''.join(filter(str.isdigit, cnpj))
+
+    print(cnpj)
+
     nome_estado,id_cidade = idCidade(cidade)
     codigoTipoTelefone =  idTipoTelefone(tipoTelefone)
     if condicao == 'Não':
-        criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
+        criarEmpresaEContato(nome,cnpj,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
         criarOrdemEmpresa(nome,nomeRepresentante)
         print("Condição é Não: " + condicao)
     else:
-        criarEmpresaEContato(nome,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
+        criarEmpresaEContato(nome,cnpj,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id)
         print("Condição é Sim: " + condicao)
 
     return render_template('opcoes.html')
@@ -3024,7 +3029,7 @@ def clientes():
     return 'teste'
 
 
-def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas=''):
+def criarEmpresaEContato(nomeContato,cnpj,nomeRepresentante,telefone,tipoTelefone,codigoTipoTelefone,nome_estado,id_cidade,tipo_id,listaEmpresas=''):
     
     idResponsavel = idRepresentante(nomeRepresentante)
     
@@ -3113,6 +3118,7 @@ def criarEmpresaEContato(nomeContato,nomeRepresentante,telefone,tipoTelefone,cod
             ],
             "CityId": id_cidade,
             "State": nome_estado,
+            "Register": cnpj,
             "Country": "Brasil",
             "TypeId": tipo_id,
             "OwnerId": idResponsavel

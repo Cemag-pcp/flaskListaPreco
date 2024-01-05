@@ -145,16 +145,6 @@
              </div>
          </div>
      </div>   
-
-     <div class="modal fade" id="modalInteracao" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalInteracaoLabel">
-      <div class="modal-dialog" role="document">
-          <div class="modal-content">
-              <div class="modal-body">
-                  <!-- Conteúdo do Modal Sim ou Nao -->
-              </div>
-          </div>
-      </div>
-  </div> 
         
         <div class="modal fade" id="modalGanhar" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel" aria-hidden="true">
          <div class="modal-dialog" role="document">
@@ -664,6 +654,7 @@ $(document).ready(function () {
       event.preventDefault();
       // Defina o conteúdo do modal para a ação "Cadastrar Cliente"
       var modalBody = document.getElementById("modalInteracao").querySelector(".modal-body");
+      console.log(modalBody)
       modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
 
       // Aqui, você pode criar e adicionar o formulário ao modal
@@ -1028,6 +1019,9 @@ $(document).ready(function () {
       var labelNomeInput = $('<label for="nomeInput" class="form-label">Nome:</label>');
       var nomeInput = $('<input type="text" class="form-control" id="nomeInput" placeholder="Nome">');
       nomeInput.attr('autocomplete', 'off');
+      var labelcnpjInput = $('<label for="cnpjInput" class="form-label">CNPJ:</label>');
+      var cnpjInput = $('<input type="text" class="form-control" id="cnpjInput" placeholder="CNPJ">');
+      cnpjInput.attr('autocomplete', 'off');
       var labelTelefoneInput = $('<label for="telefoneInput" class="form-label">Telefone:</label>');
       var form_row_telefone = $('<div class="form-row">')
       var telefoneInput = $('<input type="tel" class="form-control" id="telefoneInput" placeholder="Telefone">');
@@ -1091,6 +1085,53 @@ $(document).ready(function () {
                console.error(error);
          });
       })
+
+      cnpjInput.on('blur', function() {
+         var inputValue = $(this).val().trim(); 
+         ValidarCnpj();
+      cnpjInput.css('border','1px solid #ced4da')
+
+      inputEmpresas(inputValue)
+         .then(function(empresas) {
+            console.log(empresas)
+               empresas.forEach(function(empresa) {
+                  if(inputValue === empresa.CNPJ){
+                     alert('Empresa com o cnpj: "' + inputValue + '" já existe dentro do Ploomes, altere o nome da empresa')
+                     cnpjInput.val('')
+                     cnpjInput.css('border','1px solid red') 
+                  }
+               });
+         })
+         .catch(function(error) {
+               console.error(error);
+         });
+      })
+
+      // Adiciona um evento de input ao campo cnpjInput
+      cnpjInput.on('input', function() {
+         // Obtém o valor atual do campo
+         var inputValue = $(this).val();
+
+         // Remove caracteres não numéricos
+         var numericValue = inputValue.replace(/\D/g, '');
+
+         // Aplica a formatação desejada (43.974.562/0001-09)
+         var formattedValue = numericValue.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+
+         // Atualiza o valor do campo com a formatação aplicada
+         $(this).val(formattedValue);
+      });
+
+      // Adiciona um evento de keydown para limitar a quantidade de dígitos
+      cnpjInput.on('keydown', function(e) {
+         // Obtém o valor atual do campo
+         var inputValue = $(this).val();
+
+         // Limita a quantidade máxima de dígitos permitidos
+         if (inputValue.length >= 18 && e.which !== 8) {
+            e.preventDefault(); // Impede a entrada de mais caracteres
+         }
+      });
 
       var tipo = ["Comercial", "Celular", "Residencial","Fax","Outros"]
 
@@ -1247,7 +1288,7 @@ $(document).ready(function () {
       var botaoEnviar = $('<button id="enviar-cadastro-empresa" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
       
       // Adicione as linhas ao formulário
-      form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelTelefoneInput, form_row_telefone,labelPagamento,form_row, pagamentoSugestoes,
+      form_cadastrar_empresa.append(labelNomeInput, nomeInput,labelcnpjInput,cnpjInput,labelTelefoneInput, form_row_telefone,labelPagamento,form_row, pagamentoSugestoes,
       labelCidadeInput, cidadeInput, cidadeSugestoes,labelResponsavelInput, responsavelInput, responsavelSugestoes, botaoEnviar);
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
@@ -1287,21 +1328,28 @@ $(document).ready(function () {
 
       botaoEnviar.on('click', function (event) {
       var telefone = $('#telefoneInput').val();
-      
+      var cnpj = $('#cnpjInput').val();
+
       // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
       var regexTelefone = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
+
+      // Expressão regular para verificar se o CNPJ tem o formato específico
+      var regexCnpj = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 
       // Envio para o Ploomes
       if ($('#nomeInput').val() !== '' &&
          regexTelefone.test(telefone) &&
          $('#cidadeInput').val() !== '' &&
-         $('#responsavelInput').val() !== '') {
-       
+         $('#responsavelInput').val() !== '' &&
+         regexCnpj.test(cnpj)) {
+
          $('#modalGanhar').hide();
          showModalContinuarAoContato();
       } else {
          if (telefone === '' || !regexTelefone.test(telefone)) {
                alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
+         } else if (cnpj === '' || !regexCnpj.test(cnpj)) {
+               alert('Por favor, digite um CNPJ válido no formato correto (exemplo: 43.974.562/0001-09).');
          } else {
                alert('Por favor, preencha todos os campos.');
          }
@@ -1335,6 +1383,7 @@ $(document).ready(function () {
          $("#loading-overlay").show();
       }
       const nome = $('#nomeInput').val();
+      const cnpj = $('#cnpjInput').val();
       const telefone = $('#telefoneInput').val();
       const tipoTelefone = $('#tipoTelefone').val();
       const cidade = $('#cidadeInput').val();
@@ -1346,6 +1395,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({
                nome: nome,
+               cnpj:cnpj,
                telefone: telefone,
                tipoTelefone:tipoTelefone,
                cidade:cidade,
@@ -1900,7 +1950,7 @@ function inputPagamentos(inputValue){
 function inputEmpresas(inputValue){
    var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
    
-   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name&$orderby=Name&$count=true`;
+   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name,CNPJ&$orderby=Name&$count=true`;
    // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
    return fetch(apiUrl, {
       method: 'GET',
