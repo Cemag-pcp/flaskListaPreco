@@ -366,6 +366,7 @@ $(document).ready(function () {
                
                // Adicione um evento de clique para os botões de confirmar
                confirmButton.on('click', function () {
+                  confirmButton.prop('disabled', true);
                   $("#loading-overlay").show();
 
                   var id = item.Id; // Obtenha o ID do item
@@ -456,6 +457,7 @@ $(document).ready(function () {
 
             // Adicione um evento de clique ao botão
             button.on('click', function () {
+               button.prop('disabled', true);
                var selectedMotivoId = $('#motivosPerda').val();
 
                // Verifique se a opção selecionada é "Selecione um motivo"
