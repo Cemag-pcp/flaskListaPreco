@@ -1447,13 +1447,23 @@ def atualizar_dados_sem_cliente():
 @app.route('/perda', methods=['POST'])
 @login_required
 def perda():
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER,
+                            password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
     
     data = request.get_json()  # Obtém os dados JSON do corpo da solicitação
 
     dealId = data.get('dealId')
     selectedOption = data.get('selectedMotivoId')
+    textareaDescricao = data.get('textareaDescricao')
+    nomeCliente = data.get('nomeCliente')
 
-    print(dealId, selectedOption)
+    cur.execute("INSERT INTO tb_perdas (dealId, observacao) VALUES (%s, %s)",
+                        (dealId, textareaDescricao))
+    conn.commit()
+
+    print(dealId,textareaDescricao)
 
     perderNegocio(selectedOption, dealId)
 

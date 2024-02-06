@@ -96,13 +96,13 @@
                {% else %}
                   {% if dado.PersonId != None %}
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
-                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
+                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
                   <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
                   <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
 
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
                   {% else %}
-                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}')">Perder</a>
+                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
                   <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
                   <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
                   {% endif %}
@@ -120,7 +120,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body-perder" style="text-align: center">
+                    <div class="modal-body-perder">
                         <!-- Conteúdo será preenchido dinamicamente usando JavaScript -->
                     </div>
                 </div>
@@ -416,25 +416,28 @@ $(document).ready(function () {
       $('#modalGanhar').modal('show');
    }
 
-   function showModalPerder(dealId) {
+   function showModalPerder(dealId, nomeCliente) {
 
     // Defina o conteúdo do modal para a ação "Perder" com base no dealId
     var modalBody = $('.modal-body-perder'); // Selecione o elemento com a classe modal-body
     modalBody.empty(); // Limpe o conteúdo existente
     modalBody.innerHTML = "Você está prestes a perder o negócio " + dealId;
+    $(".modal-title").text("Perder proposta");
 
     // Crie um elemento select para os motivos de perda
+    var label_select = $('<label>Selecione o motivo da perda</label>');
     var select = $('<select class="form-control" id="motivosPerda" name="motivosPerda" required>');
     
     // Adicione uma opção padrão (por exemplo, "Selecione um motivo")
-    var defaultOption = $('<option value="">Selecione um motivo</option>');
+    var defaultOption = $(`<option value="" selected hidden disabled>Selecione um motivo</option>`);
     select.append(defaultOption);
+
+    var textarea = $('<div style="margin-top:15px" id="campo_observacao_perda"><label>Coloque uma breve descrição sobre o motivo da perda(Opcional)</label><textarea id="text-descricao-perda" class="form-control" placeholder="Digite aqui..."></textarea></div>');
 
    // Fechar o modal ao clicar no botão de fechar
    $('#modalPerder').on('click', '.close', function () {
       $('#modalPerder').modal('hide');
    });
-
 
     // Send a GET request to the backend
     $.ajax({
@@ -450,7 +453,7 @@ $(document).ready(function () {
             });
 
             // Adicione o select ao modalBody
-            modalBody.append(select);
+            modalBody.append(label_select,select,textarea);
 
             // Adicione um botão "Perder"
             var button = $('<button class="btn btn-primary" style="margin-top: 10px;">Perder</button>');
@@ -458,6 +461,7 @@ $(document).ready(function () {
             // Adicione um evento de clique ao botão
             button.on('click', function () {
                var selectedMotivoId = $('#motivosPerda').val();
+               var textareaDescricao= $('#text-descricao-perda').val();
 
                // Verifique se a opção selecionada é "Selecione um motivo"
                if (selectedMotivoId === '') {
@@ -473,6 +477,8 @@ $(document).ready(function () {
                   data: JSON.stringify({
                      selectedMotivoId: selectedMotivoId,
                      dealId: dealId,
+                     nomeCliente:nomeCliente,
+                     textareaDescricao:textareaDescricao
                   }),
                   success: function (response) {
                      window.location.reload();
@@ -501,6 +507,10 @@ $(document).ready(function () {
 
             // Adicione o botão ao modalBody
             modalBody.append(button);
+
+            modalBody.on('change', '#motivosPerda', function() {
+               $('#text-descricao-perda').val('');
+            });
 
             // Abra o modal após preencher o conteúdo
             $('#modalPerder').modal('show');
