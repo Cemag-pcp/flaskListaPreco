@@ -1225,9 +1225,9 @@ def consulta():
 
     tb_listarItensMaisVendidos = listarItensMaisVendidos(representante)
 
-    df = df.merge(tb_listarItensMaisVendidos, how='left', on='codigo')
-
-    df = df.sort_values(by='count', ascending=False)
+    if len(tb_listarItensMaisVendidos) > 0:
+        df = df.merge(tb_listarItensMaisVendidos, how='left', on='codigo')
+        df = df.sort_values(by='count', ascending=False)
 
     print(df)
 
