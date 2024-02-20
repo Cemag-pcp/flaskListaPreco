@@ -50,7 +50,7 @@ def resetar_cache():
     cache_produtos.clear()
 
 
-# @cachetools.cached(cache_precos)
+@cachetools.cached(cache_precos)
 def api_precos():
 
     response = requests.get(
