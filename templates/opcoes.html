@@ -3,8 +3,8 @@
 
 <form class="botoes_gerar_consultar" method="post">
    <div class="custom-card2">
-   <h1 style="font-size: 30px;">Selecione uma opção:</h1>
-      <div class="opcoes_botoes"> 
+      <h1 style="font-size: 30px;">Selecione uma opção:</h1>
+      <div class="opcoes_botoes">
          <button class="gerar_proposta" type="submit" name="option" value="lista">Gerar Proposta</button>
          <button class="consulta_precos" type="submit" name="option" value="consulta">Consulta de preços</button>
          <button class="cadastrar_cliente" name="option" id="modal-cadastrar-cliente">Cadastrar Cliente</button>
@@ -17,17 +17,17 @@
       <div class="col-md-6 mb-3">
 
          <div class="input-group" style="width: 65%;">
-            
+
             <input type="text" id="searchInput" class="form-control" placeholder="Filtrar qualquer valor">
             <div class="input-group-append">
                <span class="input-group-text">
-               <i class="fa fa-search"></i>
+                  <i class="fa fa-search"></i>
                </span>
             </div>
 
-        </div>
+         </div>
       </div>
-    </div>
+   </div>
    <div class="row">
       {% for dado in data %}
       <div class="col-md-4 mb-3" id="containerDosCards">
@@ -40,10 +40,11 @@
                {% else %}
                <div class="card-content" style="display: flex; justify-content: space-between;">
                   <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
-                  <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;" title="Adicione um contato"></i>
-              </div>
-              <p style="color: red;">Adicione um contato para ganhar proposta</p>
-              <div class="campo_adicional" style="display: none;">
+                  <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;"
+                     title="Adicione um contato"></i>
+               </div>
+               <p style="color: red;">Adicione um contato para ganhar proposta</p>
+               <div class="campo_adicional" style="display: none;">
                   <div class="caret-down"></div>
                   <h6 style="border-bottom: 1px solid lightgrey; padding: 5px;">Adicionar Contato</h6>
                   <div style="margin-top: 10px; margin-bottom: 10px;">
@@ -51,9 +52,10 @@
                      <input type="text" class="form-control campo_input">
                      <div class="suggestions_2 suggestions_campo_input" style="display: none;"></div>
                   </div>
-                  <button class="btn btn-info btn-sm salvarContato" onclick="enviarDeals($(this).closest('.custom-card'))">Salvar</button>
+                  <button class="btn btn-info btn-sm salvarContato"
+                     onclick="enviarDeals($(this).closest('.custom-card'))">Salvar</button>
                   <button class="btn btn-danger btn-sm botao_cancelar">Cancelar</button>
-              </div>
+               </div>
                {% endif %}
                <p class="data-aceito card-aceito">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
                   <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
@@ -62,101 +64,113 @@
                   {% endif %}
                </p>
                {% if dado.ApprovalStatusId == 1 %}
-                  <p class="card-text" >
-                     <i class="fas fa-exclamation-triangle button-icon" style="color: orange;"></i> Aguardando aprovação
-                  </p>
+               <p class="card-text">
+                  <i class="fas fa-exclamation-triangle button-icon" style="color: orange;"></i> Aguardando aprovação
+               </p>
                {% else %}
-                  <p></p>
+               <p></p>
                {% endif %}
                <p class="data-status card-status">Status:
-               {% if dado.StatusId == 1 %}
+                  {% if dado.StatusId == 1 %}
                   <span style="color: blue;">Em Aberto</span>
-               {% elif dado.StatusId == 2 %}
+                  {% elif dado.StatusId == 2 %}
                   <span style="color: green;">Ganha</span>
-               {% elif dado.StatusId == 3 %}
+                  {% elif dado.StatusId == 3 %}
                   <span style="color: red;">Perdida</span>
-               {% endif %}
+                  {% endif %}
                </p>
                <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
                <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
                <p class="card-text">
-                  PDF: 
+                  PDF:
                   <span class="pdf-data" style="display: none;">{{ dado.pdf }}</span>
                   <span class="copy-icon" onclick="copyText('{{dado.pdf}}')"><i class="fas fa-copy"></i></span>
                   <a href="{{ dado.pdf }}" target="_blank"><i class="fa-solid fa-file"></i></a>
-                  Aceite: 
-                  <span class="aceite-data" style="display: none;">{{ dado.aceite }}</span> 
+                  Aceite:
+                  <span class="aceite-data" style="display: none;">{{ dado.aceite }}</span>
                   <span class="copy-icon" onclick="copyText('{{dado.aceite}}')"><i class="fas fa-copy"></i></span>
                   <a href="{{ dado.aceite }}" target="_blank"><i class="fa-solid fa-file"></i></a>
 
-              </p>
+               </p>
                {% if dado.StatusId == 2 or dado.StatusId == 3 or dado.ApprovalStatusId == 1 %}
-                  <a></a>
-                  <a></a>
+               <a></a>
+               <a></a>
                {% else %}
-                  {% if dado.PersonId != None %}
-                  <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
-                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
-                  <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
-                  <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
+               {% if dado.PersonId != None %}
+               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
+               <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
+               <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+               <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
 
-                  <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-                  {% else %}
-                  <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
-                  <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
-                  <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-                  {% endif %}
+               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
+               {% else %}
+               <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
+               <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
+               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
+                  onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
+               {% endif %}
                {% endif %}
             </div>
          </div>
-         
 
-         <div class="modal fade" id="modalPerder" data-bs-backdrop="static"  tabindex="-1" role="dialog" aria-labelledby="modalPerderLabel">
+         <div class="modal fade" id="modalPerder" data-bs-backdrop="static" tabindex="-1" role="dialog"
+            aria-labelledby="modalPerderLabel">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalPerderLabel">Perder proposta</h5>
-                        <button type="button" class="close" aria-label="Fechar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body-perder">
-                        <!-- Conteúdo será preenchido dinamicamente usando JavaScript -->
-                    </div>
-                </div>
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="modalPerderLabel">Perder proposta</h5>
+                     <button type="button" class="close" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body-perder">
+                     <!-- Conteúdo será preenchido dinamicamente usando JavaScript -->
+                  </div>
+               </div>
             </div>
-        </div>
+         </div>
 
-        <div class="modal fade" id="modalSimNao" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalSimNaoLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <!-- Conteúdo do Modal Sim ou Nao -->
-                    </div>
-                </div>
+      </div>
+      {% endfor %}
+
+      <div class="modal fade" id="modalSimNao" data-bs-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="modalSimNaoLabel">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-body" id="modal-body-simNao">
+                  <!-- Conteúdo do Modal Sim ou Nao -->
+               </div>
             </div>
-        </div> 
-      </div>  
-        {% endfor %}
-        <div class="modal fade" id="modalInteracao" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalInteracaoLabel">
-         <div class="modal-dialog" role="document">
-             <div class="modal-content">
-                 <div class="modal-body">
-                     <!-- Conteúdo do Modal Sim ou Nao -->
-                 </div>
-             </div>
          </div>
-     </div>   
-        
-        <div class="modal fade" id="modalGanhar" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalGanharLabel" aria-hidden="true">
+      </div>
+
+      <div class="modal fade" id="modalInteracao" data-bs-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="modalInteracaoLabel">
          <div class="modal-dialog" role="document">
-             <div class="modal-content">
-                 <div class="modal-body">
-                     <!-- Conteúdo do Modal Ganhar -->
-                 </div>
-             </div>
+            <div class="modal-content">
+               <div class="modal-body">
+                  <!-- Conteúdo do Modal Sim ou Nao -->
+               </div>
+            </div>
          </div>
-     </div> 
+      </div>
+
+      <div class="modal fade" id="modalGanhar" data-bs-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="modalGanharLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-body">
+                  <!-- Conteúdo do Modal Ganhar -->
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 
 </div>
@@ -170,10 +184,10 @@
 </div>
 
 <script>
-   $(document).ready(function() {
+   $(document).ready(function () {
       // Ao clicar no botão "plus"
       var campo_input = $(".campo_input");
-      $(".botao_plus").on("click", function() {
+      $(".botao_plus").on("click", function () {
          // Encontre os elementos associados ao card específico
          var cardContent = $(this).closest('.card-content');
          var campoAdicional = cardContent.siblings('.campo_adicional');
@@ -183,7 +197,7 @@
       });
 
       // Ao clicar no botão "cancelar"
-      $(".botao_cancelar").on("click", function() {
+      $(".botao_cancelar").on("click", function () {
          // Ocultar o campo adicional associado ao botão clicado
          $(this).closest('.campo_adicional').hide();
          campo_input.val('')
@@ -193,59 +207,59 @@
 
 <script>
 
-$(document).ready(function () {
-   function contatos_Valores() {
-      var campo_inputs = $('.campo_input');
-      var suggestions_campo_inputs = $('.suggestions_campo_input');
-      var salvar_contato = $('.salvarContato');
+   $(document).ready(function () {
+      function contatos_Valores() {
+         var campo_inputs = $('.campo_input');
+         var suggestions_campo_inputs = $('.suggestions_campo_input');
+         var salvar_contato = $('.salvarContato');
 
-      campo_inputs.on('input', function () {
-         var inputValue = $(this).val();
-         var suggestions_campo_input = $(this).siblings('.suggestions_campo_input');
+         campo_inputs.on('input', function () {
+            var inputValue = $(this).val();
+            var suggestions_campo_input = $(this).siblings('.suggestions_campo_input');
 
-         if (inputValue.trim() === '') {
-            suggestions_campo_input.hide();
-            return;
-         }
+            if (inputValue.trim() === '') {
+               suggestions_campo_input.hide();
+               return;
+            }
 
-         inputNomesContatos(inputValue)
-            .then(function (contatosResponse) {
-               suggestions_campo_input.empty();
+            inputNomesContatos(inputValue)
+               .then(function (contatosResponse) {
+                  suggestions_campo_input.empty();
 
-               contatosResponse.forEach(function (contato) {
-                  var suggestionItem;
+                  contatosResponse.forEach(function (contato) {
+                     var suggestionItem;
 
-                  if (contato.Company) {
-                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
-                  } else {
-                     suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
-                  }
+                     if (contato.Company) {
+                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '<strong> (' + contato.Company.Name + ')</strong>' + '</div>');
+                     } else {
+                        suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
+                     }
 
-                  suggestionItem.on('mousedown', function (event) {
-                     event.preventDefault();
-                     suggestions_campo_input.hide();
-                     suggestions_campo_input.empty();
-                     campo_inputs.val(contato.Name);
+                     suggestionItem.on('mousedown', function (event) {
+                        event.preventDefault();
+                        suggestions_campo_input.hide();
+                        suggestions_campo_input.empty();
+                        campo_inputs.val(contato.Name);
+                     });
+
+                     suggestions_campo_input.append(suggestionItem);
+                     suggestions_campo_input.show();
                   });
-
-                  suggestions_campo_input.append(suggestionItem);
-                  suggestions_campo_input.show();
+               })
+               .catch(function (error) {
+                  console.error(error);
                });
-            })
-            .catch(function (error) {
-               console.error(error);
-            });
-      });
+         });
 
-      campo_inputs.on('blur', function () {
-         // Agora, o código a seguir é executado quando o campo perde o foco
-         suggestions_campo_inputs.hide();
-      });
-   }
+         campo_inputs.on('blur', function () {
+            // Agora, o código a seguir é executado quando o campo perde o foco
+            suggestions_campo_inputs.hide();
+         });
+      }
 
-   // Chama a função quando o documento estiver pronto
-   contatos_Valores();
-});
+      // Chama a função quando o documento estiver pronto
+      contatos_Valores();
+   });
 
 
 </script>
@@ -264,7 +278,7 @@ $(document).ready(function () {
             card.style.display = "none";
          }
       });
-   }); 
+   });
 
 </script>
 
@@ -320,7 +334,7 @@ $(document).ready(function () {
    function showModalGanhar(dealId) {
       // Defina o conteúdo do modal para a ação "Ganhar" com base no dealId
       var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
-      
+
       // Fechar o modal ao clicar no botão de fechar
       $('#modalGanhar').on('click', '.close', function () {
          $('#modalGanhar').modal('hide');
@@ -351,11 +365,11 @@ $(document).ready(function () {
                // Crie um card para cada item
                var card = $('<div class="card1">');
                var cardBody = $('<div class="card-body1">');
-               
+
                // Formatando data
                var dataString = item.Date;
                var dataFormatada = moment(dataString).format('DD/MM/YYYY HH:mm:ss');
-               
+
                // Adicione o conteúdo do card
                cardBody.append('<h5 class="card-title1">' + formattedAmount + '</h5>');
                cardBody.append('<a href="' + item.DocumentUrl + '" class="card-link" target="_blank">Link para PDF</a><br>');
@@ -363,7 +377,7 @@ $(document).ready(function () {
 
                // Adicione um botão de confirmar ao card
                var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
-               
+
                // Adicione um evento de clique para os botões de confirmar
                confirmButton.on('click', function () {
                   confirmButton.prop('disabled', true);
@@ -386,7 +400,7 @@ $(document).ready(function () {
                         $('#success-message').html('Proposta ganha com sucesso.').show();
 
                         // Defina um temporizador para ocultar a mensagem após 5 segundos
-                        setTimeout(function() {
+                        setTimeout(function () {
                            $('#success-message').hide();
                         }, 5000); // 5000 milissegundos (5 segundos)
 
@@ -400,7 +414,7 @@ $(document).ready(function () {
 
                cardBody.append(confirmButton);
                card.append(cardBody);
-               
+
                // Adicione o card à modal
                modalBody.append(card);
             });
@@ -418,33 +432,33 @@ $(document).ready(function () {
 
    function showModalPerder(dealId, nomeCliente) {
 
-    // Defina o conteúdo do modal para a ação "Perder" com base no dealId
-    var modalBody = $('.modal-body-perder'); // Selecione o elemento com a classe modal-body
-    modalBody.empty(); // Limpe o conteúdo existente
-    modalBody.innerHTML = "Você está prestes a perder o negócio " + dealId;
-    $(".modal-title").text("Perder proposta");
+      // Defina o conteúdo do modal para a ação "Perder" com base no dealId
+      var modalBody = $('.modal-body-perder'); // Selecione o elemento com a classe modal-body
+      modalBody.empty(); // Limpe o conteúdo existente
+      modalBody.innerHTML = "Você está prestes a perder o negócio " + dealId;
+      $(".modal-title").text("Perder proposta");
 
-    // Crie um elemento select para os motivos de perda
-    var label_select = $('<label>Selecione o motivo da perda</label>');
-    var select = $('<select class="form-control" id="motivosPerda" name="motivosPerda" required>');
-    
-    // Adicione uma opção padrão (por exemplo, "Selecione um motivo")
-    var defaultOption = $(`<option value="" selected hidden disabled>Selecione um motivo</option>`);
-    select.append(defaultOption);
+      // Crie um elemento select para os motivos de perda
+      var label_select = $('<label>Selecione o motivo da perda</label>');
+      var select = $('<select class="form-control" id="motivosPerda" name="motivosPerda" required>');
 
-    var textarea = $('<div style="margin-top:15px" id="campo_observacao_perda"><label>Coloque uma breve descrição sobre o motivo da perda(Opcional)</label><textarea id="text-descricao-perda" class="form-control" placeholder="Digite aqui..."></textarea></div>');
+      // Adicione uma opção padrão (por exemplo, "Selecione um motivo")
+      var defaultOption = $(`<option value="" selected hidden disabled>Selecione um motivo</option>`);
+      select.append(defaultOption);
 
-   // Fechar o modal ao clicar no botão de fechar
-   $('#modalPerder').on('click', '.close', function () {
-      $('#modalPerder').modal('hide');
-   });
+      var textarea = $('<div style="margin-top:15px" id="campo_observacao_perda"><label>Coloque uma breve descrição sobre o motivo da perda(Opcional)</label><textarea id="text-descricao-perda" class="form-control" placeholder="Digite aqui..."></textarea></div>');
 
-    // Send a GET request to the backend
-    $.ajax({
-        url: '/motivosPerda',
-        type: 'GET',
-        success: function (response) {
-         
+      // Fechar o modal ao clicar no botão de fechar
+      $('#modalPerder').on('click', '.close', function () {
+         $('#modalPerder').modal('hide');
+      });
+
+      // Send a GET request to the backend
+      $.ajax({
+         url: '/motivosPerda',
+         type: 'GET',
+         success: function (response) {
+
             // Preencher o select com os motivos de perda recebidos
             $.each(response, function (index, item) {
                var option = $('<option value="' + item.Id + '">' + item.Name + '</option>');
@@ -453,7 +467,7 @@ $(document).ready(function () {
             });
 
             // Adicione o select ao modalBody
-            modalBody.append(label_select,select,textarea);
+            modalBody.append(label_select, select, textarea);
 
             // Adicione um botão "Perder"
             var button = $('<button class="btn btn-primary" style="margin-top: 10px;">Perder</button>');
@@ -461,7 +475,7 @@ $(document).ready(function () {
             // Adicione um evento de clique ao botão
             button.on('click', function () {
                var selectedMotivoId = $('#motivosPerda').val();
-               var textareaDescricao= $('#text-descricao-perda').val();
+               var textareaDescricao = $('#text-descricao-perda').val();
 
                // Verifique se a opção selecionada é "Selecione um motivo"
                if (selectedMotivoId === '') {
@@ -477,8 +491,8 @@ $(document).ready(function () {
                   data: JSON.stringify({
                      selectedMotivoId: selectedMotivoId,
                      dealId: dealId,
-                     nomeCliente:nomeCliente,
-                     textareaDescricao:textareaDescricao
+                     nomeCliente: nomeCliente,
+                     textareaDescricao: textareaDescricao
                   }),
                   success: function (response) {
                      window.location.reload();
@@ -489,7 +503,7 @@ $(document).ready(function () {
                      $('#success-message').html('Proposta perdida com sucesso.').show();
 
                      // Defina um temporizador para ocultar a mensagem após 5 segundos
-                     setTimeout(function() {
+                     setTimeout(function () {
                         $('#success-message').hide();
                      }, 5000); // 5000 milissegundos (5 segundos)
 
@@ -508,22 +522,22 @@ $(document).ready(function () {
             // Adicione o botão ao modalBody
             modalBody.append(button);
 
-            modalBody.on('change', '#motivosPerda', function() {
+            modalBody.on('change', '#motivosPerda', function () {
                $('#text-descricao-perda').val('');
             });
 
             // Abra o modal após preencher o conteúdo
             $('#modalPerder').modal('show');
-        }
-    });
-}
+         }
+      });
+   }
 </script>
 
 <script>
    function showModalRevisar(dealId) {
       // Defina o conteúdo do modal para a ação "Ganhar" com base no dealId
       var modalBody = document.getElementById("modalGanhar").querySelector(".modal-body");
-      
+
       // Fechar o modal ao clicar no botão de fechar
       $('#modalGanhar').on('click', '.close', function () {
          $('#modalGanhar').modal('hide');
@@ -554,7 +568,7 @@ $(document).ready(function () {
                // Crie um card para cada item
                var card = $('<div class="card1">');
                var cardBody = $('<div class="card-body1">');
-               
+
                // Formatando data
                var dataString = item.Date;
                var dataFormatada = moment(dataString).format('DD/MM/YYYY HH:mm:ss');
@@ -568,14 +582,14 @@ $(document).ready(function () {
 
                // Adicione um botão de confirmar ao card
                // var confirmButton = $('<button class="btn btn-info btn-sm ganhar">Confirmar</button>');
-               
+
                // cardBody.append(confirmButton);
-               
+
                // cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><button value="teste">Revisar</button></form>');
                cardBody.append('<form id="revisar" action="/consulta" method="POST"><input type="hidden" name="valor" value="' + quote_id + '"><input type="hidden" name="dealId" value="' + DealId + '"><button type="submit">Revisar</button></form>');
 
                card.append(cardBody);
-               
+
                // Adicione o card à modal
                modalBody.append(card);
             });
@@ -613,8 +627,8 @@ $(document).ready(function () {
       var botaoModalContato = $('<button id="cadastrar-contato" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Contato</button>');
 
       div.append(botaoModalCliente, botaoModalContato)
-      
-      form_cadastrar_cliente.append(title,div);
+
+      form_cadastrar_cliente.append(title, div);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
@@ -632,10 +646,19 @@ $(document).ready(function () {
       $('#modalGanhar').modal('hide');
    });
 
-   
-   function showModalContinuarAoContato(){
+
+   function showModalContinuarAoContato() {
+
       // Defina o conteúdo do modal para a ação "Cadastrar Cliente"
-      var modalBody = document.getElementById("modalSimNao").querySelector(".modal-body");
+      var modalBody = document.getElementById("modalSimNao")?.querySelector(".modal-body");
+
+      // Verifique se modalBody é nulo antes de continuar
+      if (!modalBody) {
+         console.error("Elemento modalBody não encontrado.");
+         return;
+      }
+
+      // var modalBody = document.getElementById("modalSimNao").querySelector(".modal-body");
       modalBody.innerHTML = ''; // Limpar o conteúdo atual do modal
 
       // Aqui, você pode criar e adicionar o formulário ao modal
@@ -646,8 +669,8 @@ $(document).ready(function () {
       var botaoModalSim = $('<button id="cadastrar-contato-sim" class="btn btn-info btn-sm" style="color: #fff; padding: 15px; font-weight: bold; font-size: 20px;">Sim</button>');
 
       div.append(botaoModalNao, botaoModalSim)
-      
-      form_cadastrar_cliente.append(title,div);
+
+      form_cadastrar_cliente.append(title, div);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
@@ -658,7 +681,7 @@ $(document).ready(function () {
       $('#modalSimNao').on('click', '.close', function () {
          $('#modalSimNao').modal('hide');
       });
-      
+
    }
 
    function showModalInteracao(event) {
@@ -682,43 +705,43 @@ $(document).ready(function () {
       var arrowIcon = $('<i style="cursor:pointer" id="arrow" class="fa-solid fa-angle-down"></i>');
 
       // Adicione um manipulador de eventos de clique ao ícone
-      arrowIcon.on('click', function() {
+      arrowIcon.on('click', function () {
          // Alterne entre as classes ao clicar
          $(this).toggleClass('fa-angle-down fa-angle-up');
 
-             // Verifique se o ícone está para baixo ou para cima
-            if ($(this).hasClass('fa-angle-down')) {
-               // Se estiver para baixo, esconda os campos
-               inputDate.hide();
-               contato_interacao.hide();
-               responsavel_interacao.hide();
-            } else {
-               // Se estiver para cima, mostre os campos
-               inputDate.show();
-               contato_interacao.show();
-               responsavel_interacao.show();
-            }
+         // Verifique se o ícone está para baixo ou para cima
+         if ($(this).hasClass('fa-angle-down')) {
+            // Se estiver para baixo, esconda os campos
+            inputDate.hide();
+            contato_interacao.hide();
+            responsavel_interacao.hide();
+         } else {
+            // Se estiver para cima, mostre os campos
+            inputDate.show();
+            contato_interacao.show();
+            responsavel_interacao.show();
+         }
       });
 
       // Substitua a linha original que cria o ícone pela linha modificada
       var label_mais_campos = $('<label>Campos não obrigatório</label>');
       var inputDate = $('<label>Data: </label><input id="campo-data" type="date" class="form-control" style="min-height: 40px;">');
-      inputDate.css('display','none');
+      inputDate.css('display', 'none');
       var contato_interacao = $('<label>Contatos: </label><input id="campo-texto-1" type="text" class="form-control">');
       contato_interacao.attr('autocomplete', 'off');
-      contato_interacao.css('display','none');
+      contato_interacao.css('display', 'none');
       var contato_interacao_Sugestoes = $('<div class="suggestions" id="suggestions_contato_interacao"></div>');
       var responsavel_interacao = $('<label>Responsável: </label><input type="text" class="form-control" id="responsavel_interacao" value="{{ nomeRepresentante }}" placeholder="Responsável">');
       responsavel_interacao.attr('autocomplete', 'off');
-      responsavel_interacao.css('display','none');
+      responsavel_interacao.css('display', 'none');
       var responsavel_interacao_Sugestoes = $('<div class="suggestions" id="suggestionsResponsaveisInteracao"></div>')
       var valorFixoResponsavel = $('<input type="hidden" id="representante-name-contato" value="{{ nomeRepresentante }}">').val()
       var button_salvar = $('<button type="submit" class="btn btn-info btn-sm" style="margin-top:25px">Salvar</button>');
 
-      div_mais_campos.append(label_mais_campos,arrowIcon)
-      div.append(textarea,div_mais_campos,inputDate)
+      div_mais_campos.append(label_mais_campos, arrowIcon)
+      div.append(textarea, div_mais_campos, inputDate)
 
-      empresa_registrar.on('blur', function() {
+      empresa_registrar.on('blur', function () {
          // Verifique se o valor do campo empresa_registrar não está vazio
          if ($(this).val().trim() !== '') {
             // Se não estiver vazio, exiba todos_os_campos
@@ -733,7 +756,7 @@ $(document).ready(function () {
 
       var contatos;
 
-      contato_interacao.on('input', function() {
+      contato_interacao.on('input', function () {
          var inputValue = $(this).val();
          if (inputValue.trim() === '') {
             // Se o valor do input estiver vazio, oculta as sugestões e retorna
@@ -741,13 +764,13 @@ $(document).ready(function () {
             return;
          }
          inputNomesContatos(inputValue)
-            .then(function(contatosResponse) {
+            .then(function (contatosResponse) {
                // Limpe as sugestões anteriores
                $('#suggestions_contato_interacao').empty();
 
                contatos = contatosResponse;
-               
-               contatos.forEach(function(contato) {
+
+               contatos.forEach(function (contato) {
                   var suggestionItem;
 
                   if (contato.Company) {
@@ -756,7 +779,7 @@ $(document).ready(function () {
                      suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
                   }
 
-                  suggestionItem.on('mousedown', function(event) {
+                  suggestionItem.on('mousedown', function (event) {
                      // Impede que o input perca o foco
                      event.preventDefault();
                      $('#suggestions_contato_interacao').empty();
@@ -771,82 +794,82 @@ $(document).ready(function () {
                   $('#suggestions_contato_interacao').show();
                });
             })
-            .catch(function(error) {
+            .catch(function (error) {
                console.error(error);
             });
       })
-      .on('blur', function() {
-         $('#suggestions_contato_interacao').hide();
-      });
+         .on('blur', function () {
+            $('#suggestions_contato_interacao').hide();
+         });
 
       buscarProfileId(valorFixoResponsavel)
-      .then(profileId => {
+         .then(profileId => {
 
-        if (profileId === 1) {
-          
-         responsavel_interacao.on('input', function() {
-            var inputValue = $(this).val();
-            if (inputValue.trim() === '') {
-               $('#suggestionsResponsaveisInteracao').hide();
-               return;
-            }
-            inputResponsaveis(inputValue)
-            .then(function(responsaveis) {
-                     // Limpe as sugestões anteriores
-                     $('#suggestionsResponsaveisInteracao').empty();
+            if (profileId === 1) {
 
-                     // Adicione as novas sugestões
-                     responsaveis.forEach(function(responsavel) {
-                        var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
-                        suggestionItem.on('mousedown', function(event) {
-                           // Impede que o input perca o foco
-                           event.preventDefault();
-                           // Preencha o campo cidadeInput com a sugestão clicada
-                           responsavel_interacao.val(responsavel.Name);
-                           // Limpe as sugestões
-                           $('#suggestionsResponsaveisInteracao').empty();
-                           $('#suggestionsResponsaveisInteracao').hide();
+               responsavel_interacao.on('input', function () {
+                  var inputValue = $(this).val();
+                  if (inputValue.trim() === '') {
+                     $('#suggestionsResponsaveisInteracao').hide();
+                     return;
+                  }
+                  inputResponsaveis(inputValue)
+                     .then(function (responsaveis) {
+                        // Limpe as sugestões anteriores
+                        $('#suggestionsResponsaveisInteracao').empty();
+
+                        // Adicione as novas sugestões
+                        responsaveis.forEach(function (responsavel) {
+                           var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
+                           suggestionItem.on('mousedown', function (event) {
+                              // Impede que o input perca o foco
+                              event.preventDefault();
+                              // Preencha o campo cidadeInput com a sugestão clicada
+                              responsavel_interacao.val(responsavel.Name);
+                              // Limpe as sugestões
+                              $('#suggestionsResponsaveisInteracao').empty();
+                              $('#suggestionsResponsaveisInteracao').hide();
+                           });
+                           // Adicione a sugestão à lista de sugestões
+                           $('#suggestionsResponsaveisInteracao').append(suggestionItem);
                         });
-                        // Adicione a sugestão à lista de sugestões
-                        $('#suggestionsResponsaveisInteracao').append(suggestionItem);
+
+                        $('#suggestionsResponsaveisInteracao').show();
+                     })
+                     .catch(function (error) {
+                        console.error(error);
                      });
-
-                     $('#suggestionsResponsaveisInteracao').show();
                })
-               .catch(function(error) {
-                     console.error(error);
-               });
-            })
-            .on('blur', function() {
-               $('#suggestionsResponsaveisInteracao').hide();
-            });
+                  .on('blur', function () {
+                     $('#suggestionsResponsaveisInteracao').hide();
+                  });
 
-        } else {
-          // Ocultar o elemento de responsável
-          responsavel_interacao.attr("readonly", true);
-        }
-      });
-      
+            } else {
+               // Ocultar o elemento de responsável
+               responsavel_interacao.attr("readonly", true);
+            }
+         });
+
       var empresas; // Declare a variável fora do escopo da função para que seja acessível em outros lugares
 
       empresa_registrar.on('input', function () {
-      var inputValue = $(this).val().trim();
-      if (inputValue === '') {
-         $('#suggestionsEmpresasRegistrar').hide();
-         todos_os_campos.css('display', 'none');
-         $(".modal-title").text("Escolha a empresa que deseja registrar");
-         return;
-      } 
+         var inputValue = $(this).val().trim();
+         if (inputValue === '') {
+            $('#suggestionsEmpresasRegistrar').hide();
+            todos_os_campos.css('display', 'none');
+            $(".modal-title").text("Escolha a empresa que deseja registrar");
+            return;
+         }
 
-      inputEmpresas(inputValue)
-         .then(function (empresasResponse) {
-            // Limpe as sugestões anteriores
-            $('#suggestionsEmpresasRegistrar').empty();
+         inputEmpresas(inputValue)
+            .then(function (empresasResponse) {
+               // Limpe as sugestões anteriores
+               $('#suggestionsEmpresasRegistrar').empty();
 
-            // Adicione as novas sugestões
-            empresas = empresasResponse; // Atribua o valor à variável no escopo mais amplo
+               // Adicione as novas sugestões
+               empresas = empresasResponse; // Atribua o valor à variável no escopo mais amplo
 
-            empresas.forEach(function (empresa) {
+               empresas.forEach(function (empresa) {
                   var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
                   suggestionItem.on('mousedown', function (event) {
                      // Impede que o input perca o foco
@@ -863,20 +886,20 @@ $(document).ready(function () {
 
                   // Adicione a sugestão à lista de sugestões
                   $('#suggestionsEmpresasRegistrar').append(suggestionItem);
+               });
+
+               $('#suggestionsEmpresasRegistrar').show();
+            })
+            .catch(function (error) {
+               console.error(error);
             });
-
-            $('#suggestionsEmpresasRegistrar').show();
-         })
-         .catch(function (error) {
-            console.error(error);
-         });
       })
-    .on('blur', function () {
-        $('#suggestionsEmpresasRegistrar').hide();
-    });
+         .on('blur', function () {
+            $('#suggestionsEmpresasRegistrar').hide();
+         });
 
-      
-    button_salvar.on('click', function () {
+
+      button_salvar.on('click', function () {
          if (!empresas) {
             console.error("A lista de empresas não foi carregada corretamente.");
             return;
@@ -922,16 +945,16 @@ $(document).ready(function () {
          $('#modalInteracao').modal('hide');
       });
 
-      todos_os_campos.append(div,contato_interacao,contato_interacao_Sugestoes,responsavel_interacao,responsavel_interacao_Sugestoes,button_salvar)
-      form_cadastrar_cliente.append(title,empresa_registrar,EmpresaSugestoes,todos_os_campos);
+      todos_os_campos.append(div, contato_interacao, contato_interacao_Sugestoes, responsavel_interacao, responsavel_interacao_Sugestoes, button_salvar)
+      form_cadastrar_cliente.append(title, empresa_registrar, EmpresaSugestoes, todos_os_campos);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
-      
+
    }
 
-   $(document).on('click', '#botao-modal-interacao', function(event) {
-         $('#modalGanhar').modal('hide');
-         showModalInteracao(event);
+   $(document).on('click', '#botao-modal-interacao', function (event) {
+      $('#modalGanhar').modal('hide');
+      showModalInteracao(event);
    });
 
    // Modal de cadastro de cliente
@@ -945,32 +968,32 @@ $(document).ready(function () {
       const responsavelRegistro = $('#responsavel_interacao').val();
 
       const dados = {
-        nome_empresa: nome_empresa || null,
-        registro: registro || null,
-        dataRegistro: dataRegistro || [],
-        contatoRegistro: contatoRegistro || [],
-        responsavelRegistro: responsavelRegistro || []
+         nome_empresa: nome_empresa || null,
+         registro: registro || null,
+         dataRegistro: dataRegistro || [],
+         contatoRegistro: contatoRegistro || [],
+         responsavelRegistro: responsavelRegistro || []
       };
 
       $.ajax({
-            url: '/cadastrar-interacao',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-               nome_empresa: nome_empresa,
-               registro: registro,
-               dataRegistro:dataRegistro,
-               contatoRegistro:contatoRegistro,
-               responsavelRegistro:responsavelRegistro
-            }),
-            success: function (response) {
-               location.reload();
-            },
-            error: function (error) {
-               console.log(error);
-               $("#loading-overlay").hide();
-               alert("Erro ao enviar a informação para o servidor, verifique se o contato ou a empresa foi selecionada corretamente")
-            }
+         url: '/cadastrar-interacao',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({
+            nome_empresa: nome_empresa,
+            registro: registro,
+            dataRegistro: dataRegistro,
+            contatoRegistro: contatoRegistro,
+            responsavelRegistro: responsavelRegistro
+         }),
+         success: function (response) {
+            location.reload();
+         },
+         error: function (error) {
+            console.log(error);
+            $("#loading-overlay").hide();
+            alert("Erro ao enviar a informação para o servidor, verifique se o contato ou a empresa foi selecionada corretamente")
+         }
       });
    }
 
@@ -994,12 +1017,12 @@ $(document).ready(function () {
          type: 'POST',
          contentType: 'application/json',
          data: JSON.stringify({
-               idDeals: idDeals,
-               nomeEmpresa: nomeEmpresa,
-               campoInput: campoInput
+            idDeals: idDeals,
+            nomeEmpresa: nomeEmpresa,
+            campoInput: campoInput
          }),
          success: function (response) {
-            if(response == "Erro"){
+            if (response == "Erro") {
                alert("Erro ao enviar a informação para o servidor, verifique se o contato foi selecionada corretamente");
                $("#loading-overlay").hide();
             } else {
@@ -1025,7 +1048,7 @@ $(document).ready(function () {
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar Empresa</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
 
       var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
-      form_cadastrar_empresa.append(botaoVoltar,title);
+      form_cadastrar_empresa.append(botaoVoltar, title);
 
       var labelNomeInput = $('<label for="nomeInput" class="form-label">Nome:</label>');
       var nomeInput = $('<input type="text" class="form-control" id="nomeInput" placeholder="Nome">');
@@ -1041,11 +1064,11 @@ $(document).ready(function () {
       tipoTelefone.css('width', 'auto');
       var labelPagamento = $('<label class="form-label" style="display:none">Pagamento:</label>');
       var form_row = $('<div class="form-row" style="display:none">')
-      
-      var pagamentoInput= $('<textarea rows="2" cols="49" class="form-control" id="pagamentoInput">');
+
+      var pagamentoInput = $('<textarea rows="2" cols="49" class="form-control" id="pagamentoInput">');
       pagamentoInput.attr('autocomplete', 'off');
       pagamentoInput.attr('readonly', true);
-      pagamentoInput.css('cursor','pointer');
+      pagamentoInput.css('cursor', 'pointer');
       pagamentoInput.css('width', 'auto');
       pagamentoInput.css('height', '80px');
 
@@ -1061,65 +1084,65 @@ $(document).ready(function () {
       responsavelInput.attr('autocomplete', 'off');
       var valorFixoResponsavel = $('<input type="hidden" id="representante-name" value="{{ nomeRepresentante }}">').val()
       var responsavelSugestoes = $('<div class="suggestions" id="suggestionsResponsaveis"></div>');
-      
-      form_row.append(pagamentoInput,botaoApagarUltimo)
-      form_row_telefone.append(telefoneInput,tipoTelefone)
-   
+
+      form_row.append(pagamentoInput, botaoApagarUltimo)
+      form_row_telefone.append(telefoneInput, tipoTelefone)
+
       telefoneInput.on('input', function () {
-      var numeroFormatado = $(this).val().replace(/\D/g, '');
+         var numeroFormatado = $(this).val().replace(/\D/g, '');
 
-      numeroFormatado = numeroFormatado.substring(0, 11);
+         numeroFormatado = numeroFormatado.substring(0, 11);
 
-      if (numeroFormatado.length === 11) {
-         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
-      } else if (numeroFormatado.length === 10) {
-         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
-      }
-      $(this).val(numeroFormatado);
-   });
+         if (numeroFormatado.length === 11) {
+            numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
+         } else if (numeroFormatado.length === 10) {
+            numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
+         }
+         $(this).val(numeroFormatado);
+      });
 
-      nomeInput.on('blur', function() {
-         var inputValue = $(this).val().trim(); 
-      nomeInput.css('border','1px solid #ced4da')
+      nomeInput.on('blur', function () {
+         var inputValue = $(this).val().trim();
+         nomeInput.css('border', '1px solid #ced4da')
 
-      inputEmpresas(inputValue)
-         .then(function(empresas) {
-               empresas.forEach(function(empresa) {
-                  if(inputValue.toLowerCase() === empresa.Name.toLowerCase()){
+         inputEmpresas(inputValue)
+            .then(function (empresas) {
+               empresas.forEach(function (empresa) {
+                  if (inputValue.toLowerCase() === empresa.Name.toLowerCase()) {
                      alert('Empresa com o nome: "' + inputValue + '" já existe dentro do Ploomes, altere o nome da empresa')
                      nomeInput.val('')
-                     nomeInput.css('border','1px solid red') 
+                     nomeInput.css('border', '1px solid red')
                   }
                });
-         })
-         .catch(function(error) {
+            })
+            .catch(function (error) {
                console.error(error);
-         });
+            });
       })
 
-      cnpjInput.on('blur', function() {
-         var inputValue = $(this).val().trim(); 
+      cnpjInput.on('blur', function () {
+         var inputValue = $(this).val().trim();
          ValidarCnpj();
-      cnpjInput.css('border','1px solid #ced4da')
+         cnpjInput.css('border', '1px solid #ced4da')
 
-      inputEmpresas(inputValue)
-         .then(function(empresas) {
-            console.log(empresas)
-               empresas.forEach(function(empresa) {
-                  if(inputValue === empresa.CNPJ){
+         inputEmpresas(inputValue)
+            .then(function (empresas) {
+               console.log(empresas)
+               empresas.forEach(function (empresa) {
+                  if (inputValue === empresa.CNPJ) {
                      alert('Empresa com o cnpj: "' + inputValue + '" já existe dentro do Ploomes, altere o nome da empresa')
                      cnpjInput.val('')
-                     cnpjInput.css('border','1px solid red') 
+                     cnpjInput.css('border', '1px solid red')
                   }
                });
-         })
-         .catch(function(error) {
+            })
+            .catch(function (error) {
                console.error(error);
-         });
+            });
       })
 
       // Adiciona um evento de input ao campo cnpjInput
-      cnpjInput.on('input', function() {
+      cnpjInput.on('input', function () {
          // Obtém o valor atual do campo
          var inputValue = $(this).val();
 
@@ -1134,7 +1157,7 @@ $(document).ready(function () {
       });
 
       // Adiciona um evento de keydown para limitar a quantidade de dígitos
-      cnpjInput.on('keydown', function(e) {
+      cnpjInput.on('keydown', function (e) {
          // Obtém o valor atual do campo
          var inputValue = $(this).val();
 
@@ -1144,28 +1167,28 @@ $(document).ready(function () {
          }
       });
 
-      var tipo = ["Comercial", "Celular", "Residencial","Fax","Outros"]
+      var tipo = ["Comercial", "Celular", "Residencial", "Fax", "Outros"]
 
       for (var i = 0; i < tipo.length; i++) {
          var option = $('<option></option>').attr('value', tipo[i]).text(tipo[i]);
          tipoTelefone.append(option);
       }
 
-      cidadeInput.on('input', function() {
-      var inputValue = $(this).val();
-      if (inputValue.trim() === '') {
-         $('#suggestions').hide();
-         return;
-       } 
-      inputCidades(inputValue)
-         .then(function(cidades) {
+      cidadeInput.on('input', function () {
+         var inputValue = $(this).val();
+         if (inputValue.trim() === '') {
+            $('#suggestions').hide();
+            return;
+         }
+         inputCidades(inputValue)
+            .then(function (cidades) {
                // Limpe as sugestões anteriores
                $('#suggestions').empty();
 
                // Adicione as novas sugestões
-               cidades.forEach(function(cidade) {
-                  var suggestionItem = $('<div class="suggestion-item">' + cidade.Name + " - " + cidade.State.Name +'</div>');
-                  suggestionItem.on('mousedown', function(event) {
+               cidades.forEach(function (cidade) {
+                  var suggestionItem = $('<div class="suggestion-item">' + cidade.Name + " - " + cidade.State.Name + '</div>');
+                  suggestionItem.on('mousedown', function (event) {
                      // Impede que o input perca o foco
                      event.preventDefault();
                      // Preencha o campo cidadeInput com a sugestão clicada
@@ -1179,66 +1202,66 @@ $(document).ready(function () {
                });
 
                $('#suggestions').show();
-         })
-         .catch(function(error) {
+            })
+            .catch(function (error) {
                console.error(error);
-         });
+            });
       })
-      .on('blur', function() {
-         $('#suggestions').hide();
-      });
+         .on('blur', function () {
+            $('#suggestions').hide();
+         });
 
       buscarProfileId(valorFixoResponsavel)
-      .then(profileId => {
+         .then(profileId => {
 
-        if (profileId === 1) {
-          
-         responsavelInput.on('input', function() {
-            var inputValue = $(this).val();
-            if (inputValue.trim() === '') {
-               $('#suggestionsResponsaveis').hide();
-               return;
-            }
-            inputResponsaveis(inputValue)
-            .then(function(responsaveis) {
-                     // Limpe as sugestões anteriores
-                     $('#suggestionsResponsaveis').empty();
+            if (profileId === 1) {
 
-                     // Adicione as novas sugestões
-                     responsaveis.forEach(function(responsavel) {
-                        var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
-                        suggestionItem.on('mousedown', function(event) {
-                           // Impede que o input perca o foco
-                           event.preventDefault();
-                           // Preencha o campo cidadeInput com a sugestão clicada
-                           responsavelInput.val(responsavel.Name);
-                           // Limpe as sugestões
-                           $('#suggestionsResponsaveis').empty();
-                           $('#suggestionsResponsaveis').hide();
+               responsavelInput.on('input', function () {
+                  var inputValue = $(this).val();
+                  if (inputValue.trim() === '') {
+                     $('#suggestionsResponsaveis').hide();
+                     return;
+                  }
+                  inputResponsaveis(inputValue)
+                     .then(function (responsaveis) {
+                        // Limpe as sugestões anteriores
+                        $('#suggestionsResponsaveis').empty();
+
+                        // Adicione as novas sugestões
+                        responsaveis.forEach(function (responsavel) {
+                           var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
+                           suggestionItem.on('mousedown', function (event) {
+                              // Impede que o input perca o foco
+                              event.preventDefault();
+                              // Preencha o campo cidadeInput com a sugestão clicada
+                              responsavelInput.val(responsavel.Name);
+                              // Limpe as sugestões
+                              $('#suggestionsResponsaveis').empty();
+                              $('#suggestionsResponsaveis').hide();
+                           });
+                           // Adicione a sugestão à lista de sugestões
+                           $('#suggestionsResponsaveis').append(suggestionItem);
                         });
-                        // Adicione a sugestão à lista de sugestões
-                        $('#suggestionsResponsaveis').append(suggestionItem);
+
+                        $('#suggestionsResponsaveis').show();
+                     })
+                     .catch(function (error) {
+                        console.error(error);
                      });
-
-                     $('#suggestionsResponsaveis').show();
                })
-               .catch(function(error) {
-                     console.error(error);
-               });
-            })
-            .on('blur', function() {
-               $('#suggestionsResponsaveis').hide();
-            });
+                  .on('blur', function () {
+                     $('#suggestionsResponsaveis').hide();
+                  });
 
-        } else {
-          // Ocultar o elemento de responsável
-          responsavelInput.attr("readonly", true);
-        }
-      });
+            } else {
+               // Ocultar o elemento de responsável
+               responsavelInput.attr("readonly", true);
+            }
+         });
       var selectedPayments = [];
 
       // Adicione o evento de clique ao botão "Apagar Último"
-      botaoApagarUltimo.on('click', function() {
+      botaoApagarUltimo.on('click', function () {
          // Verifique se há pagamentos para apagar
          if (selectedPayments.length > 0) {
             // Remova o último pagamento da lista
@@ -1248,63 +1271,63 @@ $(document).ready(function () {
          }
       });
 
-      pagamentoInput.on('click', function() {
+      pagamentoInput.on('click', function () {
          var inputValue = $(this).val().trim();
-         selectedPayments = inputValue.split(',').map(function(item) {
-               return item.trim();
+         selectedPayments = inputValue.split(',').map(function (item) {
+            return item.trim();
          });
 
          if (selectedPayments.length > 0 && selectedPayments[0] === '') {
-               selectedPayments.shift();
+            selectedPayments.shift();
          }
          //VOLTAR
          inputPagamentos(inputValue)
-               .then(function(pagamentos) {
-                  $('#suggestionsPagamento').empty();
+            .then(function (pagamentos) {
+               $('#suggestionsPagamento').empty();
 
-                  pagamentos.forEach(function(pagamento) {
-                     var suggestionItem = $('<div class="suggestion-item">' + pagamento.Name +'</div>');
+               pagamentos.forEach(function (pagamento) {
+                  var suggestionItem = $('<div class="suggestion-item">' + pagamento.Name + '</div>');
 
-                     suggestionItem.on('mousedown', function(event) {
-                           event.preventDefault();
+                  suggestionItem.on('mousedown', function (event) {
+                     event.preventDefault();
 
-                           var selectedPayment = $(this).text().trim();
+                     var selectedPayment = $(this).text().trim();
 
-                           if (!selectedPayments.includes(selectedPayment)) {
-                              selectedPayments.push(selectedPayment);
-                              pagamentoInput.val(selectedPayments.join(', '));
-                           } else{
-                              alert("Valor já adicionado")
-                           }
+                     if (!selectedPayments.includes(selectedPayment)) {
+                        selectedPayments.push(selectedPayment);
+                        pagamentoInput.val(selectedPayments.join(', '));
+                     } else {
+                        alert("Valor já adicionado")
+                     }
 
-                           $('#suggestionsPagamento').empty();
-                           $('#suggestionsPagamento').hide();
-                     });
-
-                     $('#suggestionsPagamento').append(suggestionItem);
+                     $('#suggestionsPagamento').empty();
+                     $('#suggestionsPagamento').hide();
                   });
 
-                  $('#suggestionsPagamento').show();
-      
-               })
-               .catch(function(error) {
-                  console.error(error);
+                  $('#suggestionsPagamento').append(suggestionItem);
                });
+
+               $('#suggestionsPagamento').show();
+
+            })
+            .catch(function (error) {
+               console.error(error);
+            });
       })
-      
-      .on('blur', function() {
-         $('#suggestionsPagamento').hide();
-      });
+
+         .on('blur', function () {
+            $('#suggestionsPagamento').hide();
+         });
 
       var botaoEnviar = $('<button id="enviar-cadastro-empresa" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
-      
+
       // Adicione as linhas ao formulário
-      form_cadastrar_empresa.append(labelNomeInput, nomeInput,labelcnpjInput,cnpjInput,labelTelefoneInput, form_row_telefone,labelPagamento,form_row, pagamentoSugestoes,
-      labelCidadeInput, cidadeInput, cidadeSugestoes,labelResponsavelInput, responsavelInput, responsavelSugestoes, botaoEnviar);
+      form_cadastrar_empresa.append(labelNomeInput, nomeInput, labelcnpjInput, cnpjInput, labelTelefoneInput, form_row_telefone, labelPagamento, form_row, pagamentoSugestoes,
+         labelCidadeInput, cidadeInput, cidadeSugestoes, labelResponsavelInput, responsavelInput, responsavelSugestoes, botaoEnviar);
 
       modalBody.appendChild(form_cadastrar_empresa[0]);
 
-      var isEnviando = false; 
+      var isEnviando = false;
 
       $('#modalSimNao').on('click', '#cadastrar-contato-nao', function (event) {
          event.stopPropagation(); // interrompe a propagação do evento
@@ -1332,51 +1355,51 @@ $(document).ready(function () {
          const empresaCriada = $('#nomeInput').val()
          $('#modalSimNao').modal('hide');
          $('#modalGanhar').show();
-         if(empresaCriada){
-            showModalCriarContato(event,empresaCriada);
+         if (empresaCriada) {
+            showModalCriarContato(event, empresaCriada);
          }
       });
 
       botaoEnviar.on('click', function (event) {
-      var telefone = $('#telefoneInput').val();
-      var cnpj = $('#cnpjInput').val();
+         var telefone = $('#telefoneInput').val();
+         var cnpj = $('#cnpjInput').val();
 
-      // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
-      var regexTelefone = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
+         // Expressão regular para verificar se o número de telefone tem 10 ou 11 dígitos
+         var regexTelefone = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
 
-      // Expressão regular para verificar se o CNPJ tem o formato específico
-      var regexCnpj = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+         // Expressão regular para verificar se o CNPJ tem o formato específico
+         var regexCnpj = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 
-      // Envio para o Ploomes
-      if ($('#nomeInput').val() !== '' &&
-         regexTelefone.test(telefone) &&
-         $('#cidadeInput').val() !== '' &&
-         $('#responsavelInput').val() !== '' &&
-         regexCnpj.test(cnpj)) {
+         // Envio para o Ploomes
+         if ($('#nomeInput').val() !== '' &&
+            regexTelefone.test(telefone) &&
+            $('#cidadeInput').val() !== '' &&
+            $('#responsavelInput').val() !== '' &&
+            regexCnpj.test(cnpj)) {
 
-         $('#modalGanhar').hide();
-         showModalContinuarAoContato();
-      } else {
-         if (telefone === '' || !regexTelefone.test(telefone)) {
-               alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
-         } else if (cnpj === '' || !regexCnpj.test(cnpj)) {
-               alert('Por favor, digite um CNPJ válido no formato correto (exemplo: 43.974.562/0001-09).');
+            $('#modalGanhar').hide();
+            showModalContinuarAoContato();
          } else {
+            if (telefone === '' || !regexTelefone.test(telefone)) {
+               alert('Por favor, digite um número de telefone válido (confira se faltou digitar o DDD).');
+            } else if (cnpj === '' || !regexCnpj.test(cnpj)) {
+               alert('Por favor, digite um CNPJ válido no formato correto (exemplo: 43.974.562/0001-09).');
+            } else {
                alert('Por favor, preencha todos os campos.');
+            }
          }
-      }
-   });
+      });
 
       // Abra o modal
       $('#modalGanhar').modal('show');
    }
 
-   $(document).on('click', '#btnVoltar', function(event) {
+   $(document).on('click', '#btnVoltar', function (event) {
       // Feche o modal atual
-         $('#cadastrar-empresa').modal('hide');
+      $('#cadastrar-empresa').modal('hide');
 
-         // Agora, abra o modal de escolha entre cliente ou contato
-         showModalEscolhaClienteOuContato(event);
+      // Agora, abra o modal de escolha entre cliente ou contato
+      showModalEscolhaClienteOuContato(event);
    });
 
    // Associar o evento de clique ao botão "Cadastrar Empresa"
@@ -1388,9 +1411,9 @@ $(document).ready(function () {
    $('#modalGanhar').on('click', '.close', function () {
       $('#modalGanhar').modal('hide');
    });
-   
-   function enviarCadastroEmpresa(condicao){
-      if(condicao == "Não"){
+
+   function enviarCadastroEmpresa(condicao) {
+      if (condicao == "Não") {
          $("#loading-overlay").show();
       }
       const nome = $('#nomeInput').val();
@@ -1401,32 +1424,32 @@ $(document).ready(function () {
       const responsavel = $('#responsavelInput').val();
 
       $.ajax({
-            url: '/cadastrar-empresa',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-               nome: nome,
-               cnpj:cnpj,
-               telefone: telefone,
-               tipoTelefone:tipoTelefone,
-               cidade:cidade,
-               responsavel:responsavel,
-               condicao:condicao
-            }),
-            success: function (response) {
-               console.log("Sucesso")
-               $('#cadastrar-contato-nao').prop('disabled', true);
-               if(condicao == "Não"){
-                  window.location.reload();
-               }
-            },
-            error: function (error) {
-               console.log(error);
+         url: '/cadastrar-empresa',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({
+            nome: nome,
+            cnpj: cnpj,
+            telefone: telefone,
+            tipoTelefone: tipoTelefone,
+            cidade: cidade,
+            responsavel: responsavel,
+            condicao: condicao
+         }),
+         success: function (response) {
+            console.log("Sucesso")
+            $('#cadastrar-contato-nao').prop('disabled', true);
+            if (condicao == "Não") {
+               window.location.reload();
             }
+         },
+         error: function (error) {
+            console.log(error);
+         }
       });
    }
 
-   function showModalCriarContato(event,parametroOpcional = "") {
+   function showModalCriarContato(event, parametroOpcional = "") {
       event.preventDefault(); // Prevenir o envio do formulário padrão
 
       // Defina o conteúdo do modal para a ação "Cadastrar contato"
@@ -1438,10 +1461,10 @@ $(document).ready(function () {
       var title = $('<div class="modal-header"><h5 class="modal-title" id="modalGanharLabel">Cadastrar contato - Criando novo contato</h5><button type="button" class="close" aria-label="Fechar"><span aria-hidden="true">&times;</span></button></div>');
 
       var botaoVoltar = $('<button id="btnVoltar" style="font-size: 20px; border: 1px solid black; cursor:pointer;"><i class="fa-solid fa-arrow-left" style:"color:black;"></i></button>');
-      form_cadastrar_cliente.append(botaoVoltar,title);
+      form_cadastrar_cliente.append(botaoVoltar, title);
 
-      $(document).on('click', '#botao-modal-interacao', function(event) {
-      // Feche o modal atual
+      $(document).on('click', '#botao-modal-interacao', function (event) {
+         // Feche o modal atual
          $('#cadastrar-cliente').modal('hide');
       });
 
@@ -1449,7 +1472,7 @@ $(document).ready(function () {
       var nomeInputContato = $('<input type="text" id="nomeInputContato" class="form-control" placeholder="Nome do cliente">');
       nomeInputContato.attr('autocomplete', 'off');
       var nomeSugestoes = $('<div class="suggestions" id="suggestionsNome"></div>')
-      
+
       var labelTelefoneInput = $('<label class="form-label">Telefone:</label>');
 
       var form_row_telefone = $('<div class="form-row">')
@@ -1459,7 +1482,7 @@ $(document).ready(function () {
       var tipoTelefoneContato = $('<select class="form-control" id="tipoTelefoneContato">');
       tipoTelefoneContato.attr('autocomplete', 'off');
       tipoTelefoneContato.css('width', 'auto');
-      
+
       var form_row_readonly = $('<div class="form-row">')
       var empresasAdicionadasInput = $('<textarea type="text" id="empresasAdicionadas" class="form-control" readonly>')
       var labelEmpresaInput = $('<label class="form-label">Empresas:</label>');
@@ -1471,12 +1494,12 @@ $(document).ready(function () {
       var botaoApagarUltimo = $('<button class="btn btn-danger btn-sm">Apagar</button>');
       botaoApagarUltimo.css('height', '42px');
 
-      if (parametroOpcional !== ""){
+      if (parametroOpcional !== "") {
          console.log("Entrou no IF")
-         empresasAdicionadasInput.val(parametroOpcional); 
-         empresaInputContato.css('display','none')
-         botaoApagarUltimo.css('display','none')
-         addEmpresa.css('display','none')
+         empresasAdicionadasInput.val(parametroOpcional);
+         empresaInputContato.css('display', 'none')
+         botaoApagarUltimo.css('display', 'none')
+         addEmpresa.css('display', 'none')
          var nomeSugestoes = ''
       } else {
          // pass
@@ -1493,56 +1516,56 @@ $(document).ready(function () {
       var responsavelSugestoes = $('<div class="suggestions" id="suggestionsResponsaveisContato"></div>')
       var valorFixoResponsavel = $('<input type="hidden" id="representante-name-contato" value="{{ nomeRepresentante }}">').val()
 
-      form_row_telefone.append(telefoneInputContato,tipoTelefoneContato)
-      form_row.append(empresaInputContato,addEmpresa)
-      form_row_readonly.append(empresasAdicionadasInput,botaoApagarUltimo)
+      form_row_telefone.append(telefoneInputContato, tipoTelefoneContato)
+      form_row.append(empresaInputContato, addEmpresa)
+      form_row_readonly.append(empresasAdicionadasInput, botaoApagarUltimo)
 
       telefoneInputContato.on('input', function () {
-      var numeroFormatado = $(this).val().replace(/\D/g, '');
+         var numeroFormatado = $(this).val().replace(/\D/g, '');
 
-      numeroFormatado = numeroFormatado.substring(0, 11);
+         numeroFormatado = numeroFormatado.substring(0, 11);
 
-      if (numeroFormatado.length === 11) {
-         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
-      } else if (numeroFormatado.length === 10) {
-         numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
-      }
-      $(this).val(numeroFormatado);
+         if (numeroFormatado.length === 11) {
+            numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 7) + '-' + numeroFormatado.substring(7);
+         } else if (numeroFormatado.length === 10) {
+            numeroFormatado = '(' + numeroFormatado.substring(0, 2) + ') ' + numeroFormatado.substring(2, 6) + '-' + numeroFormatado.substring(6);
+         }
+         $(this).val(numeroFormatado);
       });
-      
+
       var empresasAdicionadas = [];
 
-      nomeInputContato.on('input', function() {
+      nomeInputContato.on('input', function () {
          var inputValue = $(this).val();
          if (inputValue.trim() === '') {
             $('#suggestionsNome').hide();
             labelTelefoneInput.css('display', 'flex');
             form_row_telefone.css('display', 'flex');
-            labelCidadeInput.css('display','flex');
-            cidadeInputContato.css('display','flex');
+            labelCidadeInput.css('display', 'flex');
+            cidadeInputContato.css('display', 'flex');
             $('#modalGanharLabel').text("Cadastrar contato - Criando novo contato")
             return;
-         } 
-      
-         inputNomesContatos(inputValue)
-            .then(function(contatos) {
-                  // Limpe as sugestões anteriores
-                  $('#suggestionsNome').empty();
-                  empresasAdicionadasInput.empty();
-                  
-                  var novoContato = {
-                     Name: inputValue, 
-                     Company: null // Se não houver uma empresa associada, você pode deixar esse campo como null
-                  };
+         }
 
-                  // Adicione o novoContato à lista de contatos
-                  contatos.push(novoContato);
-                  contatos.forEach(function(contato) {
+         inputNomesContatos(inputValue)
+            .then(function (contatos) {
+               // Limpe as sugestões anteriores
+               $('#suggestionsNome').empty();
+               empresasAdicionadasInput.empty();
+
+               var novoContato = {
+                  Name: inputValue,
+                  Company: null // Se não houver uma empresa associada, você pode deixar esse campo como null
+               };
+
+               // Adicione o novoContato à lista de contatos
+               contatos.push(novoContato);
+               contatos.forEach(function (contato) {
                   var suggestionItem;
 
                   if (contatos.length === 0 || (contato.Name === inputValue && !('Id' in contato))) {
                      var suggestionItem = $('<div class="suggestion-item"><strong>Novo contato:</strong> ' + inputValue + '</div>');
-                     suggestionItem.on('mousedown', function(event) {
+                     suggestionItem.on('mousedown', function (event) {
                         // Impede que o input perca o foco
                         event.preventDefault();
                         // Preencha o campo nomeInputContato com o valor original
@@ -1552,13 +1575,13 @@ $(document).ready(function () {
                         $('#suggestionsNome').hide();
                         labelTelefoneInput.css('display', 'flex');
                         form_row_telefone.css('display', 'flex');
-                        labelCidadeInput.css('display','flex');
-                        cidadeInputContato.css('display','flex');
+                        labelCidadeInput.css('display', 'flex');
+                        cidadeInputContato.css('display', 'flex');
                      });
-                     if(contato.Name === inputValue){
+                     if (contato.Name === inputValue) {
                         $('#suggestionsNome').append(suggestionItem);
                         return
-                     }    
+                     }
                      $('#suggestionsNome').show();
                   } else {
                      if (contato.Company) {
@@ -1566,7 +1589,7 @@ $(document).ready(function () {
                      } else {
                         suggestionItem = $('<div class="suggestion-item">' + contato.Name + '</div>');
                      }
-                     suggestionItem.on('mousedown', function(event) {
+                     suggestionItem.on('mousedown', function (event) {
                         // Impede que o input perca o foco
                         event.preventDefault();
                         $('#suggestionsNome').empty();
@@ -1577,18 +1600,18 @@ $(document).ready(function () {
                         $('#modalGanharLabel').text("Cadastrar contato - Utilizando contato já existente");
                         labelTelefoneInput.css('display', 'none');
                         form_row_telefone.css('display', 'none');
-                        labelCidadeInput.css('display','none');
-                        cidadeInputContato.css('display','none');
+                        labelCidadeInput.css('display', 'none');
+                        cidadeInputContato.css('display', 'none');
                         cidadeInputContato.val('');
                         telefoneInputContato.val('');
                         tipoTelefoneContato.val('');
-                  
+
                         empresasAdicionadas = [];
                         if (!contato.Company) {
 
                         } else {
-                              empresasAdicionadasInput.val(contato.Company.Name);
-                              empresasAdicionadas.push(empresasAdicionadasInput.val());
+                           empresasAdicionadasInput.val(contato.Company.Name);
+                           empresasAdicionadas.push(empresasAdicionadasInput.val());
                         }
                      });
                      $('#suggestionsNome').append(suggestionItem);
@@ -1596,38 +1619,38 @@ $(document).ready(function () {
                   }
                });
             })
-            .catch(function(error) {
-                  console.error(error);
+            .catch(function (error) {
+               console.error(error);
             });
       })
-      .on('blur', function() {
-         $('#suggestionsNome').hide();
-      });
+         .on('blur', function () {
+            $('#suggestionsNome').hide();
+         });
 
-      
-      var tipoContato = ["Comercial", "Celular", "Residencial","Fax","Outros"]
+
+      var tipoContato = ["Comercial", "Celular", "Residencial", "Fax", "Outros"]
 
       for (var i = 0; i < tipoContato.length; i++) {
          var option = $('<option></option>').attr('value', tipoContato[i]).text(tipoContato[i]);
          tipoTelefoneContato.append(option);
-      }  
+      }
 
-      cidadeInputContato.on('input', function() {
-      var inputValue = $(this).val();
-      if (inputValue.trim() === '') {
-         $('#suggestionsCidadeContato').hide();
-         return;
-       } 
+      cidadeInputContato.on('input', function () {
+         var inputValue = $(this).val();
+         if (inputValue.trim() === '') {
+            $('#suggestionsCidadeContato').hide();
+            return;
+         }
 
-      inputCidades(inputValue)
-         .then(function(cidades) {
+         inputCidades(inputValue)
+            .then(function (cidades) {
                // Limpe as sugestões anteriores
                $('#suggestionsCidadeContato').empty();
 
                // Adicione as novas sugestões
-               cidades.forEach(function(cidade) {
-                  var suggestionItem = $('<div class="suggestion-item">' + cidade.Name + " - " + cidade.State.Name +'</div>');
-                  suggestionItem.on('mousedown', function(event) {
+               cidades.forEach(function (cidade) {
+                  var suggestionItem = $('<div class="suggestion-item">' + cidade.Name + " - " + cidade.State.Name + '</div>');
+                  suggestionItem.on('mousedown', function (event) {
                      // Impede que o input perca o foco
                      event.preventDefault();
                      // Preencha o campo cidadeInput com a sugestão clicada
@@ -1641,74 +1664,74 @@ $(document).ready(function () {
                });
 
                $('#suggestionsCidadeContato').show();
-         })
-         .catch(function(error) {
+            })
+            .catch(function (error) {
                console.error(error);
-         });
+            });
       })
-      .on('blur', function() {
-         $('#suggestionsCidadeContato').hide();
-      });
+         .on('blur', function () {
+            $('#suggestionsCidadeContato').hide();
+         });
 
       buscarProfileId(valorFixoResponsavel)
-      .then(profileId => {
+         .then(profileId => {
 
-        if (profileId === 1) {
-          
-         responsavelInputContato.on('input', function() {
-            var inputValue = $(this).val();
-            if (inputValue.trim() === '') {
-               $('#suggestionsResponsaveisContato').hide();
-               return;
-            }
-            inputResponsaveis(inputValue)
-            .then(function(responsaveis) {
-                     // Limpe as sugestões anteriores
-                     $('#suggestionsResponsaveisContato').empty();
+            if (profileId === 1) {
 
-                     // Adicione as novas sugestões
-                     responsaveis.forEach(function(responsavel) {
-                        var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
-                        suggestionItem.on('mousedown', function(event) {
-                           // Impede que o input perca o foco
-                           event.preventDefault();
-                           // Preencha o campo cidadeInput com a sugestão clicada
-                           responsavelInputContato.val(responsavel.Name);
-                           // Limpe as sugestões
-                           $('#suggestionsResponsaveisContato').empty();
-                           $('#suggestionsResponsaveisContato').hide();
+               responsavelInputContato.on('input', function () {
+                  var inputValue = $(this).val();
+                  if (inputValue.trim() === '') {
+                     $('#suggestionsResponsaveisContato').hide();
+                     return;
+                  }
+                  inputResponsaveis(inputValue)
+                     .then(function (responsaveis) {
+                        // Limpe as sugestões anteriores
+                        $('#suggestionsResponsaveisContato').empty();
+
+                        // Adicione as novas sugestões
+                        responsaveis.forEach(function (responsavel) {
+                           var suggestionItem = $('<div class="suggestion-item">' + responsavel.Name + '</div>');
+                           suggestionItem.on('mousedown', function (event) {
+                              // Impede que o input perca o foco
+                              event.preventDefault();
+                              // Preencha o campo cidadeInput com a sugestão clicada
+                              responsavelInputContato.val(responsavel.Name);
+                              // Limpe as sugestões
+                              $('#suggestionsResponsaveisContato').empty();
+                              $('#suggestionsResponsaveisContato').hide();
+                           });
+                           // Adicione a sugestão à lista de sugestões
+                           $('#suggestionsResponsaveisContato').append(suggestionItem);
                         });
-                        // Adicione a sugestão à lista de sugestões
-                        $('#suggestionsResponsaveisContato').append(suggestionItem);
+
+                        $('#suggestionsResponsaveisContato').show();
+                     })
+                     .catch(function (error) {
+                        console.error(error);
                      });
-
-                     $('#suggestionsResponsaveisContato').show();
                })
-               .catch(function(error) {
-                     console.error(error);
-               });
-            })
-            .on('blur', function() {
-               $('#suggestionsResponsaveisContato').hide();
-            });
+                  .on('blur', function () {
+                     $('#suggestionsResponsaveisContato').hide();
+                  });
 
-        } else {
-          // Ocultar o elemento de responsável
-          responsavelInputContato.attr("readonly", true);
-        }
-      });
+            } else {
+               // Ocultar o elemento de responsável
+               responsavelInputContato.attr("readonly", true);
+            }
+         });
 
       var selectedPayments = [];
 
       // Adicione o evento de clique ao botão "Adicionar Empresa"
-      addEmpresa.on('click', function() {
+      addEmpresa.on('click', function () {
          var empresaDigitada = empresaInputContato.val().trim();
 
          if (empresaDigitada !== '') {
             // Adicione a empresa digitada ao array de empresas adicionadas
             empresasAdicionadas.push(empresaDigitada);
 
-            if(empresasAdicionadasInput.val()){
+            if (empresasAdicionadasInput.val()) {
                empresasAdicionadasInput.val(empresasAdicionadasInput.val() + ', ' + empresaDigitada);
             } else {
                empresasAdicionadasInput.val(empresasAdicionadas.join(', '));
@@ -1718,70 +1741,70 @@ $(document).ready(function () {
          }
       });
 
-      botaoApagarUltimo.on('click', function() {
-      // Verifique se há empresas para apagar
-      if (empresasAdicionadas.length > 0) {
-         // Remova a última empresa adicionada do array
-         empresasAdicionadas.pop();
+      botaoApagarUltimo.on('click', function () {
+         // Verifique se há empresas para apagar
+         if (empresasAdicionadas.length > 0) {
+            // Remova a última empresa adicionada do array
+            empresasAdicionadas.pop();
 
-         empresasAdicionadasInput.val(empresasAdicionadas.join(', '));
+            empresasAdicionadasInput.val(empresasAdicionadas.join(', '));
          }
       });
 
       empresaInputContato.on('input', function () {
-      var inputValue = $(this).val().trim();
-      selectedPayments = inputValue.split(',').map(function (item) {
-         return item.trim();
-      });
+         var inputValue = $(this).val().trim();
+         selectedPayments = inputValue.split(',').map(function (item) {
+            return item.trim();
+         });
 
-      if (selectedPayments.length > 0 && selectedPayments[0] === '') {
-         selectedPayments.shift();
-      }
+         if (selectedPayments.length > 0 && selectedPayments[0] === '') {
+            selectedPayments.shift();
+         }
 
-    if (inputValue.includes(',')) {
-        // Limpa o campo de entrada para que a busca por sugestões comece novamente
-        empresaInputContato.val('');
-    }
+         if (inputValue.includes(',')) {
+            // Limpa o campo de entrada para que a busca por sugestões comece novamente
+            empresaInputContato.val('');
+         }
 
-    inputEmpresas(inputValue)
-        .then(function (empresas) {
-            // Limpe as sugestões anteriores
-            $('#suggestionsEmpresas').empty();
+         inputEmpresas(inputValue)
+            .then(function (empresas) {
+               // Limpe as sugestões anteriores
+               $('#suggestionsEmpresas').empty();
 
-            // Adicione as novas sugestões
-            empresas.forEach(function (empresa) {
-                var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
-                suggestionItem.on('mousedown', function (event) {
-                  // Impede que o input perca o foco
-                  event.preventDefault();
+               // Adicione as novas sugestões
+               empresas.forEach(function (empresa) {
+                  var suggestionItem = $('<div class="suggestion-item">' + empresa.Name + '</div>');
+                  suggestionItem.on('mousedown', function (event) {
+                     // Impede que o input perca o foco
+                     event.preventDefault();
 
-                  var selectedPayment = empresa.Name;
+                     var selectedPayment = empresa.Name;
 
-                  // Atualiza apenas o valor do input com o nome da empresa
-                  empresaInputContato.val(selectedPayment);
+                     // Atualiza apenas o valor do input com o nome da empresa
+                     empresaInputContato.val(selectedPayment);
 
-                  $('#suggestionsEmpresas').empty();
-                  $('#suggestionsEmpresas').hide();
+                     $('#suggestionsEmpresas').empty();
+                     $('#suggestionsEmpresas').hide();
+                  });
+                  // Adicione a sugestão à lista de sugestões
+                  $('#suggestionsEmpresas').append(suggestionItem);
                });
-                // Adicione a sugestão à lista de sugestões
-                $('#suggestionsEmpresas').append(suggestionItem);
-            });
 
-            $('#suggestionsEmpresas').show();
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+               $('#suggestionsEmpresas').show();
+            })
+            .catch(function (error) {
+               console.error(error);
+            });
       })
-    .on('blur', function () {
-        $('#suggestionsEmpresas').hide();
-    });
+         .on('blur', function () {
+            $('#suggestionsEmpresas').hide();
+         });
 
       var botaoEnviarContato = $('<button id="enviar-cadastro-contato" class="btn btn-success btn-sm" style="color: #fff; padding: 8px; margin-top:15px; font-weight: bold;">Cadastrar</button>');
 
-      form_cadastrar_cliente.append(title,labelNomeInput, nomeInputContato,nomeSugestoes,labelTelefoneInput ,form_row_telefone, 
-      labelEmpresaInput,form_row_readonly,form_row,EmpresaSugestoes,labelCidadeInput,cidadeInputContato,cidadeSugestoes,labelResponsavelInput,responsavelInputContato,
-      responsavelSugestoes,botaoEnviarContato);
+      form_cadastrar_cliente.append(title, labelNomeInput, nomeInputContato, nomeSugestoes, labelTelefoneInput, form_row_telefone,
+         labelEmpresaInput, form_row_readonly, form_row, EmpresaSugestoes, labelCidadeInput, cidadeInputContato, cidadeSugestoes, labelResponsavelInput, responsavelInputContato,
+         responsavelSugestoes, botaoEnviarContato);
 
       modalBody.appendChild(form_cadastrar_cliente[0]);
 
@@ -1793,30 +1816,30 @@ $(document).ready(function () {
          var tipoTelefoneContato = $('#tipoTelefoneContato').val();
          var regexTelefoneContato = /^(\(\d{2}\)\s?\d{5}-\d{4}|\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s?\d{5}-\d{4}|\d{2}\s?\d{4}-\d{4})$/;
          console.log(!$('#telefoneInputContato').is(':visible'))
-         
+
          if ($('#nomeInputContato').val() !== '' &&
             $('#responsavelInputContato').val() !== '' &&
             $('#empresasAdicionadas').val() !== '' &&
             (!$('#telefoneInputContato').is(':visible') || (telefoneContato !== '' && regexTelefoneContato.test(telefoneContato))) &&
             (!$('#cidadeInputContato').is(':visible') || cidadeContato !== '')) {
-               if($('#adicionarEmpresa').is(':visible')){
-                  var condicao = "Contato"
-               }else{
-                  var condicao = "Negocio"
-               }
-               $(this).prop('disabled', true);
-               enviarCadastroContato(condicao); //POST CONTATO
+            if ($('#adicionarEmpresa').is(':visible')) {
+               var condicao = "Contato"
+            } else {
+               var condicao = "Negocio"
+            }
+            $(this).prop('disabled', true);
+            enviarCadastroContato(condicao); //POST CONTATO
          } else {
-            if ($('#empresasAdicionadas').val() === ''){
+            if ($('#empresasAdicionadas').val() === '') {
                alert('Por favor, adicione a(s) Empresa(s).');
-            } else if(cidadeContato === ''){
-                  alert('Por favor, preencha o campo de cidade');
+            } else if (cidadeContato === '') {
+               alert('Por favor, preencha o campo de cidade');
             } else if ($('#nomeInputContato').val() === '') {
-                  alert('Por favor, preencha o nome.');
+               alert('Por favor, preencha o nome.');
             } else if ($('#responsavelInputContato').val() === '') {
-                  alert('Por favor, preencha o responsável.');
+               alert('Por favor, preencha o responsável.');
             } else if ((telefoneContato === '' || !regexTelefoneContato.test(telefoneContato) || tipoTelefoneContato === '')) {
-                  alert('Por favor, preencha todas as informações do telefone (Coloque o telefone com DDD)')
+               alert('Por favor, preencha todas as informações do telefone (Coloque o telefone com DDD)')
             }
          }
       });
@@ -1835,7 +1858,7 @@ $(document).ready(function () {
       $('#modalGanhar').modal('hide');
    });
 
-   function enviarCadastroContato(condicao){
+   function enviarCadastroContato(condicao) {
       $("#loading-overlay").show();
       const nomeContato = $('#nomeInputContato').val();
       const telefoneContato = $('#telefoneInputContato').val();
@@ -1845,29 +1868,29 @@ $(document).ready(function () {
       const tipoTelefoneContato = $('#tipoTelefoneContato').val();
 
       $.ajax({
-            url: '/cadastrar-contato',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-               nomeContato: nomeContato,
-               telefoneContato: telefoneContato,
-               empresaInputContato:empresaInputContato,
-               cidadeContato:cidadeContato,
-               responsavelContato:responsavelContato,
-               tipoTelefoneContato:tipoTelefoneContato,
-               condicao:condicao
-            }),
-            success: function (response) {
-               window.location.reload();
-               alert('Contato Cadastrado com Sucesso');
-               
-               setTimeout(function() {
-                  $("#loading-overlay").show();
-               }, 5000); // 5000 milissegundos (5 segundos)
-            },
-            error: function (error) {
-               console.log(error);
-            }
+         url: '/cadastrar-contato',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({
+            nomeContato: nomeContato,
+            telefoneContato: telefoneContato,
+            empresaInputContato: empresaInputContato,
+            cidadeContato: cidadeContato,
+            responsavelContato: responsavelContato,
+            tipoTelefoneContato: tipoTelefoneContato,
+            condicao: condicao
+         }),
+         success: function (response) {
+            window.location.reload();
+            alert('Contato Cadastrado com Sucesso');
+
+            setTimeout(function () {
+               $("#loading-overlay").show();
+            }, 5000); // 5000 milissegundos (5 segundos)
+         },
+         error: function (error) {
+            console.log(error);
+         }
       });
    }
 
@@ -1878,123 +1901,123 @@ $(document).ready(function () {
 
 <script>
 
-function buscarProfileId(representanteNameValue) {
+   function buscarProfileId(representanteNameValue) {
 
-   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-   var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'`;
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+      var apiUrl = `https://public-api2.ploomes.com/Users?$top=100&$select=ProfileId&$filter=Name eq '${representanteNameValue}'`;
 
-   return fetch(apiUrl, {
-   method: 'GET',
-   headers: {
-      'User-Key': apiKey
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
+            'User-Key': apiKey
+         }
+      })
+         .then(response => response.json())
+         .then(data => {
+            if (data && data.value && data.value.length > 0) {
+               return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
+            }
+            return null; // Retorna null se nenhum ID for encontrado
+         })
+         .catch(error => {
+            console.error(error);
+            return null;
+         });
    }
-   })
-   .then(response => response.json())
-   .then(data => {
-      if (data && data.value && data.value.length > 0) {
-         return data.value[0].ProfileId; // Pega o primeiro ID da lista (se houver)
-      }
-      return null; // Retorna null se nenhum ID for encontrado
-   })
-   .catch(error => {
-      console.error(error);
-      return null;
-   });
-}
 
-function inputCidades(inputValue) {
+   function inputCidades(inputValue) {
       var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
       var apiUrl = `https://public-api2.ploomes.com/Cities?$expand=State,Country&$skip=0&$top=5&$filter=(startswith(Name,'${inputValue}'))&$select=Id,IBGECode,Name&$orderby=Name&$count=true`;
 
       return fetch(apiUrl, {
          method: 'GET',
          headers: {
-               'User-Key': apiKey
+            'User-Key': apiKey
          }
       })
-      .then(response => response.json())
-      .then(data => data.value)
-      .catch(error => {
-         console.error(error);
-         return [];
-      });
+         .then(response => response.json())
+         .then(data => data.value)
+         .catch(error => {
+            console.error(error);
+            return [];
+         });
    }
 
-function inputResponsaveis(iniciais){
-   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-   var apiUrl = `https://public-api2.ploomes.com/Users/GetContactOwners?$expand=Profile&$skip=0&$top=5&$filter=(startswith(Name,'${iniciais}'))&$select=Id,Name&$orderby=Name&$count=true`;
+   function inputResponsaveis(iniciais) {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+      var apiUrl = `https://public-api2.ploomes.com/Users/GetContactOwners?$expand=Profile&$skip=0&$top=5&$filter=(startswith(Name,'${iniciais}'))&$select=Id,Name&$orderby=Name&$count=true`;
 
-   return fetch(apiUrl, {
-      method: 'GET',
-      headers: {
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
             'User-Key': apiKey
-      }
-   })
-   .then(response => response.json())
-   .then(data => data.value)
-   .catch(error => {
-      console.error(error);
-      return [];
-   });
-}
+         }
+      })
+         .then(response => response.json())
+         .then(data => data.value)
+         .catch(error => {
+            console.error(error);
+            return [];
+         });
+   }
 
-function inputPagamentos(inputValue){
-   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-   
-   var apiUrl = `https://public-api2.ploomes.com/Fields@OptionsTables@Options?$skip=0&$top=20&$filter=TableId+eq+27971&$select=Id,Name&$orderby=Name&$count=true`;
-   // var apiUrl = `https://public-api2.ploomes.com/Fields@OptionsTables@Options?$skip=0&$top=10&$filter=(contains(Name,'${inputValue}')) and TableId+eq+27971&$select=Id,Name&$orderby=Name&$count=true`;
+   function inputPagamentos(inputValue) {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
 
-   return fetch(apiUrl, {
-      method: 'GET',
-      headers: {
+      var apiUrl = `https://public-api2.ploomes.com/Fields@OptionsTables@Options?$skip=0&$top=20&$filter=TableId+eq+27971&$select=Id,Name&$orderby=Name&$count=true`;
+      // var apiUrl = `https://public-api2.ploomes.com/Fields@OptionsTables@Options?$skip=0&$top=10&$filter=(contains(Name,'${inputValue}')) and TableId+eq+27971&$select=Id,Name&$orderby=Name&$count=true`;
+
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
             'User-Key': apiKey
-      }
-   })
-   .then(response => response.json())
-   .then(data => data.value)
-   .catch(error => {
-      console.error(error);
-      return [];
-   });
-}
+         }
+      })
+         .then(response => response.json())
+         .then(data => data.value)
+         .catch(error => {
+            console.error(error);
+            return [];
+         });
+   }
 
-function inputEmpresas(inputValue){
-   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-   
-   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name,CNPJ&$orderby=Name&$count=true`;
-   // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
-   return fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-            'User-Key': apiKey
-      }
-   })
-   .then(response => response.json())
-   .then(data => data.value)
-   .catch(error => {
-      console.error(error);
-      return [];
-   });
-}
+   function inputEmpresas(inputValue) {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
 
-function inputNomesContatos(inputValue){
-   var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
-   
-   var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+2+and+(startswith(Name,'${inputValue}'))&$select=Id,Name&$orderby=Name&$count=true`;
-   // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
-   return fetch(apiUrl, {
-      method: 'GET',
-      headers: {
+      var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+1 and startswith(Name,'${inputValue}')&$select=Id,Name,CNPJ&$orderby=Name&$count=true`;
+      // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
             'User-Key': apiKey
-      }
-   })
-   .then(response => response.json())
-   .then(data => data.value)
-   .catch(error => {
-      console.error(error);
-      return [];
-   });
-}
+         }
+      })
+         .then(response => response.json())
+         .then(data => data.value)
+         .catch(error => {
+            console.error(error);
+            return [];
+         });
+   }
+
+   function inputNomesContatos(inputValue) {
+      var apiKey = '5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3';
+
+      var apiUrl = `https://public-api2.ploomes.com/Contacts?$expand=Company($select=Id,Name)&$skip=0&$top=5&$filter=TypeId+eq+2+and+(startswith(Name,'${inputValue}'))&$select=Id,Name&$orderby=Name&$count=true`;
+      // Contacts?$expand=Company($select=Id,Name),Owner($expand=Profile),Phones&$skip=0&$top=1&$filter=TypeId+eq+1+and+(Name+eq+%27w%27)&$select=Id,Name,TypeId,CurrencyId,Register,CPF,CNPJ,Owner&$orderby=Name&$count=true
+      return fetch(apiUrl, {
+         method: 'GET',
+         headers: {
+            'User-Key': apiKey
+         }
+      })
+         .then(response => response.json())
+         .then(data => data.value)
+         .catch(error => {
+            console.error(error);
+            return [];
+         });
+   }
 
 </script>
 
