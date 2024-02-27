@@ -253,7 +253,32 @@
       <textarea id="observacao" rows="4" cols="45"></textarea>
     </div>
 
-    <button class="enviarModal" id="enviar-button" onclick="enviarDados()">Enviar</button>
+    <button class="enviarModal" id="enviar-button-proposta">Enviar</button>
+  </div>
+</div>
+
+<div class="modal" id="modal_confirmacao_proposta" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tem certeza que deseja enviar os itens abaixo?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="fechar_confirmacao_proposta">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Descrição da Carreta</label>
+          <ul id="codigo_e_carreta_confirmacao_proposta">
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="botao_nao_proposta">Não</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="botao_sim_proposta">Sim</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -900,6 +925,26 @@
     // Exibe o carregamento
     $("#loading-overlay").show();
 
+    let items = obterDadosProposta()
+
+    // Obtenha os valores dos campos adicionais do formulário
+    var nome = document.getElementById('resultado-nomes-novo').value;
+    var contato = document.getElementById('resultado-contatos-novo').value;
+    var formaPagamento = document.getElementById('forma-pagamento').value;
+    var observacoes = document.getElementById('observacao').value;
+    var nomeResponsavel = document.getElementById('resultado-responsavel').value;
+
+    // Chame a função para enviar os dados para o backend usando fetch
+    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel);
+    copiarItensETotalParaAreaDeTransferencia();
+  }
+
+  $('#botao_sim_proposta').one('click',function(){
+    handleEnviarButtonClick()
+  })
+
+  function obterDadosProposta(){
+    // Exibe o carregamento
     const items = [];
 
     // Obtenha todos os itens da lista
@@ -916,6 +961,8 @@
       const numeros = numerosElement.textContent;
       const valorRealElement = listItem.querySelector('.valorReal');
       const valorReal = valorRealElement.textContent;
+      const descricaoCarreta = listItem.querySelector('.descCarreta');
+      const descCarreta = descricaoCarreta.textContent;
 
       // Crie um objeto com os dados do item
       const item = {
@@ -924,30 +971,54 @@
         quanti: quanti,
         numeros: numeros,
         valorReal: valorReal,
+        descCarreta:descCarreta
       };
 
       // Adicione o item à lista de itens
       items.push(item);
     });
 
-    // Obtenha os valores dos campos adicionais do formulário
-    var nome = document.getElementById('resultado-nomes-novo').value;
-    var contato = document.getElementById('resultado-contatos-novo').value;
-    var formaPagamento = document.getElementById('forma-pagamento').value;
-    var observacoes = document.getElementById('observacao').value;
-    var nomeResponsavel = document.getElementById('resultado-responsavel').value;
-
-    // Chame a função para enviar os dados para o backend usando fetch
-    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel);
-    copiarItensETotalParaAreaDeTransferencia();
+    return items
   }
 
-  // Obtenha o botão "Enviar"
-  const enviarButton = document.getElementById('enviar-button');
-
   // Adicione um evento de clique ao botão "Enviar"
-  enviarButton.addEventListener('click', handleEnviarButtonClick);
+  $('#enviar-button-proposta').on('click',function(){
+    modalConfirmacaoProposta();
+  })
   
+  function fecharModalConfirmacaoProposta() {
+
+    $('#modal_confirmacao_proposta').hide();
+    
+  }
+
+  function modalConfirmacaoProposta() {
+
+      $('#modal_confirmacao_proposta .modal-body ul').empty();
+
+      $('#modal_confirmacao_proposta').show();
+
+      let itens_modal_proposta = obterDadosProposta()
+
+      var codigoList_carretaList = document.getElementById("codigo_e_carreta_confirmacao_proposta");
+
+      // Iterate through the array and add values to the respective ul elements
+      itens_modal_proposta.forEach(function (item) {
+        // Add 'description' to <li> in codigo_confirmacao
+        var codigoItem_carretaItem = document.createElement("li");
+        codigoItem_carretaItem.textContent = item.description+ " - " + item.descCarreta;
+        codigoList_carretaList.appendChild(codigoItem_carretaItem);
+      });
+  }
+    // Configurar evento de clique para fechar o modal quando o botão de fechar for clicado
+    $('#botao_nao_proposta').on('click',function(){
+      fecharModalConfirmacaoProposta();
+    })
+    
+    $('#fechar_confirmacao_proposta').on('click',function(){
+      fecharModalConfirmacaoProposta();
+    })
+
 </script>
 
 <script>// Atualizar dados de dropdow de clientes

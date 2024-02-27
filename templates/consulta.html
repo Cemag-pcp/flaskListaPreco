@@ -251,6 +251,31 @@
 
 </div>
 
+<div class="modal" id="modal_confirmacao" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tem certeza que deseja enviar os itens abaixo?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="fechar_confirmacao">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Descrição da Carreta</label>
+          <ul id="codigo_e_carreta_confirmacao">
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="botao_nao">Não</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="botao_sim">Sim</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // Manipulador de evento de clique para botões favoritos
   $('#table1').on('click', '.favorito-btn', function (event) {
@@ -900,10 +925,12 @@
           // Recarrega a página após um breve intervalo de tempo
           location.reload();
         } else {
+          $("#loading-overlay").hide();
           console.error('Ocorreu um erro ao enviar os itens.');
         }
       })
       .catch(error => {
+        $("#loading-overlay").hide();
         console.error('Ocorreu um erro ao enviar os itens:', error);
       });
   }
@@ -956,38 +983,10 @@
 
   // Função para lidar com o clique no botão "Enviar"
   function handleEnviarButtonClick() {
-    // Exibe o carregamento
+    
     $("#loading-overlay").show();
 
-    const items = [];
-
-    // Obtenha todos os itens da lista
-    const listItems = document.querySelectorAll('.listCard li');
-
-    // Percorra os itens e obtenha os dados
-    listItems.forEach(listItem => {
-      const description = listItem.getAttribute('data-description');
-      const corElement = listItem.querySelector('.cor');
-      const cor = corElement.value;
-      const quantiElement = listItem.querySelector('.quanti');
-      const quanti = quantiElement.textContent;
-      const numerosElement = listItem.querySelector('.numeros');
-      const numeros = numerosElement.textContent;
-      const valorRealElement = listItem.querySelector('.valorReal');
-      const valorReal = valorRealElement.textContent;
-
-      // Crie um objeto com os dados do item
-      const item = {
-        description: description,
-        cor: cor,
-        quanti: quanti,
-        numeros: numeros,
-        valorReal: valorReal,
-      };
-
-      // Adicione o item à lista de itens
-      items.push(item);
-    });
+    let items_dados = obterDadosConsulta()
 
     // Obtenha os valores dos campos adicionais do formulário
     var nome = document.getElementById('resultado-nomes-novo').value;
@@ -1004,20 +1003,93 @@
       $("#loading-overlay").hide();
       return; // Para sair da função e não continuar.
     }
-
-    // Chame a função para enviar os dados para o backend usando fetch
-    sendData(items, nome, contato, formaPagamento, observacoes, nomeResponsavel, idQuote, dealIdBackend);
+    
+    sendData(items_dados, nome, contato, formaPagamento, observacoes, nomeResponsavel, idQuote, dealIdBackend);
     copiarItensETotalParaAreaDeTransferencia();
   }
 
-  // Obtenha o botão "Enviar"
-  const enviarButton = document.getElementById('enviar-button');
+  $('#botao_sim').one('click',function(){
+    handleEnviarButtonClick()
+  })
+
+  function obterDadosConsulta(){
+    // Exibe o carregamento
+    const items = [];
+
+    // Obtenha todos os itens da lista
+    const listItems = document.querySelectorAll('.listCard li');
+
+    // Percorra os itens e obtenha os dados
+    listItems.forEach(listItem => {
+      const description = listItem.getAttribute('data-description');
+      const corElement = listItem.querySelector('.cor');
+      const cor = corElement.value;
+      const quantiElement = listItem.querySelector('.quanti');
+      const quanti = quantiElement.textContent;
+      const numerosElement = listItem.querySelector('.numeros');
+      const numeros = numerosElement.textContent;
+      const valorRealElement = listItem.querySelector('.valorReal');
+      const valorReal = valorRealElement.textContent;
+      const descricaoCarreta = listItem.querySelector('.descCarreta');
+      const descCarreta = descricaoCarreta.textContent;
+
+      // Crie um objeto com os dados do item
+      const item = {
+        description: description,
+        cor: cor,
+        quanti: quanti,
+        numeros: numeros,
+        valorReal: valorReal,
+        descCarreta:descCarreta
+      };
+
+      // Adicione o item à lista de itens
+      items.push(item);
+    });
+
+    return items
+  }
 
   // Adicione um evento de clique ao botão "Enviar"
-  enviarButton.addEventListener('click', handleEnviarButtonClick);
+  $('#enviar-button').on('click',function(){
+    modalConfirmacaoConsulta();
+  })
 
 </script>
 
+<script>
+    function fecharModalConfirmacao() {
+        $('#modal_confirmacao').hide();
+    }
+
+    function modalConfirmacaoConsulta() {
+
+      $('#modal_confirmacao .modal-body ul').empty();
+
+      $('#modal_confirmacao').show();
+
+      let itens_modal =  obterDadosConsulta()
+
+      var codigoList_carretaList = document.getElementById("codigo_e_carreta_confirmacao");
+
+      // Iterate through the array and add values to the respective ul elements
+      itens_modal.forEach(function (item) {
+        // Add 'description' to <li> in codigo_confirmacao
+        var codigoItem_carretaItem = document.createElement("li");
+        codigoItem_carretaItem.textContent = item.description+ " - " + item.descCarreta;
+        codigoList_carretaList.appendChild(codigoItem_carretaItem);
+      });
+    }
+    // Configurar evento de clique para fechar o modal quando o botão de fechar for clicado
+    $('#botao_nao').on('click',function(){
+      fecharModalConfirmacao();
+    })
+    
+    $('#fechar_confirmacao').on('click',function(){
+      fecharModalConfirmacao();
+    })
+
+</script>
 <!-- <script>
   // Função para copiar os itens e o total para a área de transferência
     
