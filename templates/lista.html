@@ -266,7 +266,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="overflow-y: auto; height: 400px;">
         <div class="form-group">
           <label>Descrição da Carreta</label>
           <ul id="codigo_e_carreta_confirmacao_proposta">
@@ -1000,13 +1000,44 @@
 
       let itens_modal_proposta = obterDadosProposta()
 
+      var nome = document.getElementById('resultado-nomes-novo').value;
+      var contato = document.getElementById('resultado-contatos-novo').value;
+      var formaPagamento = document.getElementById('forma-pagamento').value;
+      var observacoes = document.getElementById('observacao').value;
+      var nomeResponsavel = document.getElementById('resultado-responsavel').value;
+
+      // Crie um elemento para armazenar as informações adicionais
+      var infoAdicionais = document.createElement("div");
+
+      // Adicione o nome
+      var nomeElemento = document.createElement("p");
+      nomeElemento.textContent = "Nome: " + nome;
+      infoAdicionais.appendChild(nomeElemento);
+
+      // Adicione o contato
+      var contatoElemento = document.createElement("p");
+      contatoElemento.textContent = "Contato: " + contato;
+      infoAdicionais.appendChild(contatoElemento);
+
+      // Adicione a forma de pagamento
+      var formaPagamentoElemento = document.createElement("p");
+      formaPagamentoElemento.textContent = "Forma de Pagamento: " + formaPagamento;
+      infoAdicionais.appendChild(formaPagamentoElemento);
+
+      // Adicione as observações
+      var observacoesElemento = document.createElement("p");
+      observacoesElemento.textContent = "Observações: " + observacoes;
+      infoAdicionais.appendChild(observacoesElemento);
+
       var codigoList_carretaList = document.getElementById("codigo_e_carreta_confirmacao_proposta");
+
+      codigoList_carretaList.appendChild(infoAdicionais);
 
       // Iterate through the array and add values to the respective ul elements
       itens_modal_proposta.forEach(function (item) {
         // Add 'description' to <li> in codigo_confirmacao
         var codigoItem_carretaItem = document.createElement("li");
-        codigoItem_carretaItem.textContent = item.description+ " - " + item.descCarreta;
+        codigoItem_carretaItem.textContent = item.description+ " - " + item.descCarreta + "; Quantidade: " + item.numeros + " - " + item.cor;
         codigoList_carretaList.appendChild(codigoItem_carretaItem);
       });
   }
