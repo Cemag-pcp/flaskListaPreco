@@ -28,116 +28,31 @@
          </div>
       </div>
    </div>
+   <div class="row" id="cardInicio">
+
+   </div>
    <div class="row">
-      {% for dado in data %}
-      <div class="col-md-4 mb-3" id="containerDosCards">
-         <div class="custom-card">
-            <div class="card-body">
-               <input class="id-deals" type="text" value="{{ dado.DealId }}" style="display: none;">
-               <input class="nome-empresa" type="text" value="{{ dado.ContactName }}" style="display: none;">
-               {% if dado.PersonId != None %}
-               <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
-               {% else %}
-               <div class="card-content" style="display: flex; justify-content: space-between;">
-                  <h6 class="card-text">{{ dado.ContactName }} - {{ dado.DealId }}</h6>
-                  <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;"
-                     title="Adicione um contato"></i>
-               </div>
-               <p style="color: red;">Adicione um contato para ganhar proposta</p>
-               <div class="campo_adicional" style="display: none;">
-                  <div class="caret-down"></div>
-                  <h6 style="border-bottom: 1px solid lightgrey; padding: 5px;">Adicionar Contato</h6>
-                  <div style="margin-top: 10px; margin-bottom: 10px;">
-                     <label>Contato: </label>
-                     <input type="text" class="form-control campo_input">
-                     <div class="suggestions_2 suggestions_campo_input" style="display: none;"></div>
-                  </div>
-                  <button class="btn btn-info btn-sm salvarContato"
-                     onclick="enviarDeals($(this).closest('.custom-card'))">Salvar</button>
-                  <button class="btn btn-danger btn-sm botao_cancelar">Cancelar</button>
-               </div>
-               {% endif %}
-               <p class="data-aceito card-aceito">Aceito: {% if dado.ExternallyAccepted == 'Sim' %}
-                  <span style="color: green;">{{ dado.ExternallyAccepted }}</span>
-                  {% else %}
-                  <span style="color: red;">{{ dado.ExternallyAccepted }}</span>
-                  {% endif %}
-               </p>
-               {% if dado.ApprovalStatusId == 1 %}
-               <p class="card-text">
-                  <i class="fas fa-exclamation-triangle button-icon" style="color: orange;"></i> Aguardando aprovação
-               </p>
-               {% else %}
-               <p></p>
-               {% endif %}
-               <p class="data-status card-status">Status:
-                  {% if dado.StatusId == 1 %}
-                  <span style="color: blue;">Em Aberto</span>
-                  {% elif dado.StatusId == 2 %}
-                  <span style="color: green;">Ganha</span>
-                  {% elif dado.StatusId == 3 %}
-                  <span style="color: red;">Perdida</span>
-                  {% endif %}
-               </p>
-               <p class="card-text">Data: {{ dado.LastUpdateDate}}</p>
-               <p class="card-text">Valor: R$ {{ dado.Amount}}</p>
-               <p class="card-text">
-                  PDF:
-                  <span class="pdf-data" style="display: none;">{{ dado.pdf }}</span>
-                  <span class="copy-icon" onclick="copyText('{{dado.pdf}}')"><i class="fas fa-copy"></i></span>
-                  <a href="{{ dado.pdf }}" target="_blank"><i class="fa-solid fa-file"></i></a>
-                  Aceite:
-                  <span class="aceite-data" style="display: none;">{{ dado.aceite }}</span>
-                  <span class="copy-icon" onclick="copyText('{{dado.aceite}}')"><i class="fas fa-copy"></i></span>
-                  <a href="{{ dado.aceite }}" target="_blank"><i class="fa-solid fa-file"></i></a>
-
-               </p>
-               {% if dado.StatusId == 2 or dado.StatusId == 3 or dado.ApprovalStatusId == 1 %}
-               <a></a>
-               <a></a>
-               {% else %}
-               {% if dado.PersonId != None %}
-               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="showModalGanhar('{{ dado.DealId }}')">Ganhar</a>
-               <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
-               <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
-               <!-- <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="revisarProposta('{{ dado.DealId }}')">Revisar</a> -->
-
-               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-               {% else %}
-               <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="showModalPerder('{{ dado.DealId }}', '{{ dado.ContactName }}')">Perder</a>
-               <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="reenviarEmail('{{ dado.DealId }}', '{{ dado.ContactName }}')">Reenviar e-mail</a>
-               <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;"
-                  onclick="showModalRevisar('{{ dado.DealId }}')">Revisar</a>
-               {% endif %}
-               {% endif %}
-            </div>
-         </div>
-
-         <div class="modal fade" id="modalPerder" data-bs-backdrop="static" tabindex="-1" role="dialog"
-            aria-labelledby="modalPerderLabel">
-            <div class="modal-dialog" role="document">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <h5 class="modal-title" id="modalPerderLabel">Perder proposta</h5>
-                     <button type="button" class="close" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                     </button>
-                  </div>
-                  <div class="modal-body-perder">
-                     <!-- Conteúdo será preenchido dinamicamente usando JavaScript -->
-                  </div>
-               </div>
-            </div>
-         </div>
-
+      <div class="col-md-6 mb-3">
+         <button class="btn btn-info" id="carregarItens" style="width: 200px;">Carregar Itens</button>
       </div>
-      {% endfor %}
+   </div>
+
+      <div class="modal fade" id="modalPerder" data-bs-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="modalPerderLabel">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="modalPerderLabel">Perder proposta</h5>
+                  <button type="button" class="close" aria-label="Fechar">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body-perder">
+                  <!-- Conteúdo será preenchido dinamicamente usando JavaScript -->
+               </div>
+            </div>
+         </div>
+      </div>
 
       <div class="modal fade" id="modalSimNao" data-bs-backdrop="static" tabindex="-1" role="dialog"
          aria-labelledby="modalSimNaoLabel">
@@ -171,7 +86,6 @@
             </div>
          </div>
       </div>
-   </div>
 
 </div>
 
@@ -203,6 +117,118 @@
          campo_input.val('')
       });
    });
+</script>
+
+<script>
+   let topValue = 3; // valor inicial de top
+   let skipValue = 0; // valor inicial de skip
+
+   let carregarItens = document.getElementById("carregarItens")
+
+   carregarItens.addEventListener('click', function() {
+         enviarRequisicao();
+         skipValue += 10
+   });
+
+   function enviarRequisicao() {
+      $("#loading-overlay").show();
+       fetch('/mouse-down', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({
+               top: topValue,
+               skip: skipValue
+           })
+       })
+      .then(response => response.json())
+      .then(data => {
+           // lógica para lidar com a resposta do servidor
+           const containerRow = document.getElementById('cardInicio');
+
+            data.forEach(dado => {
+               containerRow.innerHTML  += `
+                  <div class="col-md-4 mb-3" id="containerDosCards">
+                        <div class="custom-card">
+                           <div class="card-body">
+                              <input class="id-deals" type="text" value="${dado.DealId}" style="display: none;">
+                              <input class="nome-empresa" type="text" value="${dado.ContactName}" style="display: none;">
+                              ${dado.PersonId !== null ? `
+                                    <h6 class="card-text">${dado.ContactName} - ${dado.DealId}</h6>
+                              ` : `
+                                    <div class="card-content" style="display: flex; justify-content: space-between;">
+                                       <h6 class="card-text">${dado.ContactName} - ${dado.DealId}</h6>
+                                       <i class="fa-solid fa-plus botao_plus" style="color: gray; cursor: pointer;" title="Adicione um contato"></i>
+                                    </div>
+                                    <p style="color: red;">Adicione um contato para ganhar proposta</p>
+                                    <div class="campo_adicional" style="display: none;">
+                                       <div class="caret-down"></div>
+                                       <h6 style="border-bottom: 1px solid lightgrey; padding: 5px;">Adicionar Contato</h6>
+                                       <div style="margin-top: 10px; margin-bottom: 10px;">
+                                          <label>Contato: </label>
+                                          <input type="text" class="form-control campo_input">
+                                          <div class="suggestions_2 suggestions_campo_input" style="display: none;"></div>
+                                       </div>
+                                       <button class="btn btn-info btn-sm salvarContato" onclick="enviarDeals($(this).closest('.custom-card'))">Salvar</button>
+                                       <button class="btn btn-danger btn-sm botao_cancelar">Cancelar</button>
+                                    </div>
+                              `}
+                              <p class="data-aceito card-aceito">Aceito: ${dado.ExternallyAccepted === 'Sim' ? `<span style="color: green;">${dado.ExternallyAccepted}</span>` : `<span style="color: red;">${dado.ExternallyAccepted}</span>`}</p>
+                              ${dado.ApprovalStatusId === 1 ? `
+                                    <p class="card-text">
+                                       <i class="fas fa-exclamation-triangle button-icon" style="color: orange;"></i> Aguardando aprovação
+                                    </p>
+                              ` : ''}
+                              <p class="data-status card-status">Status: 
+                                    ${dado.StatusId === 1 ? `<span style="color: blue;">Em Aberto</span>` : (dado.StatusId === 2 ? `<span style="color: green;">Ganha</span>` : `<span style="color: red;">Perdida</span>`)}
+                              </p>
+                              <p class="card-text">Data: ${dado.LastUpdateDate}</p>
+                              <p class="card-text">Valor: R$ ${dado.Amount}</p>
+                              <p class="card-text">
+                                    PDF:
+                                    <span class="pdf-data" style="display: none;">${dado.pdf}</span>
+                                    <span class="copy-icon" onclick="copyText('${dado.pdf}')"><i class="fas fa-copy"></i></span>
+                                    <a href="${dado.pdf}" target="_blank"><i class="fa-solid fa-file"></i></a>
+                                    Aceite:
+                                    <span class="aceite-data" style="display: none;">${dado.aceite}</span>
+                                    <span class="copy-icon" onclick="copyText('${dado.aceite}')"><i class="fas fa-copy"></i></span>
+                                    <a href="${dado.aceite}" target="_blank"><i class="fa-solid fa-file"></i></a>
+                                    ${dado.StatusId === 2 ? `
+                                       Venda:
+                                       <span class="pdf-venda-data" style="display: none;">${dado.link_venda}</span>
+                                       <span class="copy-icon" onclick="copyText('${dado.link_venda}')"><i class="fas fa-copy"></i></span>
+                                       <a href="${dado.link_venda}" target="_blank"><i class="fa-solid fa-file"></i></a>
+                                    ` : ''}
+                              </p>
+                              ${dado.StatusId === 2 || dado.StatusId === 3 || dado.ApprovalStatusId === 1 ? `
+                                    <a></a>
+                                    <a></a>
+                              ` : `
+                                    ${dado.PersonId !== null ? `
+                                       <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalGanhar('${dado.DealId}')">Ganhar</a>
+                                       <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('${dado.DealId}', '${dado.ContactName}')">Perder</a>
+                                       <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('${dado.DealId}', '${dado.ContactName}')">Reenviar e-mail</a>
+                                       <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('${dado.DealId}')">Revisar</a>
+                                    ` : `
+                                       <a class="btn btn-danger btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalPerder('${dado.DealId}', '${dado.ContactName}')">Perder</a>
+                                       <a class="btn btn-info btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="reenviarEmail('${dado.DealId}', '${dado.ContactName}')">Reenviar e-mail</a>
+                                       <a class="btn btn-success btn-sm" style="color: #fff; padding: 0.1rem 0.5rem;" onclick="showModalRevisar('${dado.DealId}')">Revisar</a>
+                                    `}
+                              `}
+                           </div>
+                        </div>
+                  </div>
+               `;
+               containerRow.appendChild(card);
+            });
+            $("#loading-overlay").hide();
+       })
+       .catch(error => {
+            $("#loading-overlay").hide();
+           console.error('Erro ao enviar requisição:', error);
+       });
+   }
 </script>
 
 <script>

@@ -1160,10 +1160,20 @@ def opcoes():
             return redirect(url_for('consulta'))
 
     lista_motivos = listarMotivos()
-    data = listarOrcamentos(nomeRepresentante)
 
-    return render_template('opcoes.html', data=data, lista_motivos=lista_motivos,nomeRepresentante=nomeRepresentante)
+    return render_template('opcoes.html', lista_motivos=lista_motivos,nomeRepresentante=nomeRepresentante)
 
+@app.route('/mouse-down', methods=['POST'])
+@login_required
+def mouse_down():
+
+    nomeRepresentante = session['user_id']
+
+    skip = int(request.json.get('skip', 0)) # valor padrão é 0
+    print("Antes da Lista Orçamentos")
+    data = listarOrcamentos(nomeRepresentante,skip)
+
+    return jsonify(data)
 
 @app.route('/consulta', methods=['POST','GET'])
 @login_required
@@ -2515,6 +2525,42 @@ def buscarLinkAceitePdf(DealId):
     return links
 
 
+def consultarLinkPedidoVendas(DealId,skip):
+
+    """Função para buscar o pdf e aceite da proposta"""
+
+    order = f"https://public-api2.ploomes.com/Orders?$top=3&$skip={skip}&$filter=true+and+true+and+(DealId+eq+{DealId})&$select=Id"
+    
+    
+    headers = {
+        "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
+    }
+    
+    response = requests.get(order, headers=headers)
+
+    documentos = response.json()
+    
+    if documentos['value'] != []:
+        id_venda = documentos['value']
+
+        for doc in id_venda:
+            id_value = doc['Id']
+
+        url = f"https://public-api2.ploomes.com/Orders?$top=3&$skip={skip}&$filter=Id+eq+{id_value}&$select=DocumentUrl"
+
+        response = requests.get(url, headers=headers)
+
+        documentos = response.json()
+        link_documentos = documentos['value']
+
+        for doc in link_documentos:
+            link = doc['DocumentUrl']
+
+        return link
+    
+    return ''
+
+
 def obterDocumentoPdf(DealId):
     """Função para buscar o pdf e aceite da proposta e preparar e-mail"""
 
@@ -2623,14 +2669,16 @@ def formatar_data(data_str):
     return data_formatada
 
 
-def listarOrcamentos(nomeRepresentante):
+def listarOrcamentos(nomeRepresentante,skip):
     """Função para listar negócios de cada representante"""
 
     idRep = idRepresentante(nomeRepresentante)
 
-    url = "https://public-api2.ploomes.com/Quotes?$top=50&$filter=OwnerId+eq+{} and LastReview&$orderby=Date desc&$select=DealId,ExternallyAccepted,ApprovalStatusId".format(
-        idRep)
+    print(idRep)
+    print(skip)
 
+    url = f"https://public-api2.ploomes.com/Quotes?$top=3&$skip={skip}&$filter=OwnerId+eq+{idRep} and LastReview&$orderby=Date desc&$select=DealId,ExternallyAccepted,ApprovalStatusId"
+    
     headers = {
         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
     }
@@ -2639,9 +2687,9 @@ def listarOrcamentos(nomeRepresentante):
 
     data = response.json()
     data1 = data['value']
+    # print(data1)
 
-    url = "https://public-api2.ploomes.com/Deals?$top=50&$filter=OwnerId+eq+{} and StatusId+eq+1&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount,PersonId".format(
-        idRep)
+    url = f"https://public-api2.ploomes.com/Deals?$top=3&$skip={skip}&$filter=(OwnerId eq {idRep}) and ((StatusId eq 2) or (StatusId eq 1))&$orderby=LastUpdateDate desc&$select=StatusId,LastUpdateDate,Id,ContactName,Amount,PersonId"
 
     headers = {
         "User-Key": "5151254EB630E1E946EA7D1F595F7A22E4D2947FA210A36AD214D0F98E4F45D3EF272EE07FCF09BB4AEAEA13976DCD5E1EE313316FD9A5359DA88975965931A3"
@@ -2651,20 +2699,26 @@ def listarOrcamentos(nomeRepresentante):
 
     data = response.json()
     data2 = data['value']
+    # print(data2)
 
     # Crie um dicionário para mapear DealId para os itens no segundo JSON
     deal_id_mapping = {item2['Id']: item2 for item2 in data2}
 
     # Combine os JSONs com base em DealId
     combined_json = []
+    skip = 0
     for item1 in data1:
         deal_id = item1['DealId']
         if deal_id in deal_id_mapping:
             item2 = deal_id_mapping[deal_id]
             link = buscarLinkAceitePdf(deal_id)
-            combined_item = {**item1, **item2, **link}
+            link_venda = consultarLinkPedidoVendas(deal_id,skip)
+            combined_item = {**item1, **item2, **link,'link_venda': link_venda}
             combined_json.append(combined_item)
+            skip += 2
             
+    print(combined_json)   
+
     for item in combined_json:
         if item['ExternallyAccepted'] is None:
             item['ExternallyAccepted'] = "Não"
